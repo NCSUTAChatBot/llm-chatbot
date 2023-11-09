@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Textbox and Button Page</title>
+</head>
+<body>
+    <form method="POST" action="/process" id="textForm">
+        <label for="input_text">Enter Text:</label>
+        <input type="text" id="input_text" name="input_text" required>
+        <button type="submit">Submit</button>
+    </form>
+    <div id="result"></div> <!-- Placeholder for displaying the processed result -->
+
+    <script>
+        // JavaScript code for handling form submission and displaying the result
+        document.addEventListener("DOMContentLoaded", function() {
+            const form = document.getElementById("textForm");
+            const resultDiv = document.getElementById("result");
+
+            form.addEventListener("submit", function(event) {
+                event.preventDefault(); // Prevent the form from submitting via the browser
+                const formData = new FormData(form);
+
+                // Send a POST request to the /process route
+                fetch("/process", {
+                    method: "POST",
+                    body: formData
+                })
+                .then(response => response.json()) // Parse the response as JSON
+                .then(data => {
+                    // Display the processed result from the JSON response
+                    resultDiv.textContent = "Processed text: " + data.result;
+                })
+                .catch(error => console.error(error));
+            });
+        });
+    </script>
+</body>
+</html>
