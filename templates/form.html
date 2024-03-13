@@ -1,7 +1,9 @@
 <!DOCTYPE html>
+<!-- TODO: Add the chat window to allow the message history -->
+
 <html>
 <head>
-    <title>Textbox and Button Page</title>
+    <title>The chatbot page</title>
 </head>
 <body>
     <form method="POST" action="/process" id="textForm">
@@ -29,7 +31,8 @@
                 .then(response => response.json()) // Parse the response as JSON
                 .then(data => {
                     // Display the processed result from the JSON response
-                    resultDiv.textContent = "Processed text: " + data.result;
+                    // resultDiv.textContent = "Chat history: " + data.result;
+                    resultDiv.textContent = "Answer: " + data.result;
                 })
                 .catch(error => console.error(error));
             });

@@ -17,7 +17,8 @@ def process():
     result = process_question(input_text)
     # Do something with the input_text, e.g., print it
     print(f"Received input: {input_text}")
-    return jsonify({"result": result})
+    print(f"Result: {result}")
+    return jsonify({"result": ""+result})
 
 if __name__ == '__main__':
     app.run(debug=True)

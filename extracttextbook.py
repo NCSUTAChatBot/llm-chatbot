@@ -1,6 +1,13 @@
 # Step 1: Convert PDF to text
 import textract
-from transformers import GPT2TokenizerFast
+# Need to change the following import to the newer version.
+
+# The following commented line is also deprecated, need to change (the extracttextbook.py explicitly use this)
+# from transformers import GPT2TokenizerFast
+
+# TODO: refactor the GPT2TokenizerFast to tokenization_gpt2_fast
+
+from transformers.models.gpt2 import tokenization_gpt2_fast
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 import pickle as pkl
 # doc = textract.process("./textbook.pdf")
@@ -13,7 +20,7 @@ with open('textbook.txt', 'r') as f:
     text = f.read()
 
 # Step 3: Create function to count tokens
-tokenizer = GPT2TokenizerFast.from_pretrained("gpt2")
+tokenizer = tokenization_gpt2_fast()
 
 def count_tokens(text: str) -> int:
     return len(tokenizer.encode(text))
