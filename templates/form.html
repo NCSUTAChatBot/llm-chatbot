@@ -1,42 +1,77 @@
 <!DOCTYPE html>
-<!-- TODO: Add the chat window to allow the message history -->
-
 <html>
 <head>
-    <title>The chatbot page</title>
+    <title>Simple Chatbot Conversation</title>
+    <style>
+        #conversation {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-top: 20px;
+            height: 300px;
+            overflow-y: auto;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 8px;
+            border-radius: 4px;
+        }
+
+        .user {
+            background-color: #f0f0f0;
+            text-align: left;
+        }
+
+        .bot {
+            background-color: #e0eaff;
+            text-align: left;
+        }
+    </style>
 </head>
 <body>
-    <form method="POST" action="/process" id="textForm">
-        <label for="input_text">Enter Text:</label>
-        <input type="text" id="input_text" name="input_text" required>
-        <button type="submit">Submit</button>
-    </form>
-    <div id="result"></div> <!-- Placeholder for displaying the processed result -->
+    <h1>Ask the OSS Chatbot</h1>
+    <input type="text" id="question" placeholder="Ask me anything...">
+    <button onclick="submitQuestion()">Ask</button>
+
+    <div id="conversation"></div>
 
     <script>
-        // JavaScript code for handling form submission and displaying the result
-        document.addEventListener("DOMContentLoaded", function() {
-            const form = document.getElementById("textForm");
-            const resultDiv = document.getElementById("result");
+        async function submitQuestion() {
+            const questionInput = document.getElementById('question');
+            const questionText = questionInput.value.trim();
+            const conversationDiv = document.getElementById('conversation');
 
-            form.addEventListener("submit", function(event) {
-                event.preventDefault(); // Prevent the form from submitting via the browser
-                const formData = new FormData(form);
+            if (questionText === '') {
+                return; // Do nothing if the question is empty
+            }
 
-                // Send a POST request to the /process route
-                fetch("/process", {
-                    method: "POST",
-                    body: formData
-                })
-                .then(response => response.json()) // Parse the response as JSON
-                .then(data => {
-                    // Display the processed result from the JSON response
-                    // resultDiv.textContent = "Chat history: " + data.result;
-                    resultDiv.textContent = "Answer: " + data.result;
-                })
-                .catch(error => console.error(error));
+            // Display the user's question
+            const userQuestionDiv = document.createElement('div');
+            userQuestionDiv.classList.add('message', 'user');
+            userQuestionDiv.textContent = `User: ${questionText}`;
+            conversationDiv.appendChild(userQuestionDiv);
+
+            // Fetch and display the bot's answer
+            const response = await fetch('http://localhost:5000/ask', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ question: questionText }),
             });
-        });
+
+            const data = await response.json();
+            const botAnswerDiv = document.createElement('div');
+            botAnswerDiv.classList.add('message', 'bot');
+            botAnswerDiv.textContent = `Bot: ${data.result.answer}`;
+            conversationDiv.appendChild(botAnswerDiv);
+
+            // Clear the question input for the next question
+            questionInput.value = '';
+
+            // Scroll to the bottom of the conversation to show the latest exchange
+            conversationDiv.scrollTop = conversationDiv.scrollHeight;
+        }
     </script>
 </body>
 </html>

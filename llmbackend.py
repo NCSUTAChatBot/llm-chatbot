@@ -10,47 +10,80 @@ import pickle as pkl
 # TODO: Change the langchain to langchain_community
 
 # langchain 
-from langchain.embeddings import OpenAIEmbeddings
-from langchain.vectorstores import FAISS
+# from langchain.embeddings import OpenAIEmbeddings
+# from langchain_community.embeddings import OpenAIEmbeddings
+from langchain_openai import OpenAIEmbeddings
+# from langchain.vectorstores import FAISS
+from langchain_community.vectorstores import FAISS
 from langchain.chains.question_answering import load_qa_chain
-from langchain.llms import OpenAI
+# from langchain.llms import OpenAI
+from langchain_community.llms import OpenAI
 from langchain.chains import ConversationalRetrievalChain
 
-def get_text_chunks(filename) : # Flask doesn't really matter the backend. 
+def get_text_chunks(filename: str) -> list: # Flask doesn't really matter the backend.
+    '''
+    Get  the text chunks from the preprocessed pickle file.
+
+    Params:
+    - filename(str): the filename of the preprocessed text chunks.
+
+    Returns:
+    - l(list): the list of all text chunks from the pickle file.
+    ''' 
     # read the preprocessed text chunks from the pickle file
     with open(filename, "rb") as f:
         l = pkl.load(f)
     return l
 
-def process_question(question) :
-    # set openai api key
-    os.environ["OPENAI_API_KEY"] = "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"
+def make_vector_database(chunks_list: list) -> FAISS:
+    '''
+    Make the vector database from the text chunks.
 
-    # get text chunks
-    chunks = get_text_chunks("textbook.pkl") 
+    Params:
+    - chunks_list(list): the list of all text chunks.
+    
+    Returns:
+    - db(FAISS): the vector database from the text chunks.
+    '''
     # Get embedding model
     embeddings = OpenAIEmbeddings()
 
     # Create vector database from the text chunks, using the embedding model
-    db = FAISS.from_documents(chunks, embeddings)
-    chat_history = []
+    db = FAISS.from_documents(chunks_list, embeddings)
+    return db
 
-    # Create chain for QA session
-    chain = load_qa_chain(OpenAI(temperature=0), chain_type="stuff")
+def make_query(chat_history: list, question: str) -> str:
+    '''
+    Make the query with the question.
 
-    query = question
+    Params:
+    - question(str): the question to make query to openai.
 
-    # perform similarity search for the question and the vector db to get the related chunks
-    docs = db.similarity_search(query)
+    Returns:
+    - result['answer']: the answer from openai api.
+    '''
+    # set openai api key
+    # Here you need to set up your own openai api key.
+    # os.environ["OPENAI_API_KEY"] = 
+
+    # get text chunks
+    db = make_vector_database(chunks_list=get_text_chunks("textbook.pkl"))
+    # chat_history = []
+
+    # # Create chain for QA session
+    # chain = load_qa_chain(OpenAI(temperature=0), chain_type="stuff")
+
+    # # perform similarity search for the question and the vector db to get the related chunks
+    # docs = db.similarity_search(question)
 
     # db.as_retriever has the question and the chunks, send them to openai api and wait for the response, and store the related infomation by setting verbose as True.
-    qa = ConversationalRetrievalChain.from_llm(OpenAI(temperature=0.1), db.as_retriever(), verbose=True)
-    
-    result = qa({"question": query, "chat_history": chat_history})
-    chat_history.append((query, result['answer']))
-
+    qa = ConversationalRetrievalChain.from_llm(OpenAI(temperature=0.1), db.as_retriever(), verbose=True) #return_generated_question=True, return_source_documents=True)
+    # print("CCCCC"+question)
+    result = qa({"chat_history": chat_history, "question": question})
+    chat_history.append((question, result['answer']))
+    # print('comb '+str(result))
     # chat_history
-    return result['answer']
+    return result
 
 
 # if __name__ == "__main__" :
