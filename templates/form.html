@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <!-- Include marked.js from CDN -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script> -->
     <title>Simple Chatbot Conversation</title>
     <style>
         #conversation {
@@ -34,7 +36,6 @@
     <button onclick="submitQuestion()">Ask</button>
 
     <div id="conversation"></div>
-
     <script>
         async function submitQuestion() {
             const questionInput = document.getElementById('question');

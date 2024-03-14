@@ -1,0 +1,6 @@
+Flask==2.2.5
+langchain==0.1.12
+langchain_community==0.0.28
+langchain_openai==0.0.8
+textract==1.6.5
+transformers==4.37.2

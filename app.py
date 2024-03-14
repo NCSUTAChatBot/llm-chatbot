@@ -24,7 +24,7 @@ def make_query_wrapper(chat_history, input_text: str | None) -> str:
     
 @app.route('/ask', methods=['POST'])
 def ask():
-    # This function is listening for the /query POST request after the page is loaded.
+    # This function is listening for the /ask POST request after the page is loaded.
     input_text = request.json
     print(f"Received input: {str(input_text)}")
     if input_text is not None:

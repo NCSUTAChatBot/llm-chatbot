@@ -1,24 +1,15 @@
 import os
 import pickle as pkl
-
-
-
 # Some old apis are used here, need to change it later. The log from the terminal shows it need to change to 
 # langchain_community.vectorstores import FAISS langchain_community, and langchain_openai, ...
 # Please follow the log from the terminal if it is need refactor.
 
-# TODO: Change the langchain to langchain_community
+# TODO: It seems that langchain_comunity.llms OPENAI will be deprecated
 
-# langchain 
-# from langchain.embeddings import OpenAIEmbeddings
-# from langchain_community.embeddings import OpenAIEmbeddings
-from langchain_openai import OpenAIEmbeddings
-# from langchain.vectorstores import FAISS
-from langchain_community.vectorstores import FAISS
-from langchain.chains.question_answering import load_qa_chain
-# from langchain.llms import OpenAI
-from langchain_community.llms import OpenAI
-from langchain.chains import ConversationalRetrievalChain
+from langchain_openai import OpenAIEmbeddings               # import this to support creating the vector database from the text
+from langchain_community.vectorstores import FAISS          # Facebook AI Similarity Search (Faiss) provides an implemenation of the vector database.
+from langchain_community.llms import OpenAI                 # OpenAI is an open-source library for natural language understanding.
+from langchain.chains import ConversationalRetrievalChain   # The one popular chain from langchain, which concatenates the previous model's output to the new model's input.
 
 def get_text_chunks(filename: str) -> list: # Flask doesn't really matter the backend.
     '''
@@ -63,29 +54,15 @@ def make_query(chat_history: list, question: str) -> str:
     - result['answer']: the answer from openai api.
     '''
     # set openai api key
-    # Here you need to set up your own openai api key.
-    # os.environ["OPENAI_API_KEY"] = 
+    # Here you need to set up your own openai api key in your $path, or you can try to add your api key in this session by running the line below.
+    # os.environ["OPENAI_API_KEY"] = <your key>
 
     # get text chunks
     db = make_vector_database(chunks_list=get_text_chunks("textbook.pkl"))
-    # chat_history = []
-
-    # # Create chain for QA session
-    # chain = load_qa_chain(OpenAI(temperature=0), chain_type="stuff")
-
-    # # perform similarity search for the question and the vector db to get the related chunks
-    # docs = db.similarity_search(question)
 
     # db.as_retriever has the question and the chunks, send them to openai api and wait for the response, and store the related infomation by setting verbose as True.
     qa = ConversationalRetrievalChain.from_llm(OpenAI(temperature=0.1), db.as_retriever(), verbose=True) #return_generated_question=True, return_source_documents=True)
-    # print("CCCCC"+question)
+
     result = qa({"chat_history": chat_history, "question": question})
     chat_history.append((question, result['answer']))
-    # print('comb '+str(result))
-    # chat_history
     return result
-
-
-# if __name__ == "__main__" :
-#     os.environ["OPENAI_API_KEY"] = "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"
-#     execute_chunks()
