@@ -4,3 +4,4 @@ langchain_community==0.0.28
 langchain_openai==0.0.8
 textract==1.6.5
 transformers==4.37.2
+faiss-cpu==1.8.0

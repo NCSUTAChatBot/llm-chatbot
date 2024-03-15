@@ -40,6 +40,7 @@ def make_vector_database(chunks_list: list) -> FAISS:
     embeddings = OpenAIEmbeddings()
 
     # Create vector database from the text chunks, using the embedding model
+    # TODO: make it only excute once.
     db = FAISS.from_documents(chunks_list, embeddings)
     return db
 
@@ -48,6 +49,7 @@ def make_query(chat_history: list, question: str) -> str:
     Make the query with the question.
 
     Params:
+    - chat_history(list): the chat history.
     - question(str): the question to make query to openai.
 
     Returns:
@@ -61,6 +63,7 @@ def make_query(chat_history: list, question: str) -> str:
     db = make_vector_database(chunks_list=get_text_chunks("textbook.pkl"))
 
     # db.as_retriever has the question and the chunks, send them to openai api and wait for the response, and store the related infomation by setting verbose as True.
+    # If we can set a limit of db.as_retriever(), to reduce the cost 
     qa = ConversationalRetrievalChain.from_llm(OpenAI(temperature=0.1), db.as_retriever(), verbose=True) #return_generated_question=True, return_source_documents=True)
 
     result = qa({"chat_history": chat_history, "question": question})
