@@ -1,7 +1,9 @@
 from flask import Flask, render_template, request, jsonify
+from flask_cors import CORS
 from llmbackend import make_query
 
 app = Flask(__name__)
+CORS(app, resources={r"/ask": {"origins": ["192.168.86.29"]}})
 chat_history = []
 @app.route('/')
 def index():
