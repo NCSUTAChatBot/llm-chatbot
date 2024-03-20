@@ -64,7 +64,7 @@ def make_query(chat_history: list, question: str) -> str:
 
     # db.as_retriever has the question and the chunks, send them to openai api and wait for the response, and store the related infomation by setting verbose as True.
     # If we can set a limit of db.as_retriever(), to reduce the cost 
-    qa = ConversationalRetrievalChain.from_llm(OpenAI(temperature=0.1), db.as_retriever(), verbose=True) #return_generated_question=True, return_source_documents=True)
+    qa = ConversationalRetrievalChain.from_llm(OpenAI(temperature=0.1), db.as_retriever(search_type="similarity_score_threshold", search_kwargs={"score_threshold": 0.6}), verbose=True) #return_generated_question=True, return_source_documents=True)
 
     result = qa({"chat_history": chat_history, "question": question})
     chat_history.append((question, result['answer']))

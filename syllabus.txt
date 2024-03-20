@@ -1,0 +1,158 @@
+Catalog Description
+Object-oriented languages and systems built with object-oriented software components. Object-oriented design methodologies, such as CRC cards and the Unified Modeling Language (UML). Requirement analysis. Design patterns. Agile methods. Object-oriented programming environments, such as the Eclipse platform. Platforms for Web services, such as J2EE. Project required.
+
+Prerequisites
+CSC 316:Data Structures for Computer Scientists
+Learning Objectives
+The goals for this course are to ...
+
+learn to design programs with classes that work together with maximum cohesion and minimum coupling,
+learn how design methodologies, such as CRC cards, and the Uniform Modeling Language, can be used to express the interaction between program components.
+understand the differences between statically and dynamically typed object-oriented languages, and be able to program in both,
+learn how an understanding of software design patterns can be used to structure programs so that they are robust and extensible, and
+appreciate how programs can be restructured ("refactored") to improve their adherence to the principles of good design.
+
+Text
+REQUIRED
+Engineering Software as a Service
+by Armando Fox and David Patterson
+Publisher: CreateSpace
+Textbook Paperback, Kindle, iBooks, or Nook edition
+Pub. Date: 2016 or 2nd ed. beta, 2021
+
+Important dates
+First class: Friday, Jan. 13
+Last class: Friday, Apr. 21
+No class: Friday, March 17 (spring break)
+              Friday, Apr. 7 (Good Friday)
+Last day to drop or change to audit: Monday, Mar. 6
+For more details, see the academic calendar.
+Class meetings
+Friday, 1:30-4:15 PM in EB II 1230
+
+Incremental-learning requirement
+CSC/ECE 517 will be a hybrid course this semester, with some material being presented in class, synchronously online, and some presented asynchronously online. Educational research shows that students learn best incrementally, rather than by studying large amounts of material right before exams. Incremental learning can only take place when students concentrate on each lesson when it is presented.
+
+Accordingly, all students in CSC/ECE 517 are required to do two things:
+
+Pass a quiz over the online material for the week by Thursday evening before class. A passing score on a quiz is a score of at least 80%.
+Attend at least 8 out of the 11 (non-exam) weeks of class (at least 6 of which must be attended in the classroom). Attendance credit will be given for responding intelligently to the majority of in-class response Google forms during class. The deadline for responding is 6 PM on the day of class for on-campus students, and 6 days after the class for off-campus students (e.g., class on Friday means you need to comment by the following Thursday).
+There are thus 23 times during the semester that incremental-learning credit must be earned: 9 of 11 class sessions, plus 14 of 15 online lessons. Each one of them is worth 5 semester points. Thus, there are a maximum of 45 points for class attendance, and a maximum of 70 points for quizzes.
+
+Audit requirement
+Pass half of the online quizzes. Also, do one homework, or take one test (not quiz), before spring break and score at least 50%; then do one homework, or take one test, after spring break and score at least 50%. You can choose which homework or test to take, and if you take one and fail to score 50%, you can try another. If you complete this requirement, you will receive a grade of AU. If you do not fulfill this requirement, your grade will be NR (no recognition).
+
+Points
+Homework    400 pts.
+Programs    320 points
+GitHub Project exercise    10 pts.
+Ruby program    30 pts.
+Ruby on Rails program    90 pts.
+OSS project    90 pts.
+Final project    100 pts.
+Writing assignments    80 pts.
+Writeup on OSS project    40 pts.
+Final project design doc.    40 pts.
+Reviews    120 pts.
+Teammate reviews (aggregate)    65 pts.
+Peer reviews    60 pts.
+[2 required for each of 3 peer-reviewed assgts.]
+Exams    360 pts.
+Test 1   60 pts.
+Test 2  120 pts.
+Final exam    180 pts.
+Quizzes (5 pts. each)    70 pts.
+Syllabus quiz
+Fourteen weekly quizzes
+(Credit for a maximum of 14 of the above)
+Attendance (5 pts. per class for up to 9 classes)    45 pts.
+Cutoffs for As, Bs, Cs, etc. will generally be 900, 800, 700, ... Cutoffs may be adjusted down by a few points if necessary so that students with essentially the same performance receive the same grade.
+
+There will be copious opportunities for extra credit, with the stipulation that all activities for which extra credit is given must help other students to learn the course material--either students in the current CSC/ECE 517 class, or students in later classes. Examples of activities that can earn extra credit include--
+
+doing extra peer reviews of programming or writing assignments or design documents (up to 6 extra reviews during the semester, up to 10 points per review),
+rating peer reviews that you have received for how helpful they are
+making outstanding contributions to answering other students' questions on the Piazza message board.
+
+
+Descriptions
+GitHub Project Board exercise
+0. A short exercise to familiarize you with how to use GitHub project boards
+Programs
+There will be four programming assignments.
+1. A Ruby programming assignment. You may work in a team of up to two students on this project.
+
+2. A Ruby on Rails programming assignment. You may work in a team of up to three students on this project.
+
+3. An assignment on contributing to an open-source software project. These projects will be done in groups of two or three.
+
+4. The final project, which may be done in the same group as your OSS project, or by combining two 2-member teams from the OSS project. The number of students working on this project should be three or four. Before beginning to code, you will need to submit a design document, which will be peer-reviewed by other members of the class. After the project is complete, it will be demoed via screencasting, and live to instructor, TA, and someone from the staff of the project to which it relates.
+Writing assignments
+During the semester there will be two peer-reviewed writing assignments. These assignments will be--
+
+1. Writing about the design principles and design patterns used in your OSS project. The goal is to explain your design choices to someone who is not familiar with the code, but is familiar with design principles and patterns. Clarity is the most important quality of this writeup. You should discuss possible bad choices, with code-snippet examples, and show why the choices you made were better.
+
+2. A design document for your final project.
+Teaming requirement
+Each student is required to partner or team with a minimum of 4 other students during the course. Each student who fails to partner with at least 4 other students will lose 20 points for each student short of four with whom (s)he partners. Be careful to partner with a variety of students early in the semester, since you may want to stay on the same team for the last two programming assignments.
+Tests
+Two 120-minute midterm tests will be given at roughly equal intervals during the semester.
+Exam
+The 150-minute final exam will be worth 180 points. It will be cumulative, but at least half of the points will be based on material covered after the second test.
+
+
+Late or Missed Assignments
+Late programs will be penalized at the rate of 10% per day, each day that classes are in session, whether or not our class meets on that day. Exceptions will be made only for medical reasons. Missed assignments and exams will be assigned a score of 0 and cannot be made up without an official university excuse. Contact me as soon as possible if you need to discuss reasons for late or missed assignments or exams.
+
+
+
+Posting of grades
+The Webassign gradebook will be used to post grades.
+
+Academic Integrity
+In this course, students are required to work collaboratively on homework assignments unless otherwise specified by the instructor. Students may share any information with other members of their team, but must work independently of other teams.
+
+The decision as to whether a student cheated depends on the intent of an assignment, the ground rules specified by the instructor, and the behavior of the student. Two guidelines help an instructor decide if cheating has occurred:
+
+Program plagiarism will be suspected if an assignment that calls for independent development and implementation of a program results in two or more solutions so similar that one can be converted to another by mechanical transformation.
+Cheating will be suspected if a student or team that was to complete an assignment independently cannot explain both the intricacies of their solution and the techniques used to generate that solution.
+It is unreasonable to expect a complete definition of cheating; each case is important enough to be given careful, individual scrutiny. It is, however, helpful to have guidelines and precedents. Here are some examples of cases which are clearly cheating and clearly not cheating.
+
+Large Language Models
+Use of large language models is permitted for all homework in this class. Directly turning in the output of a large language model as your homework solution is not permitted. If multiple students turn in solutions so similar that one can be converted to another by mechanical means, they have committed plagiarism even if they had no contact with each other, but just turned in the output of the same LLM. Students are permitted to experiment with LLM prompts to customize their own solution. Using LLMs to improve your code, independently of other students or teams, is not cheating.
+
+Cheating
+Turning in another individual's or team's work as your own (with or without their knowledge), Turning in a completely duplicated assignment is a flagrant offense.
+Allowing another team to turn in your work as their own
+Several teams writing one program and turning in multiple copies, all represented (implicitly or explicitly) as their own team's work
+Using any part of other students' work without the proper acknowledgment
+Soliciting help with homework or exam questions from contract cheating sites such as Chegg
+Communicating with another student in any way during an exam, or about the material on an exam you have taken before the other student has taken the exam
+Not Cheating
+Turning in work done alone, with other members of your team, or with the help of the course staff
+Getting or giving help on how to do something on Github, an IDE, or a software tool used in a course project
+Answering questions for other students on programming mechanisms that can be used to implement required functionality, without actually writing code for them
+High-level discussion of course material for better understanding
+Discussion of assignments to understand what is being asked for
+The instructor and course staff will not condone cheating. They will use software to try to detect cheating. When cheating is suspected, instructors will take reasonable action to establish whether it has occurred. If it has, the instructor or the Office of Student Conduct will apply appropriate disciplinary policy. All violations and penalties will be reported to the Office of Student Conduct, in accordance with NCSU policy. Records are kept by the OSC for a period of two years after the violation; they do not result in a permanent notation on a student's record. However, the student always has the right to bring the case before the Office of Student Conduct, if, for example, he/she feels this will result in a more sympathetic hearing. Failure to request that the case be brought before the Office of Student Conduct will be deemed a waiver of this right.
+
+A list of possible disciplinary actions is given below:
+
+Actions within the course
+No credit, reduced credit, or negative credit for the assignment.
+Loss of a letter grade for the course.
+Failure in the course.
+Forced drop in the course.
+Actions by the University
+Failure in the course.
+Suspension from the University for a designated period.
+Expulsion from the University.
+The following policies apply to all cases of cheating and plagiarism:
+
+For a first offense, the penalty will always be more severe than the penalty for failing to turn in the assignment (or take the exam) in question.
+
+All incidents will be reported to the Office of Student Conduct.
+
+E. F. Gehringer
+
+1/10/85, rev. 8/14/11, 8/23/18, 8/13/20, 8/19/23
