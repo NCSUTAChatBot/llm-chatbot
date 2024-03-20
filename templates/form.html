@@ -1,41 +1,103 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <!-- Include marked.js from CDN -->
-    <!-- <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script> -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Simple Chatbot Conversation</title>
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        header, footer {
+            background-color: #f8f9fa;
+            padding: 10px 20px;
+            text-align: center;
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+
         #conversation {
+            flex: 1;
             border: 1px solid #ddd;
             padding: 10px;
-            margin-top: 20px;
-            height: 300px;
+            margin: 20px 0;
             overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
 
         .message {
-            margin-bottom: 15px;
-            padding: 8px;
-            border-radius: 4px;
+            padding: 10px;
+            border-radius: 10px;
+            max-width: 80%;
         }
 
         .user {
+            align-self: flex-end;
             background-color: #f0f0f0;
-            text-align: left;
         }
 
         .bot {
+            align-self: flex-start;
             background-color: #e0eaff;
-            text-align: left;
+        }
+
+        #question {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 20px;
+            width: calc(100% - 120px);
+            margin-right: 10px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        @media (max-width: 600px) {
+            #question {
+                width: calc(100% - 90px);
+            }
         }
     </style>
 </head>
 <body>
-    <h1>Ask the OSS Chatbot</h1>
-    <input type="text" id="question" placeholder="Ask me anything...">
-    <button onclick="submitQuestion()">Ask</button>
+    <header>
+        <h2>Ask the OSS Chatbot</h2>
+    </header>
 
-    <div id="conversation"></div>
+    <main>
+        <input type="text" id="question" placeholder="Ask me anything...">
+        <button onclick="submitQuestion()">Ask</button>
+
+        <div id="conversation"></div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Chatbot Conversations</p>
+    </footer>
+
     <script>
         async function submitQuestion() {
             const questionInput = document.getElementById('question');
