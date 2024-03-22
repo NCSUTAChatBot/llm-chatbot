@@ -128,3 +128,6 @@ venv.bak/
 
 # pyc
 *.pyc
+
+#openaiapikey
+openapikeyformal
