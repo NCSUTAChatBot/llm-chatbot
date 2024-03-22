@@ -1,41 +1,123 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <!-- Include marked.js from CDN -->
-    <!-- <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script> -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Simple Chatbot Conversation</title>
     <style>
-        #conversation {
-            border: 1px solid #ddd;
-            padding: 10px;
-            margin-top: 20px;
-            height: 300px;
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            background-color: #fafafa;
+        }
+
+        header {
+            background-color: #f0f0f0;
+            padding: 10px 20px;
+            text-align: center;
+        }
+
+        main {
+            flex: 1;
             overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #conversation {
+            border: 2px solid #e2e2e2;
+            border-radius: 8px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column; /* Adjusted for normal order */
+            gap: 10px;
         }
 
         .message {
-            margin-bottom: 15px;
-            padding: 8px;
-            border-radius: 4px;
+            padding: 10px;
+            border-radius: 10px;
+            max-width: 80%;
         }
 
         .user {
-            background-color: #f0f0f0;
-            text-align: left;
+            align-self: flex-end;
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
         }
 
         .bot {
-            background-color: #e0eaff;
-            text-align: left;
+            align-self: flex-start;
+            background-color: #fefefe;
+            border: 1px solid #ddd;
+        }
+
+        .input-area {
+            padding: 10px 20px;
+            background-color: #f0f0f0;
+            display: flex;
+            gap: 10px;
+        }
+
+        #question {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 20px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        @media (max-width: 768px) {
+            .input-area {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            #question {
+                margin-bottom: 10px;
+            }
+
+            button {
+                width: 100%;
+                border-radius: 10px;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>Ask the OSS Chatbot</h1>
-    <input type="text" id="question" placeholder="Ask me anything...">
-    <button onclick="submitQuestion()">Ask</button>
+    <header>
+        <h2>Ask the OSS Chatbot</h2>
+    </header>
 
-    <div id="conversation"></div>
+    <main>
+        <div id="conversation"></div>
+    </main>
+
+    <div class="input-area">
+        <input type="text" id="question" placeholder="Ask me anything...">
+        <button onclick="submitQuestion()">Ask</button>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Chatbot Conversations</p>
+    </footer>
+
     <script>
         async function submitQuestion() {
             const questionInput = document.getElementById('question');
@@ -49,7 +131,7 @@
             // Display the user's question
             const userQuestionDiv = document.createElement('div');
             userQuestionDiv.classList.add('message', 'user');
-            userQuestionDiv.textContent = `User: ${questionText}`;
+            userQuestionDiv.textContent = `${questionText}`;
             conversationDiv.appendChild(userQuestionDiv);
 
             // Fetch and display the bot's answer
@@ -64,7 +146,7 @@
             const data = await response.json();
             const botAnswerDiv = document.createElement('div');
             botAnswerDiv.classList.add('message', 'bot');
-            botAnswerDiv.textContent = `Bot: ${data.result.answer}`;
+            botAnswerDiv.textContent = `${data.result.answer}`;
             conversationDiv.appendChild(botAnswerDiv);
 
             // Clear the question input for the next question
@@ -73,6 +155,11 @@
             // Scroll to the bottom of the conversation to show the latest exchange
             conversationDiv.scrollTop = conversationDiv.scrollHeight;
         }
+        // Event listener for the Enter key in the input field
+        document.getElementById('question').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                submitQuestion();
+            }
+        });
     </script>
 </body>
-</html>
