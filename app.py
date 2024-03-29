@@ -10,7 +10,7 @@ app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
-CORS(app, supports_credentials=True, resources={r"/ask": {"origins": ["192.168.86.29"]}})
+CORS(app, supports_credentials=True, resources={r"/ask": {"origins": ["152.7.178.152"]}})
 chat_history = []
 @app.route('/')
 def index():
