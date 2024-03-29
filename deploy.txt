@@ -1,0 +1,8 @@
+1. Need to set the firewall to open the related ports:
+
+sudo apt install ufw
+sudo iptables -I INPUT -p tcp -s 0.0.0.0/0 --dport 8000 -j ACCEPT
+sudo ufw allow 8000
+sudo ufw reload
+
+2. Need to make it as a system service.
