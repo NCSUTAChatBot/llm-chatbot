@@ -1,0 +1,13 @@
+[2024-04-03 13:23:57 -0400] [1071974] [INFO] Starting gunicorn 21.2.0
+[2024-04-03 13:23:57 -0400] [1071974] [INFO] Listening at: http://0.0.0.0:8000 (1071974)
+[2024-04-03 13:23:57 -0400] [1071974] [INFO] Using worker: sync
+[2024-04-03 13:23:57 -0400] [1071975] [INFO] Booting worker with pid: 1071975
+[2024-04-03 13:23:57 -0400] [1071976] [INFO] Booting worker with pid: 1071976
+[2024-04-03 13:23:57 -0400] [1071977] [INFO] Booting worker with pid: 1071977
+[2024-04-03 13:23:57 -0400] [1071978] [INFO] Booting worker with pid: 1071978
+[2024-04-03 13:27:25 -0400] [1071974] [INFO] Handling signal: int
+[2024-04-03 13:27:25 -0400] [1071977] [INFO] Worker exiting (pid: 1071977)
+[2024-04-03 13:27:25 -0400] [1071978] [INFO] Worker exiting (pid: 1071978)
+[2024-04-03 13:27:25 -0400] [1071976] [INFO] Worker exiting (pid: 1071976)
+[2024-04-03 13:27:25 -0400] [1071975] [INFO] Worker exiting (pid: 1071975)
+[2024-04-03 13:27:25 -0400] [1071974] [INFO] Shutting down: Master
