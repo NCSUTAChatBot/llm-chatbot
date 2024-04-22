@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, session
+from flask import Flask, render_template, request, jsonify
 from flask_session import Session
 from flask_cors import CORS
 from llmbackend import make_query
@@ -10,7 +10,7 @@ app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
-CORS(app, supports_credentials=True, resources={r"/ask": {"origins": ["192.168.86.29"]}})
+CORS(app, supports_credentials=True, resources={r"/ask": {"origins": ["152.7.178.152"]}})
 chat_history = []
 @app.route('/')
 def index():
@@ -47,4 +47,4 @@ def ask():
     return jsonify({'chat_history':chat_history, 'result':result})
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=8000, host="152.7.178.152")

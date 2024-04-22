@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple Chatbot Conversation</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+    <title>The SAAS Chatbot</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -102,7 +103,9 @@
 </head>
 <body>
     <header>
-        <h2>Ask the OSS Chatbot</h2>
+        <h2>Ask the SAAS Chatbot</h2>
+        <p>This Chatbot uses openai backend and it needs some time to generate a reponse. Please wait for the response after asking one question.</p>
+        <p><a href="https://forms.gle/5swJdyyfSdQxGww69" target="_blank" rel="noopener noreferrer">Leave feedback here</a></p>
     </header>
 
     <main>
@@ -115,7 +118,7 @@
     </div>
 
     <footer>
-        <p>&copy; 2024 Chatbot Conversations</p>
+        <p>&copy; 2024 NCSU CSC Dept</p>
     </footer>
 
     <script>
@@ -134,6 +137,14 @@
             userQuestionDiv.textContent = `${questionText}`;
             conversationDiv.appendChild(userQuestionDiv);
 
+            // Clear the question input for the next question
+            questionInput.value = '';
+
+            const botAnswerDiv = document.createElement('div');
+            botAnswerDiv.classList.add('message', 'bot');
+            botAnswerDiv.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Loading...`;
+            conversationDiv.appendChild(botAnswerDiv);
+
             // Fetch and display the bot's answer
             const response = await fetch('/ask', {
                 method: 'POST',
@@ -142,15 +153,8 @@
                 },
                 body: JSON.stringify({ question: questionText }),
             });
-
             const data = await response.json();
-            const botAnswerDiv = document.createElement('div');
-            botAnswerDiv.classList.add('message', 'bot');
-            botAnswerDiv.textContent = `${data.result.answer}`;
-            conversationDiv.appendChild(botAnswerDiv);
-
-            // Clear the question input for the next question
-            questionInput.value = '';
+            botAnswerDiv.innerHTML = `${data.result.answer}`;
 
             // Scroll to the bottom of the conversation to show the latest exchange
             conversationDiv.scrollTop = conversationDiv.scrollHeight;
