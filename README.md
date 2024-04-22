@@ -18,3 +18,6 @@ pip install -r requirements.txt
 python app.py
 ```  
 4. Open a browser, the default page could be `http://localhost:5000` or `127.0.0.1:5000`
+
+## Version Update 2024/4/22
+- Supports loading indicator when waiting for a response from openai gpt backend.
