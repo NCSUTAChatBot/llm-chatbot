@@ -1,18 +1,17 @@
-
 .landingPageContainer {
   position: relative;
-  height: 100vh;  /* Full height of the viewport */
-  width: 100vw;   /* Full width of the viewport */
+  height: 100vh;
+  width: 100vw;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
   background-image: url("../public/spring2020-16972.jpg");
-  background-size: cover;  /* Cover the entire container */
-  background-position: center center;  /* Center the background image */
+  background-size: cover;
+  background-position: center center;
   background-repeat: no-repeat;
   margin: 0;
-  overflow: hidden;  /* No scrollbars */
+  overflow: hidden;
 
 }
 
@@ -29,7 +28,7 @@
   flex-direction: column;
   align-items: center;
   font-weight: 300;
-  margin-top: 170px ;
+  margin-top: 170px;
 }
 
 .modalHeader {
@@ -37,6 +36,7 @@
   padding-bottom: 1px;
   color: rgba(255, 255, 255, .7);
   font-size: 28px;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
   text-align: center;
 }
 
@@ -44,8 +44,10 @@
   color: #ffffff;
   padding-bottom: 20px;
   text-align: center;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
   font-size: 16px;
 }
+
 .chatButton {
   width: 150px;
   padding: 10px;
@@ -57,7 +59,7 @@
   display: block;
   margin-left: auto;
   margin-right: auto;
-  font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
   font-size: 13px;
 }
 
@@ -71,6 +73,7 @@
   font-weight: 400;
   font-family: 'Courier New', Monaco, monospace;
 }
+
 .footerTextRight {
   position: absolute;
   bottom: 1px;
@@ -96,7 +99,7 @@
 .title {
   margin: 0;
   font-size: 18px;
-  font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
 
 .buttons {
@@ -104,15 +107,15 @@
   gap: 10px;
 }
 
-.chat-page{
+.chat-page {
   display: flex;
   flex-direction: column;
-  height: 100vh; /* Full viewport height */
+  height: 100vh;
   margin: 0;
   background-color: rgb(20, 21, 21);
 }
 
-.exit{
+.exit {
   background: none;
   color: white;
   border: none;
@@ -120,7 +123,7 @@
   font-size: 16px;
   padding: 0;
   margin-left: 20px;
-  font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
 
 .help-button {
@@ -131,7 +134,7 @@
   font-size: 16px;
   padding: 0;
   margin-left: 20px;
-  font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
 
 .feedback-button {
@@ -142,10 +145,10 @@
   font-size: 16px;
   padding: 0;
   margin-left: 20px;
-  font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
 
-.start-chat{
+.start-chat {
   background: none;
   color: white;
   border: none;
@@ -153,7 +156,7 @@
   font-size: 16px;
   padding: 0;
   margin-left: 20px;
-  font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
 
 .chat-container {
@@ -163,15 +166,31 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  height: 100vh; 
-  overflow-y: auto; 
+  height: 100vh;
+  overflow-y: auto;
 }
 
-.input-row{
-    padding: 10px 20px;
-    display: flex;
-    gap: 10px;
-    margin-bottom: 10px;
+.chat-welcome {
+  color: white;
+  text-align: center;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  font-size: 40px;
+  margin-top: 120px;
+}
+
+.chat-welcome-text {
+  color: white;
+  text-align: center;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  font-size: 20px;
+  margin-top: 20px;
+}
+
+.input-row {
+  padding: 10px 20px;
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
 }
 
 .input-field {
@@ -182,21 +201,124 @@
   padding-left: 20px;
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
   background-color: rgb(5, 5, 5);
-  color:#ffffff;
-  font-size: 14px; 
+  color: #ffffff;
+  font-size: 14px;
   height: 49px;
   font-family: 'Courier New', Courier, monospace;
   outline: none;
-  border: none; 
+  border: none;
   border-radius: 20px;
 }
 
-.submit-chat{
+.submit-chat {
   padding: 1rem;
   color: white;
   background-color: rgb(4, 4, 4);
   border-radius: 1.25rem;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
   border: none;
+}
 
+.user {
+  align-self: flex-start;
+  color: white;
+}
+
+.message {
+  padding: 10px;
+  border-radius: 10px;
+  margin-bottom: 8px;
+  max-width: 60%;
+  width: fit-content;
+}
+
+.sender {
+  font-weight: bold;
+  margin-bottom: 4px;
+  color: white;
+}
+
+.text {
+  padding: 8px;
+  border-radius: 5px;
+}
+
+.message.user {
+  align-self: flex-start;
+  background-color: transparent;
+}
+
+.message.bot {
+  align-self: flex-end;
+  background-color: transparent;
+}
+
+.message.user .text {
+  background-color: #007bff;
+  color: white;
+  border-radius: 10px;
+}
+
+.message.bot .text {
+  background-color: #007bff;
+  color: white;
+  border-radius: 10px;
+}
+
+.chat-char {
+  opacity: 0;
+  display: inline-block;
+  white-space: pre-wrap;
+  animation: typing 0.2s forwards;
+}
+
+@keyframes typing {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.name-chat-popup {
+  padding: 50px;
+  border-radius: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+  background-color: rgba(29, 29, 30, 0.8);
+  width: 350px;
+  max-width: 400px;
+  margin-bottom: 350px;
+}
+
+.popup-cancel-button {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  outline: none;
+  padding: 0 10px;
+}
+
+.popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.popup-title {
+  font-size: 24px;
+  font-family: 'Courier New', Courier, monospace;
+}
+
+.popup-body {
+  font-family: 'Courier New', Courier, monospace;
+  margin-bottom: 10px;
+  margin-bottom: 10px;
+  white-space: pre-wrap;
 }

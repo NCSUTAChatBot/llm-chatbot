@@ -10,7 +10,8 @@ app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
-CORS(app, supports_credentials=True, resources={r"/ask": {"origins": ["152.7.178.152"]}})
+# CORS(app, supports_credentials=True, resources={r"/ask": {"origins": ["192.168.50.58"]}})
+CORS(app) 
 chat_history = []
 @app.route('/')
 def index():
@@ -44,7 +45,13 @@ def ask():
     # print(f"Received input: {input_text}")
     print(f"Result: {result}")
     print(f"Type: {type(result)}")
-    return jsonify({'chat_history':chat_history, 'result':result})
+    return jsonify({'chat_history': chat_history, 'answer': result})
+
+@app.route('/clear_chat', methods=['POST'])
+def clear_chat():
+    global chat_history
+    chat_history = [] 
+    return jsonify({'status': 'Chat history cleared'}), 200
 
 if __name__ == '__main__':
-    app.run(debug=True, port=8000, host="152.7.178.152")
+    app.run(debug=True, port=8000, host="0.0.0.0")

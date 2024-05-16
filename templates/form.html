@@ -154,7 +154,7 @@
                 body: JSON.stringify({ question: questionText }),
             });
             const data = await response.json();
-            botAnswerDiv.innerHTML = `${data.result.answer}`;
+            botAnswerDiv.innerHTML = `${data.answer.answer}`;
 
             // Scroll to the bottom of the conversation to show the latest exchange
             conversationDiv.scrollTop = conversationDiv.scrollHeight;
