@@ -1,0 +1,202 @@
+
+.landingPageContainer {
+  position: relative;
+  height: 100vh;  /* Full height of the viewport */
+  width: 100vw;   /* Full width of the viewport */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  background-image: url("../public/spring2020-16972.jpg");
+  background-size: cover;  /* Cover the entire container */
+  background-position: center center;  /* Center the background image */
+  background-repeat: no-repeat;
+  margin: 0;
+  overflow: hidden;  /* No scrollbars */
+
+}
+
+.modalContainer {
+  background-color: rgba(18, 18, 28, 0.8);
+  padding: 30px;
+  border-radius: 30px;
+  width: 400px;
+  height: 370px;
+  max-width: 80%;
+  box-sizing: border-box;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-weight: 300;
+  margin-top: 170px ;
+}
+
+.modalHeader {
+  padding-top: 30px;
+  padding-bottom: 1px;
+  color: rgba(255, 255, 255, .7);
+  font-size: 28px;
+  text-align: center;
+}
+
+.modalBodyText {
+  color: #ffffff;
+  padding-bottom: 20px;
+  text-align: center;
+  font-size: 16px;
+}
+.chatButton {
+  width: 150px;
+  padding: 10px;
+  color: rgb(255, 255, 255);
+  background-color: rgb(69, 69, 69);
+  border: none;
+  border-radius: 40px;
+  cursor: pointer;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  font-size: 13px;
+}
+
+.footerTextLeft {
+  position: absolute;
+  bottom: 1px;
+  left: 10px;
+  color: white;
+  font-size: 18px;
+  z-index: 2;
+  font-weight: 400;
+  font-family: 'Courier New', Monaco, monospace;
+}
+.footerTextRight {
+  position: absolute;
+  bottom: 1px;
+  right: 10px;
+  color: white;
+  font-size: 18px;
+  z-index: 2;
+  font-weight: 400;
+  font-family: 'Courier New', Monaco, monospace;
+}
+
+.top-bar {
+  grid-area: top-bar;
+  border-radius: 3px;
+  background-color: rgba(18, 18, 28, 0.8);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+}
+
+.title {
+  margin: 0;
+  font-size: 18px;
+  font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+
+.buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.chat-page{
+  display: flex;
+  flex-direction: column;
+  height: 100vh; /* Full viewport height */
+  margin: 0;
+  background-color: rgb(20, 21, 21);
+}
+
+.exit{
+  background: none;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 0;
+  margin-left: 20px;
+  font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+
+.help-button {
+  background: none;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 0;
+  margin-left: 20px;
+  font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+
+.feedback-button {
+  background: none;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 0;
+  margin-left: 20px;
+  font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+
+.start-chat{
+  background: none;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 0;
+  margin-left: 20px;
+  font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+
+.chat-container {
+  border: 1px solid #393939;
+  border-radius: 10px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 100vh; 
+  overflow-y: auto; 
+}
+
+.input-row{
+    padding: 10px 20px;
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.input-field {
+  width: 100%;
+  padding-top: 20;
+  padding: 15;
+  border-radius: 20px;
+  padding-left: 20px;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: rgb(5, 5, 5);
+  color:#ffffff;
+  font-size: 14px; 
+  height: 49px;
+  font-family: 'Courier New', Courier, monospace;
+  outline: none;
+  border: none; 
+  border-radius: 20px;
+}
+
+.submit-chat{
+  padding: 1rem;
+  color: white;
+  background-color: rgb(4, 4, 4);
+  border-radius: 1.25rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+  border: none;
+
+}
