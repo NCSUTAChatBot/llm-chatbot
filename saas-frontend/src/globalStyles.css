@@ -1,3 +1,11 @@
+/* 
+  File: globalStyles.css
+  Description: This file contains the global styles for the application.
+  Author: sanjitkverma (skverma)
+*/
+
+/******************** STYLING FOR THE LANDING PAGE *********************/
+/* Styling for the Background for the Landing page */
 .landingPageContainer {
   position: relative;
   height: 100vh;
@@ -14,11 +22,12 @@
   overflow: hidden;
 
 }
-
+/* Styling for the welcome container for the Landing page */
 .modalContainer {
-  background-color: rgba(18, 18, 28, 0.8);
+  background-color: rgba(5, 5, 7, 0.8);
   padding: 30px;
   border-radius: 30px;
+  border: #ffffff 1px solid;
   width: 400px;
   height: 370px;
   max-width: 80%;
@@ -31,8 +40,9 @@
   margin-top: 170px;
 }
 
+/* Styling for the welcome container header for the Landing page */
 .modalHeader {
-  padding-top: 30px;
+  padding-top: 0px;
   padding-bottom: 1px;
   color: rgba(255, 255, 255, .7);
   font-size: 28px;
@@ -40,19 +50,21 @@
   text-align: center;
 }
 
+/* Styling for the welcome container text for the Landing page */
 .modalBodyText {
   color: #ffffff;
-  padding-bottom: 20px;
+  padding-bottom: 50px;
   text-align: center;
   font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
   font-size: 16px;
 }
 
+/* Styling for the welcome container chat button for the Landing page */
 .chatButton {
   width: 150px;
   padding: 10px;
   color: rgb(255, 255, 255);
-  background-color: rgb(69, 69, 69);
+  background-color: rgb(37, 36, 47);
   border: none;
   border-radius: 40px;
   cursor: pointer;
@@ -63,6 +75,7 @@
   font-size: 13px;
 }
 
+/* Styling for the left footer for the Landing page */
 .footerTextLeft {
   position: absolute;
   bottom: 1px;
@@ -74,6 +87,7 @@
   font-family: 'Courier New', Monaco, monospace;
 }
 
+/* Styling for the right footer for the Landing page */
 .footerTextRight {
   position: absolute;
   bottom: 1px;
@@ -85,6 +99,9 @@
   font-family: 'Courier New', Monaco, monospace;
 }
 
+
+/******************** STYLING FOR THE CHAT PAGE *********************/
+/* Styling for the top bar for the Chat page */
 .top-bar {
   grid-area: top-bar;
   border-radius: 3px;
@@ -96,17 +113,20 @@
   padding: 20px;
 }
 
+/* Styling for the title for the Chat page (SAAS Chatbot @2024 NCSU CSC Dept)*/
 .title {
   margin: 0;
   font-size: 18px;
   font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
 
+/* General Styling for the buttons for the Chat page */
 .buttons {
   display: flex;
   gap: 10px;
 }
 
+/* Styling for the entire chat container page for the Chat page */
 .chat-page {
   display: flex;
   flex-direction: column;
@@ -115,6 +135,7 @@
   background-color: rgb(20, 21, 21);
 }
 
+/* Styling for the exit button for the Chat page */
 .exit {
   background: none;
   color: white;
@@ -126,6 +147,7 @@
   font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
 
+/* Styling for the help button for the Chat page */
 .help-button {
   background: none;
   color: white;
@@ -137,6 +159,7 @@
   font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
 
+/* Styling for the feedback button for the Chat page */
 .feedback-button {
   background: none;
   color: white;
@@ -148,6 +171,7 @@
   font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
 
+/* Styling for the start chat button for the Chat page */
 .start-chat {
   background: none;
   color: white;
@@ -159,6 +183,7 @@
   font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
 
+/* Styling for the chatting container for the Chat page */
 .chat-container {
   border: 1px solid #393939;
   border-radius: 10px;
@@ -170,6 +195,7 @@
   overflow-y: auto;
 }
 
+/* Styling for the chat welcome text for the Chat page (Ask the SAAS Chatbot)*/
 .chat-welcome {
   color: white;
   text-align: center;
@@ -178,6 +204,7 @@
   margin-top: 120px;
 }
 
+/* Styling for the chat welcome subtext for the Chat page*/
 .chat-welcome-text {
   color: white;
   text-align: center;
@@ -186,6 +213,7 @@
   margin-top: 20px;
 }
 
+/* Styling for the chat input row containing the input field and submit prompt button*/
 .input-row {
   padding: 10px 20px;
   display: flex;
@@ -193,6 +221,7 @@
   margin-bottom: 10px;
 }
 
+/* Styling for the chat input field for the Chat page */
 .input-field {
   width: 100%;
   padding-top: 20;
@@ -210,6 +239,7 @@
   border-radius: 20px;
 }
 
+/* Styling for the chat submit button for the Chat page */
 .submit-chat {
   padding: 1rem;
   color: white;
@@ -219,11 +249,13 @@
   border: none;
 }
 
+/* Styling for the user chat messages for the Chat page */
 .user {
   align-self: flex-start;
   color: white;
 }
 
+/* Genral styling for any messages on the chat container */
 .message {
   padding: 10px;
   border-radius: 10px;
@@ -232,58 +264,46 @@
   width: fit-content;
 }
 
+/* Styling for the sender tags on the chat */
 .sender {
   font-weight: bold;
   margin-bottom: 4px;
   color: white;
 }
 
+/* Genreal styling for the chat text fields */
 .text {
   padding: 8px;
   border-radius: 5px;
 }
 
+/* Styling for the user chat messages padding for the Chat page */
 .message.user {
   align-self: flex-start;
   background-color: transparent;
 }
 
+/* Styling for the bot chat message padding for the Chat page */
 .message.bot {
   align-self: flex-end;
   background-color: transparent;
 }
 
+/* Styling for the user text messages for the Chat page */
 .message.user .text {
   background-color: #007bff;
   color: white;
   border-radius: 10px;
 }
 
+/* Styling for the bot text messages for the Chat page */
 .message.bot .text {
   background-color: #007bff;
   color: white;
   border-radius: 10px;
 }
 
-.chat-char {
-  opacity: 0;
-  display: inline-block;
-  white-space: pre-wrap;
-  animation: typing 0.2s forwards;
-}
-
-@keyframes typing {
-  from {
-    opacity: 0;
-    transform: translateY(-5px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
+/* Styling for the Assistance popup box for the Chat page */
 .name-chat-popup {
   padding: 50px;
   border-radius: 20px;
@@ -294,6 +314,7 @@
   margin-bottom: 350px;
 }
 
+/* Styling for the popup cancel button for the Chat page */
 .popup-cancel-button {
   background: none;
   border: none;
@@ -304,6 +325,7 @@
   padding: 0 10px;
 }
 
+/* General Styling for the popup header for the Chat page (Need Assistance? and X button) */
 .popup-header {
   display: flex;
   justify-content: space-between;
@@ -311,14 +333,38 @@
   margin-bottom: 20px;
 }
 
+/* Styling for the popup title for the Chat page (Need Assistance?)*/
 .popup-title {
   font-size: 24px;
   font-family: 'Courier New', Courier, monospace;
 }
 
+/* Styling for the popup body for the Chat page */
 .popup-body {
   font-family: 'Courier New', Courier, monospace;
   margin-bottom: 10px;
   margin-bottom: 10px;
   white-space: pre-wrap;
+}
+
+/******************** STYLING FOR THE CHAT PAGE ANIMATIONS *********************/
+/* Styling for the chat typing animation for the Chat page */
+.chat-char {
+  opacity: 0;
+  display: inline-block;
+  white-space: pre-wrap;
+  animation: typing 0.2s forwards;
+}
+
+/* Styling for the chat typing animation keyframes for the Chat page */
+@keyframes typing {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
