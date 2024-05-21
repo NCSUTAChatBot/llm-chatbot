@@ -16,7 +16,7 @@ function LandingPage() {
     return (
         <div className="landingPageContainer">
             <div className="modalContainer">
-                <h3 className="modalHeader">Welcome: SAAS Chatbot</h3>
+                <h3 className="modalHeader">Welcome</h3>
                 <p className="modalBodyText">This Chatbot supports asking questions from the textbook: <></>Engineering Software as a Service: An Agile Approach Using Cloud Computing
                 </p>
                 <button type="submit" className="chatButton" onClick={handleButtonClick}>
