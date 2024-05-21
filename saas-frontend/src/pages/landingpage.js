@@ -40,7 +40,6 @@ function LandingPage() {
             <p className="footerTextRight">
                 @2024 NCSU CSC Dept
             </p>
-            <p>&copy; </p>
         </div>
     );
 };
