@@ -41,14 +41,35 @@ python app.py
 ```
 cd saas-frontend
 ```
+2. Add the following .env File under the saas-frontend folder (optional: customize for your school)
+```
+# .env file for NC State University
+# @author Sanjit Verma
 
-2.  Install the packages for the frontend.
+# NAVBAR
+REACT_APP_NAVBAR_HEADER="SAAS Chatbot @2024 NCSU CSC Dept"
+REACT_APP_FEEDBACK_FORM_URL="https://forms.gle/5swJdyyfSdQxGww69"
+
+# LANDING PAGE
+REACT_APP_MODALBODYTEXT="This Chatbot supports asking questions from the textbook: Engineering Software as a Service: An Agile Approach Using Cloud Computing"
+REACT_APP_BACKGROUND_IMAGE_URL="/spring2020-16972.jpg"
+REACT_APP_LFOOTER="SAAS beta v1.0.0"
+REACT_APP_RFOOTER="@2024 NCSU CSC Dept"
+
+# CHAT PAGE
+REACT_APP_CHAT_WELCOME="Ask the SAAS Chatbot"
+REACT_APP_CHAT_WELCOME_TEXT="Please wait patiently after asking a question. The chatbot may take a moment to generate a response."
+REACT_APP_LEFT_IMAGE_URL="/ncstate-brick-2x2-blk.png"
+REACT_APP_RIGHT_IMAGE_URL="/openAI.png"
+
+```
+3.  Install the packages for the frontend.
 
 ```node
 npm install
 ```
 
-2.  Start the server.
+4.  Start the server.
 
 ```node
 npm start
@@ -66,3 +87,10 @@ npm start
 
 *   Backend API Integration
 
+## Version Update 2024/5/31
+
+*   @author sanjit verma
+
+*   Added Static chat history sidebar in chat page 
+
+*   Added env configs for frontend 
