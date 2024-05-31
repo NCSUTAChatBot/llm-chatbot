@@ -3,10 +3,18 @@
  * @author sanjitkverma (skverma)
  */
 
-import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../globalStyles.css';
 function LandingPage() {
+    
+    // ENV VARIABLES
+    const NAVBAR_HEADER = process.env.REACT_APP_NAVBAR_HEADER;
+    const LFOOTER = process.env.REACT_APP_LFOOTER;
+    const RFOOTER = process.env.REACT_APP_RFOOTER;
+    const MODALBODYTEXT = process.env.REACT_APP_MODALBODYTEXT;
+    const FEEDBACK_URL = process.env.REACT_APP_FEEDBACK_FORM_URL;
+    const BACKGROUND_IMAGE_URL = process.env.REACT_APP_BACKGROUND_IMAGE_URL;
+
     // This hook is used to navigate between different pages
     const navigate = useNavigate();
     // This function is called when the user clicks on the Chat Now button
@@ -14,31 +22,29 @@ function LandingPage() {
         navigate('/chat');
     };
     const handleFeedback = () => {
-        window.open('https://forms.gle/5swJdyyfSdQxGww69');
+        window.open(FEEDBACK_URL);
     };
-    // This hook is used to store the state of the help popup
-    const [showHelpPopup, setShowHelpPopup] = useState(false);
+
     return (
-        <div className="landingPageContainer">
+        <div className="landingPageContainer" style={{ backgroundImage: `url(${BACKGROUND_IMAGE_URL})`}}>
             <div className="top-bar">
-                <h1 className="title">SAAS Chatbot @2024 NCSU CSC Dept </h1>
+                <h1 className="title">{NAVBAR_HEADER} </h1>
                 <div className="buttons">
                     <button className="feedback-button" onClick={handleFeedback}>Leave Feedback</button>
                 </div>
             </div>
             <div className="modalContainer">
                 <h3 className="modalHeader">Welcome</h3>
-                <p className="modalBodyText">This Chatbot supports asking questions from the textbook: <></>Engineering Software as a Service: An Agile Approach Using Cloud Computing
-                </p>
+                <p className="modalBodyText">{MODALBODYTEXT}</p>
                 <button type="submit" className="chatButton" onClick={handleButtonClick}>
                     Chat Now
                 </button>
             </div>
             <p className="footerTextLeft">
-                SAAS beta v1.0.0
+                {LFOOTER}
             </p>
             <p className="footerTextRight">
-                @2024 NCSU CSC Dept
+                {RFOOTER}
             </p>
         </div>
     );

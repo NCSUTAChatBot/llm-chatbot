@@ -7,6 +7,16 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const ChatPage = () => {
+
+
+    // ENV VARIABLES
+    const NAVBAR_HEADER = process.env.REACT_APP_NAVBAR_HEADER;
+    const FEEDBACK_URL = process.env.REACT_APP_FEEDBACK_FORM_URL;
+    const CHAT_WELCOME = process.env.REACT_APP_CHAT_WELCOME;
+    const CHAT_WELCOME_TEXT = process.env.REACT_APP_CHAT_WELCOME_TEXT;
+    const LEFT_IMAGE_URL = process.env.REACT_APP_LEFT_IMAGE_URL;
+    const RIGHT_IMAGE_URL = process.env.REACT_APP_RIGHT_IMAGE_URL;
+
     // This hook is used to navigate between different pages
     const navigate = useNavigate();
     // This hook is used to store the user's question
@@ -41,7 +51,7 @@ const ChatPage = () => {
 
     // This function is called when the user clicks on the Feedback button
     const handleFeedback = () => {
-        window.open('https://forms.gle/5swJdyyfSdQxGww69');
+        window.open(FEEDBACK_URL);
     };
 
     // This function is called when the user clicks on the Help button
@@ -112,7 +122,7 @@ const ChatPage = () => {
         if (typeof text === 'string' && sender === 'bot') {
             return text.split('').map((char, index) => (
                 // Add a span element for each character with an animation delay
-                <span key={index} className="chat-char" style={{ animationDelay: `${index * 0.022}s` }}>
+                <span key={index} className="chat-char" style={{ animationDelay: `${index * 0.015}s` }}>
                     {char}
                 </span>
             ));
@@ -133,8 +143,7 @@ const ChatPage = () => {
     return (
         <div className='chat-page'>
             <div className="top-bar">
-                <h1 className="title">SAAS Chatbot @2024 NCSU CSC Dept </h1>
-
+                <h1 className="title">{NAVBAR_HEADER}</h1>
                 <div className="buttons">
                     {showHelpPopup && (
                         <div className="overlay" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0, 0, 0, .8)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
@@ -145,7 +154,6 @@ const ChatPage = () => {
                                 </div>
                                 <div className="popup-body">
                                     <p>Type you prompt and patiently wait for the model to generate the response. </p>
-                                    <p>For best results, please ask questions related to the SAAS Textbook: Engineering Software as a Service: An Agile Approach Using Cloud Computing</p>
                                     <p>Please leave feedback on your responses and report any bugs using the Feedback button so we can improve the chatbot.</p>
                                 </div>
                             </div>
@@ -161,15 +169,24 @@ const ChatPage = () => {
                     <button type="submit" className="exit" onClick={handleExit}>Exit</button>
                 </div>
             </div>
-            <main style={{ flex: 1, overflowY: 'auto', padding: '20px', display: 'flex', flexDirection: 'column' }}>
+            <aside className="sidebar">
+                <ul>
+                    <li> What is DRY?</li>
+                    <li> What is SAAS?</li>
+                    <li> Who are the authors of the textbook?</li>
+                    <li> CSC 517 Project 1 Grading</li>
+
+                </ul>
+            </aside>
+            <main style={{ flex: 1, overflowY: 'hidden', padding: '10px', display: 'flex', flexDirection: 'column' }}>
                 <div className="chat-container">
                     {messages.length === 0 ? (
                         <div >
-                            <p className="chat-welcome">Ask the SAAS Chatbot  </p>
-                            <p className="chat-welcome-text">Please wait for the response after asking one question. This Chatbot needs time to generate a reponse.</p>
+                            <p className="chat-welcome">{CHAT_WELCOME}</p>
+                            <p className="chat-welcome-text">{CHAT_WELCOME_TEXT}</p>
                             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                <img src="/ncstate-brick-2x2-blk.png" alt="NC STATE UNIVERSITY" style={{ width: '200px', height: 'auto', margin: '40px' }} />
-                                <img src="/openAI.png" alt="Chatbot" style={{ width: '190px', height: '98px', margin: '40px' }} />
+                                <img src={`${process.env.PUBLIC_URL + LEFT_IMAGE_URL}`} alt="NC STATE UNIVERSITY" style={{ width: '200px', height: 'auto', margin: '40px' }} />
+                                <img src={`${process.env.PUBLIC_URL + RIGHT_IMAGE_URL}`} alt="Open AI" style={{ width: '190px', height: '98px', margin: '40px' }} />
                             </div>
                         </div>
                     ) : (
@@ -184,27 +201,31 @@ const ChatPage = () => {
                     )}
                     <div ref={messageEndRef} />
                 </div>
+                <div className="input-row">
+                    <input
+                        type="text"
+                        id="question"
+                        placeholder="Type a prompt"
+                        className="input-field"
+                        value={question}
+                        onChange={(e) => setQuestion(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                                handleSubmit(e);
+                            }
+                        }}
+                    />
+                    <button type="submit" className="submit-chat" onClick={handleSubmit}>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" width="20" height="20">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="m9 9 6-6m0 0 6 6m-6-6v12a6 6 0 0 1-12 0v-3" />
+                        </svg>
+                    </button>
+
+                </div>
+                <div className="warning-message">
+                    Chatbot can make mistakes. Please verify sensitive information.
+                </div>
             </main>
-            <div className="input-row">
-                <input
-                    type="text"
-                    id="question"
-                    placeholder="Type a prompt"
-                    className="input-field"
-                    value={question}
-                    onChange={(e) => setQuestion(e.target.value)}
-                    onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                            handleSubmit(e);
-                        }
-                    }}
-                />
-                <button type="submit" className="submit-chat" onClick={handleSubmit}>
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" width="20" height="20">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="m9 9 6-6m0 0 6 6m-6-6v12a6 6 0 0 1-12 0v-3" />
-                    </svg>
-                </button>
-            </div>
         </div>
     );
 };
