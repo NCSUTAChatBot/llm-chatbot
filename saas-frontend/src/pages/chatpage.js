@@ -33,7 +33,7 @@ const ChatPage = () => {
     const handleExit = async () => {
         try {
             // Make the API call to clear the backend chat history (set to localhost for now)
-            const response = await fetch('http://127.0.0.1:8000/clear_chat', {
+            const response = await fetch('http://127.0.0.1:8000/chat/clear_chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' }
             });
@@ -63,7 +63,7 @@ const ChatPage = () => {
     const handleNewChat = async () => {
         try {
             // Make the API call to clear the backend chat history (set to localhost for now)
-            const response = await fetch('http://127.0.0.1:8000/clear_chat', {
+            const response = await fetch('http://127.0.0.1:8000/chat/clear_chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' }
             });
@@ -94,7 +94,7 @@ const ChatPage = () => {
         // Make the API call to get the chatbot's response
         try {
             // Make the API call to get the chatbot's response (set to localhost for now)
-            const response = await fetch('http://127.0.0.1:8000/ask', {
+            const response = await fetch('http://127.0.0.1:8000/chat/ask', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ question: question.trim() })
@@ -175,7 +175,6 @@ const ChatPage = () => {
                     <li> What is SAAS?</li>
                     <li> Who are the authors of the textbook?</li>
                     <li> CSC 517 Project 1 Grading</li>
-
                 </ul>
             </aside>
             <main style={{ flex: 1, overflowY: 'hidden', padding: '10px', display: 'flex', flexDirection: 'column' }}>
