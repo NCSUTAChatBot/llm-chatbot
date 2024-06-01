@@ -19,16 +19,25 @@
 3.  Access the Application: Once both servers are running, open your web browser and visit <http://localhost:3000> to access the application.
 
 ### Running the Backend
-
-1.  Install the packages from `requirements.txt`.
+1.  Navigate to the folder saas-backend
+2.  Install the packages from `requirements.txt`.
 
 ```python
 pip install -r requirements.txt
 ```
+(Optional) The `requirments.txt` might be out of date. Install the package prompted from the terminal.
 
-1.  (Optional) The `requirments.txt` might be out of date. Install the package prompted from the terminal.
+3. Add the following .env File under the saas-backend folder (replace username and password with your unity ID, I have set this up please me skverma@ncsu.edu if there is an connection error)
+```
+MONGODB_URI="mongodb+srv://USERNAME:PASSWORD@chatbot.3zncvhn.mongodb.net/?retryWrites=true&w=majority&appName=chatbot"
+MONGODB_DATABASE=chatbot
+MONGODB_VECTORS= MONGODB_VECTORS
+MONGODB_VECTOR_INDEX= MONGODB_VECTOR_INDEX
+MONGODB_USERS= MONGODB_USERS
 
-2.  Start the server.
+```
+
+4.  Start the server.
 
 ```python
 python app.py
@@ -93,4 +102,12 @@ npm start
 
 *   Added Static chat history sidebar in chat page 
 
-*   Added env configs for frontend 
+*   Added env configs for frontend
+
+## Version Update 2024/6/01
+
+*   @author sanjit verma
+
+*   restructured backend into saas-backend along with model, repo, service and controller strcuture
+
+*   added support API endpoint for login and create user
