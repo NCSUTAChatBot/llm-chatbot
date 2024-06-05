@@ -111,3 +111,9 @@ npm start
 *   restructured backend into saas-backend along with model, repo, service and controller strcuture
 
 *   added support API endpoint for login and create user
+
+## Version Update 2024/6/05
+
+*  @author dinesh kannan
+
+*  Created Login and Signup pages and connected it to the database
