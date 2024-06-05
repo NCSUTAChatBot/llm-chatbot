@@ -29,7 +29,7 @@ user_service = UserService(user_repository)
 # a blueprint named 'user'
 user_bp = Blueprint('user', __name__)
 
-@user_bp.route('/create', methods=['POST'])
+@user_bp.route('/signup', methods=['POST'])
 def create_user():
     try:
         data = request.get_json()

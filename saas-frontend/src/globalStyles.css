@@ -27,7 +27,7 @@
   align-items: center;
   border: #7a7a7a 1px solid;
   width: 400px;
-  height: 370px;
+  height: 450px;
   max-width: 80%;
   box-sizing: border-box;
   z-index: 2;
@@ -73,6 +73,7 @@
   display: block;
   margin-left: auto;
   margin-right: auto;
+  margin-bottom: 10px;
   font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
   font-size: 13px;
 }
@@ -420,4 +421,199 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/******************** STYLING FOR THE LOGIN PAGE *********************/
+.loginButton {
+  width: 125px;
+  padding: 10px;
+  color: rgb(255, 255, 255);
+  background-color: rgb(4, 102, 53);
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 20px;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  font-size: 20px;
+}
+.loginButton:hover {
+  background-color: #45a049; /* Darker green on hover */
+}
+
+/* Error message styling */
+.loginError {
+  color: red;
+  font-size: 0.9em;
+}
+
+.loginPageContainer {
+  flex: 1 0 auto;
+  min-height: 0;
+  display: grid;
+  box-sizing: border-box;
+  grid-template-rows: [left-start center-start right-start] 1fr [left-end center-end right-end];
+  grid-template-columns: [left-start center-start] 1fr [left-end right-start] 1fr [center-end right-end];
+  align-items: center;
+  justify-content: center;
+  justify-items: center;
+  grid-column-gap: 160px;
+  column-gap: 160px;
+  padding: 80px;
+  width: 100%;
+}
+
+.loginModalContainer {
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 30px;
+  border-radius: 30px;
+  align-items: center;
+  border: #7a7a7a 1px solid;
+  width: 400px;
+  height: 470px;
+  max-width: 80%;
+  box-sizing: border-box;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-weight: 300;
+  margin-top: 170px;
+  position: absolute;
+  top: 25%;                           
+  left: 50%;                           
+  transform: translate(-50%, -50%);   
+}
+
+.loginModalHeader {
+  padding-top: 0px;
+  padding-bottom: 1px;
+  color: rgba(10, 0, 0, 0.7);
+  font-size: 28px;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  text-align: center;
+}
+
+.email-container {
+  position: relative;
+  margin-bottom: 25px;
+  width: 320px;
+  box-sizing: content-box;
+}
+
+.login-inputContainer {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-color: #fff;
+    border: 1px solid #c2c8d0;
+    border-radius: 6px;
+    box-sizing: border-box;
+    color: #2d333a;
+    font-family: inherit;
+    font-size: 16px;
+    height: 52px;
+    line-height: 1.1;
+    outline: none;
+    padding-block: 1px;
+    padding-inline: 2px;
+    padding: 0 16px;
+    transition: box-shadow .2s ease-in-out,border-color .2s ease-in-out;
+    width: 100%;
+    text-rendering: auto;
+    letter-spacing: normal;
+    word-spacing: normal;
+    text-transform: none;
+    text-indent: 0;
+    text-shadow: none;
+    display: inline-block;
+    text-align: start;
+    margin: 0;
+}
+
+.buttonsContainer {
+  display: flex;
+  justify-content: space-evenly;
+  width: 80%; /* Matches the input and button width */
+  margin-top: 20px;
+}
+
+/* Styling for 'Forgot Password?' and 'New User' buttons */
+.forgotPasswordButton, .newUserButton {
+  background: none;
+  border: none;
+  color: #0066cc;
+  cursor: pointer;
+  padding: 5px 10px;
+  text-decoration: underline;
+}
+
+.forgotPasswordButton:hover, .newUserButton:hover {
+  color: #004499;
+  text-decoration: none;
+}
+/******************** STYLING FOR THE SIGNUP PAGE *********************/
+.signupButton {
+  width: 125px;
+  padding: 10px;
+  color: rgb(255, 255, 255);
+  background-color: rgb(4, 102, 53);
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 20px;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  font-size: 20px;
+}
+
+.signupPageContainer {
+  flex: 1 0 auto;
+  min-height: 0;
+  display: grid;
+  box-sizing: border-box;
+  grid-template-rows: [left-start center-start right-start] 1fr [left-end center-end right-end];
+  grid-template-columns: [left-start center-start] 1fr [left-end right-start] 1fr [center-end right-end];
+  align-items: center;
+  justify-content: center;
+  justify-items: center;
+  grid-column-gap: 160px;
+  column-gap: 160px;
+  padding: 80px;
+  width: 100%;
+}
+
+.signupModalContainer {
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 30px;
+  border-radius: 30px;
+  align-items: center;
+  border: #7a7a7a 1px solid;
+  width: 400px;
+  height: 570px;
+  max-width: 80%;
+  box-sizing: border-box;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-weight: 300;
+  margin-top: 170px;
+  position: absolute;
+  top: 25%;                           
+  left: 50%;                           
+  transform: translate(-50%, -50%);   
+}
+
+.signupModalHeader {
+  padding-top: 0px;
+  padding-bottom: 1px;
+  color: rgba(10, 0, 0, 0.7);
+  font-size: 28px;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  text-align: center;
 }

@@ -21,6 +21,12 @@ function LandingPage() {
     const handleButtonClick = () => {
         navigate('/chat');
     };
+    const handleLoginClick = () => {
+        navigate('/login');
+    };
+    const handleSignupClick= () => {
+        navigate('/signup')
+    };
     const handleFeedback = () => {
         window.open(FEEDBACK_URL);
     };
@@ -36,6 +42,12 @@ function LandingPage() {
             <div className="modalContainer">
                 <h3 className="modalHeader">Welcome</h3>
                 <p className="modalBodyText">{MODALBODYTEXT}</p>
+                <button type="submit" className="chatButton" onClick={handleLoginClick}>
+                    Login
+                </button>
+                <button type="submit" className="chatButton" onClick={handleSignupClick}>
+                    SignUp
+                </button>                
                 <button type="submit" className="chatButton" onClick={handleButtonClick}>
                     Chat Now
                 </button>
