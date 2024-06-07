@@ -54,7 +54,6 @@ def login_user():
         email = data.get('email')
         password = data.get('password')
         valid, message , user = user_service.authenticate_user(email, password)
-        print(valid)
         if valid:
             session['user_email']= email
             access_token = create_access_token(identity=email)
