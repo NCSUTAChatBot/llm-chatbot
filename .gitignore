@@ -65,7 +65,7 @@ db.sqlite3-journal
 # Flask stuff
 instance/
 .webassets-cache
-session_data/
+saas-backend/flask_session/
 
 # Scrapy stuff:
 .scrapy
