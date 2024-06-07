@@ -13,7 +13,10 @@ function LoginPage(){
     // useState hook is used to create state variables for email and password
     const [email, setEmail]= useState('');
     const [password, setPassword]= useState('');
+    // This hook is used to store Error messages
     const [error, setError] = useState('');
+    // This hook is used to store Token of users Logged in
+    const [authToken, setAuthToken] = useState(localStorage.getItem('accessToken'));
 
     const navigate= useNavigate();
 
@@ -43,9 +46,15 @@ function LoginPage(){
             });
 
             const data= await response.json();
-
+            // If the authentication is successful
             if (response.status === 200){
-                console.log('Login Successful:', data);
+                // Storing the accessToken received from the server in localStorage
+                localStorage.setItem('accessToken', data.access_token);
+                //  Convert the user info object to a string and storing it in localStorage
+                localStorage.setItem('userInfo', JSON.stringify(data.user_info));
+                // Set the received access token in the application's state for immediate use
+                setAuthToken(data.access_token);
+                 // Redirect the user to the '/chat' page
                 navigate('/chat')
             }
             else{
@@ -56,10 +65,16 @@ function LoginPage(){
             setError(error.message);
         }
     }
+
     // This function handles redirection to signup page
     const handleNewUser= () =>{
         navigate('/signup'); 
     };
+
+    // This function handles redirection to forgot password page
+    const handleForgotPassword=()=>{
+        navigate('/forgotpassword');
+    }
     
     //HTML code for webpage
     return(
@@ -92,7 +107,7 @@ function LoginPage(){
                 {error && <p className='loginError'>{error}</p>}
                 <button type="submit" className="loginButton" >Login</button>
                 <div className='buttonsContainer'>
-                    <button type='button' className='forgotPasswordButton'>Forgot Password?</button>
+                    <button type='button' className='forgotPasswordButton' onClick={handleForgotPassword}>Forgot Password?</button>
                     <button type='button' className='newUserButton' onClick={handleNewUser}>New User</button>
                 </div>
             </form>

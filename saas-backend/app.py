@@ -11,6 +11,7 @@ from flask import Flask, render_template, request, jsonify
 from flask_session import Session
 from flask_cors import CORS
 from llmbackend import make_query
+from flask_jwt_extended import JWTManager
 from controller.chatRoutes import chat_bp
 from controller.userRoutes import user_bp
 
@@ -29,6 +30,7 @@ Session(app)
 # Enable Cross-Origin Resource Sharing (CORS) for all domains on all routes. This allows AJAX requests from other domains.
 CORS(app) 
 
+JWTManager(app)
 app.register_blueprint(chat_bp, url_prefix='/chat')
 app.register_blueprint(user_bp, url_prefix='/user')
 

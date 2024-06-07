@@ -42,15 +42,16 @@ function LandingPage() {
             <div className="modalContainer">
                 <h3 className="modalHeader">Welcome</h3>
                 <p className="modalBodyText">{MODALBODYTEXT}</p>
+                              
+                <button type="submit" className="chatButton" onClick={handleButtonClick}>
+                    Chat Now
+                </button>
                 <button type="submit" className="chatButton" onClick={handleLoginClick}>
                     Login
                 </button>
                 <button type="submit" className="chatButton" onClick={handleSignupClick}>
                     SignUp
-                </button>                
-                <button type="submit" className="chatButton" onClick={handleButtonClick}>
-                    Chat Now
-                </button>
+                </button>  
             </div>
             <p className="footerTextLeft">
                 {LFOOTER}

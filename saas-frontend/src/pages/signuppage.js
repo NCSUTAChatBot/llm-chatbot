@@ -120,6 +120,7 @@ function SignupPage(){
                     required
                     />
                 </div>
+                {message && <p className='loginError'>{message}</p>}
                 <button type="submit" className="signupButton">Sign Up</button>
             </form>
         </div>

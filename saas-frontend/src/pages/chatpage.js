@@ -27,10 +27,14 @@ const ChatPage = () => {
     const messageEndRef = useRef(null);
     // This hook is used to store the state of the help popup
     const [showHelpPopup, setShowHelpPopup] = useState(false);
+    // This hook is used to store the information of the user currently logged in
+    const [userInfo, setUserInfo] = React.useState(null);
+    // This hook is used to set 
+    const [showDropdown, setShowDropdown] = useState(false);
 
 
     // This function is called when the user clicks on the Exit button
-    const handleExit = async () => {
+    const handleClearChat = async () => {
         try {
             // Make the API call to clear the backend chat history (set to localhost for now)
             const response = await fetch('http://127.0.0.1:8000/chat/clear_chat', {
@@ -40,7 +44,6 @@ const ChatPage = () => {
             // If the response is successful, clear the chat history on the frontend
             if (response.ok) {
                 setMessages([]);
-                navigate('/');
             } else {
                 throw new Error('Failed to clear chat history on the backend.');
             }
@@ -77,6 +80,31 @@ const ChatPage = () => {
             console.error('Error clearing chat history:', error);
         }
     };
+
+    const handleLogout = async () => {
+        try {
+            // Make the API call to clear the backend chat history (set to localhost for now)
+            const response = await fetch('http://127.0.0.1:8000/user/logout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            // If the response is successful, clear the chat history on the frontend
+            if (response.ok) {
+                setMessages([]);
+                localStorage.removeItem('accessToken');
+                localStorage.removeItem('userInfo');
+                navigate('/');
+            } else {
+                throw new Error('Failed to clear chat history on the backend.');
+            }
+        } catch (error) {
+            console.error('Error clearing chat history:', error);
+        }
+    };
+
+    const handleExit= async () => {
+        navigate('/');
+    }
 
     // This function is called when the user submits a question
     const handleSubmit = async (event) => {
@@ -139,6 +167,16 @@ const ChatPage = () => {
         }
     }, [messages]);
 
+    // This hook is used to load and set user information from localStorage
+    useEffect(() => {
+        const storedUserInfo = localStorage.getItem('userInfo');
+        if (storedUserInfo) {
+            setUserInfo(JSON.parse(storedUserInfo));
+        }
+    }, []);
+
+    const toggleDropdown = () => setShowDropdown(!showDropdown);
+
 
     return (
         <div className='chat-page'>
@@ -166,7 +204,29 @@ const ChatPage = () => {
                     </button>
                     <button className="start-chat" onClick={handleNewChat}>Start New Chat </button>
                     <button className="feedback-button" onClick={handleFeedback}>Leave Feedback</button>
-                    <button type="submit" className="exit" onClick={handleExit}>Exit</button>
+                    <button type="submit" className="clearChat" onClick={handleClearChat}>Clear Chat</button>
+                    < div classname="userInfo">
+                        {userInfo ? (
+                            <div classname="userInfo" onClick={toggleDropdown}>
+                            Welcome, {userInfo.name}
+                            {showDropdown && (
+                                <div className='user-dropdown'>
+                                    <button type="submit" className="logout" onClick={handleLogout}>Logout</button>
+                                </div>
+                            )}
+                        </div>
+                        ) : (
+                            <div  classname="userInfo" onClick={toggleDropdown}>
+                        Welcome, Guest
+                        {showDropdown && (
+                            <div className='user-dropdown'>
+                                <button onClick={handleExit}>Exit</button>
+                            </div>
+                        )}
+                    </div>
+                        )}
+                    </div>
+                    
                 </div>
             </div>
             <aside className="sidebar">
