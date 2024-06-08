@@ -60,10 +60,11 @@ REACT_APP_NAVBAR_HEADER="SAAS Chatbot @2024 NCSU CSC Dept"
 REACT_APP_FEEDBACK_FORM_URL="https://forms.gle/5swJdyyfSdQxGww69"
 
 # LANDING PAGE
-REACT_APP_MODALBODYTEXT="This Chatbot supports asking questions from the textbook: Engineering Software as a Service: An Agile Approach Using Cloud Computing"
-REACT_APP_BACKGROUND_IMAGE_URL="/spring2020-16972.jpg"
+REACT_APP_MODALBODYTEXT="Please login or create an account. This Chatbot supports asking questions from the textbook: Engineering SAAS: An Agile Approach Using Cloud Computing"
+REACT_APP_BACKGROUND_IMAGE_URL="/_MAH0122.jpg"
 REACT_APP_LFOOTER="SAAS beta v1.0.0"
 REACT_APP_RFOOTER="@2024 NCSU CSC Dept"
+REACT_APP_FRONT_LOGO="/ncstate-brick-4x1-blk-max.png"
 
 # CHAT PAGE
 REACT_APP_CHAT_WELCOME="Ask the SAAS Chatbot"
