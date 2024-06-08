@@ -89,6 +89,8 @@ def make_query(chat_history: list, question: str) -> str:
     # This process integrates both historical context and the current question to generate a relevant response.
     result = qa({"chat_history": chat_history, "question": question})
 
+    last_answer = result['answer']
+
     # Append the new question and its answer to the chat history for future context management.
     chat_history.append((question, result['answer']))
 

@@ -25,6 +25,10 @@ class UserService:
 
     def authenticate_user(self, email, password):
         return self.user_repository.authenticate_user(email, password)
+    
+    def find_user_by_email(self, email):
+        """Service method to find a user by their email address."""
+        return self.user_repository.find_user_by_email(email)
 
     @staticmethod
     def validate_password(password):
@@ -37,4 +41,5 @@ class UserService:
         if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", password):
             return False
         return True
+    
 

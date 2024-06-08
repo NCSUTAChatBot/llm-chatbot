@@ -110,12 +110,24 @@
   padding: 10px 20px;
 }
 
+.top-barchat {
+  grid: top-bar;
+  border-radius: 3px;
+  background-color: rgb(20, 21, 21);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+}
+
 
 .sidebar {
   grid-area: history;
   overflow-y: auto;
-  background-color: black;
+  background-color: rgb(12, 12, 12);
   display: flex;
+  border-radius: 10px;
   flex-direction: column;
   justify-content: space-between;
   height: 100vh;
@@ -161,7 +173,7 @@
   border: none;
   border-radius: 4px;
   transition: background-color 0.3s;
-  
+
 
 }
 
@@ -194,9 +206,8 @@
   position: relative;
   display: flex;
   align-items: center;
-  padding-top: 8px;
   font-size: 16px;
-  margin-left: 20px;
+  margin-left: 10px;
   font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 
 }
@@ -204,7 +215,7 @@
 /* Styling for the exit button for the Chat page */
 .user-dropdown {
   position: absolute;
-  background-color: rgb(179, 33, 33);
+  background-color: rgb(160, 27, 27);
   min-width: 120px;
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
   z-index: 10;
@@ -267,8 +278,6 @@
 /* Styling for the chatting container for the Chat page */
 .chat-container {
   grid-area: main;
-  border: 1px solid #393939;
-  border-radius: 10px;
   padding: 10px;
   display: flex;
   flex-direction: column;
@@ -374,26 +383,25 @@
 
 /* Styling for the user chat messages padding for the Chat page */
 .message.user {
-  align-self: flex-start;
+  align-self: flex-end;
   background-color: transparent;
 }
 
 /* Styling for the bot chat message padding for the Chat page */
 .message.bot {
-  align-self: flex-end;
+  align-self: flex-start;
   background-color: transparent;
 }
 
 /* Styling for the user text messages for the Chat page */
 .message.user .text {
-  background-color: #007bff;
+  background-color: #414344;
   color: white;
   border-radius: 10px;
 }
-
 /* Styling for the bot text messages for the Chat page */
 .message.bot .text {
-  background-color: #007bff;
+  
   color: white;
   border-radius: 10px;
 }
@@ -484,8 +492,10 @@
   display: block;
   font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
   font-size: 13px;
+  margin-bottom: 40px;
 
 }
+
 
 .loginButton:hover {
   background-color: #292727;
@@ -494,9 +504,18 @@
 /* Error message styling */
 .loginError {
   color: red;
-  font-size: 0.6em;
+  font-size: 0.7em;
+  display: flex-box;
+  position: absolute;
   text-align: center;
+  justify-content: center;
   margin: 0;
+  width: 100%;
+  top: 80%;
+  left: 50%;
+  width: 80%;
+  transform: translate(-50%, -50%);
+
 }
 
 .loginPageContainer {
@@ -622,19 +641,23 @@
 
 /******************** STYLING FOR THE SIGNUP PAGE *********************/
 .signupButton {
-  width: 125px;
+  width: 110px;
   padding: 10px;
   color: rgb(255, 255, 255);
-  background-color: rgb(4, 102, 53);
   border-radius: 10px;
   border: none;
   cursor: pointer;
   display: block;
   margin-left: auto;
   margin-right: auto;
-  margin-top: 20px;
+  background-color: rgb(179, 33, 33);
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  display: block;
   font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-  font-size: 20px;
+  font-size: 13px;
+  margin-top: 60px;
 }
 
 .signupPageContainer {
@@ -657,7 +680,7 @@
   align-items: center;
   border: #7a7a7a 1px solid;
   width: 400px;
-  height: 550px;
+  height: 570px;
   max-width: 100%;
   box-sizing: border-box;
   z-index: 2;

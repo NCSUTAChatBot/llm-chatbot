@@ -145,7 +145,7 @@ function SignupPage() {
                     </div>
                     
                     {message && <p className='loginError'>{message}</p>}
-                    <button type="submit" className="loginButton">Sign Up</button>
+                    <button type="submit" className="signupButton">Sign Up</button>
                     <div className='buttonsContainer'>
                     <button type='button' className='newUserButton' onClick={handleLoginClick}>Have an account?</button>
                 </div>

@@ -102,30 +102,30 @@ const ChatPage = () => {
         }
     };
 
-    const handleExit= async () => {
+    const handleExit = async () => {
         navigate('/');
     }
 
     // This function is called when the user submits a question
     const handleSubmit = async (event) => {
-        // Prevent the default form submission behavior
         event.preventDefault();
-        // If the question is empty, return
-        if (!question.trim()) return;
+        const email = userInfo.email; 
+        // If the question or email is empty, return
+        if (!question.trim() || !email) return;
+    
         // Add the user's question to the chat
         const userMessage = { text: question, sender: 'user' };
         // Update the chat messages
         setMessages(messages => [...messages, userMessage]);
         // Clear the input field
         setQuestion('');
-
+    
         // Make the API call to get the chatbot's response
         try {
-            // Make the API call to get the chatbot's response (set to localhost for now)
             const response = await fetch('http://127.0.0.1:8000/chat/ask', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ question: question.trim() })
+                body: JSON.stringify({ email: email, question: question.trim() })
             });
             // If the response is not successful, throw error
             if (!response.ok) {
@@ -133,16 +133,23 @@ const ChatPage = () => {
             }
             // Parse the response data
             const data = await response.json();
-            // Add the chatbot's response to the chat
-            const botMessage = { text: data.answer.answer, sender: 'bot' };
+    
+            // Safely access the chatbot's response to the chat
+            const botMessageText = data?.botMessage?.text || "No response from the bot"; // Safe access with a fallback
+    
+            // Create bot message object
+            const botMessage = { text: botMessageText, sender: 'bot' };
+    
             // Update the chat messages
             setMessages(messages => [...messages, botMessage]);
+    
             // Scroll to the last message
             messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
         } catch (error) {
             console.error('Error fetching data:', error);
         }
     };
+    
 
     // This function is called to render the message text and animate it for the bots response
     const renderMessageText = (text, sender) => {
@@ -180,7 +187,7 @@ const ChatPage = () => {
 
     return (
         <div className='chat-page'>
-            <div className="top-bar">
+            <div className="top-barchat">
                 <h1 className="title">{NAVBAR_HEADER}</h1>
                 <div className="buttons">
                     {showHelpPopup && (
@@ -202,36 +209,46 @@ const ChatPage = () => {
                             <path strokeLinecap="round" strokeLinejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
                         </svg>
                     </button>
-                    <button className="start-chat" onClick={handleNewChat}>Start New Chat </button>
-                    <button type="submit" className="clearChat" onClick={handleClearChat}>Clear Chat</button>
-                    < div classname="userInfo">
-                    {userInfo ? (
-    <div className="userInfo" onClick={toggleDropdown}>
-    Welcome, {userInfo ? userInfo.name : "Guest"}
-    {showDropdown && (
-        <div className='user-dropdown'>
-            <button type="submit" className="user-dropdown-button" onClick={handleLogout}>Logout</button>
-            <button className="user-dropdown-button" onClick={handleFeedback}>Leave Feedback</button>
-        </div>
-    )}
-    <svg style = {{paddingLeft: "5"}}xmlns="http://www.w3.org/2000/svg" fill="none" width="16" height="16" viewBox="0 0 24 24" strokeWidth="3" stroke="white" className="size-6">
-        <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/>
-    </svg>
+                    <button className="start-chat" onClick={handleNewChat} title="Start a new chat">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5=" stroke="currentColor"  style={{ width: '24px', height: '24px' }} >
+                            <path strokeLinecap="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                        </svg>
 
-</div>
+                    </button>
+                    <button type="submit" className="clearChat" onClick={handleClearChat} title='Clear Chat'>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" style={{ width: '24px', height: '24px' }}>
+  <path strokeLinecap="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+</svg>
 
-) : (
-    <div className="userInfo" onClick={toggleDropdown}>
-        Welcome, Guest
-        {showDropdown && (
-            <div className='user-dropdown'>
-                <button onClick={handleExit}>Logout</button>
-            </div>
-        )}
-    </div>
-)}
+                    </button>
+                    < div className="userInfo">
+                        {userInfo ? (
+                            <div className="userInfo" onClick={toggleDropdown}>
+                                Welcome, {userInfo ? userInfo.name : "Guest"}
+                                {showDropdown && (
+                                    <div className='user-dropdown'>
+                                        <button type="submit" className="user-dropdown-button" onClick={handleLogout}>Logout</button>
+                                        <button className="user-dropdown-button" onClick={handleFeedback}>Leave Feedback</button>
+                                    </div>
+                                )}
+                                <svg style={{ paddingLeft: "5" }} xmlns="http://www.w3.org/2000/svg" fill="none" width="16" height="16" viewBox="0 0 24 24" strokeWidth="3" stroke="white" className="size-6">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                                </svg>
+
+                            </div>
+
+                        ) : (
+                            <div className="userInfo" onClick={toggleDropdown}>
+                                Welcome, Guest
+                                {showDropdown && (
+                                    <div className='user-dropdown'>
+                                        <button onClick={handleExit}>Logout</button>
+                                    </div>
+                                )}
+                            </div>
+                        )}
                     </div>
-                    
+
                 </div>
             </div>
             <aside className="sidebar">
