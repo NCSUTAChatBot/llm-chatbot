@@ -203,28 +203,33 @@ const ChatPage = () => {
                         </svg>
                     </button>
                     <button className="start-chat" onClick={handleNewChat}>Start New Chat </button>
-                    <button className="feedback-button" onClick={handleFeedback}>Leave Feedback</button>
                     <button type="submit" className="clearChat" onClick={handleClearChat}>Clear Chat</button>
                     < div classname="userInfo">
-                        {userInfo ? (
-                            <div classname="userInfo" onClick={toggleDropdown}>
-                            Welcome, {userInfo.name}
-                            {showDropdown && (
-                                <div className='user-dropdown'>
-                                    <button type="submit" className="logout" onClick={handleLogout}>Logout</button>
-                                </div>
-                            )}
-                        </div>
-                        ) : (
-                            <div  classname="userInfo" onClick={toggleDropdown}>
-                        Welcome, Guest
-                        {showDropdown && (
-                            <div className='user-dropdown'>
-                                <button onClick={handleExit}>Exit</button>
-                            </div>
-                        )}
-                    </div>
-                        )}
+                    {userInfo ? (
+    <div className="userInfo" onClick={toggleDropdown}>
+    Welcome, {userInfo ? userInfo.name : "Guest"}
+    {showDropdown && (
+        <div className='user-dropdown'>
+            <button type="submit" className="user-dropdown-button" onClick={handleLogout}>Logout</button>
+            <button className="user-dropdown-button" onClick={handleFeedback}>Leave Feedback</button>
+        </div>
+    )}
+    <svg style = {{paddingLeft: "5"}}xmlns="http://www.w3.org/2000/svg" fill="none" width="16" height="16" viewBox="0 0 24 24" strokeWidth="3" stroke="white" className="size-6">
+        <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/>
+    </svg>
+
+</div>
+
+) : (
+    <div className="userInfo" onClick={toggleDropdown}>
+        Welcome, Guest
+        {showDropdown && (
+            <div className='user-dropdown'>
+                <button onClick={handleExit}>Logout</button>
+            </div>
+        )}
+    </div>
+)}
                     </div>
                     
                 </div>

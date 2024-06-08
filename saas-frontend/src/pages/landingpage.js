@@ -14,13 +14,12 @@ function LandingPage() {
     const MODALBODYTEXT = process.env.REACT_APP_MODALBODYTEXT;
     const FEEDBACK_URL = process.env.REACT_APP_FEEDBACK_FORM_URL;
     const BACKGROUND_IMAGE_URL = process.env.REACT_APP_BACKGROUND_IMAGE_URL;
+    const LOGO_MODAL = process.env.REACT_APP_FRONT_LOGO;
 
     // This hook is used to navigate between different pages
     const navigate = useNavigate();
     // This function is called when the user clicks on the Chat Now button
-    const handleButtonClick = () => {
-        navigate('/chat');
-    };
+
     const handleLoginClick = () => {
         navigate('/login');
     };
@@ -40,18 +39,16 @@ function LandingPage() {
                 </div>
             </div>
             <div className="modalContainer">
-                <h3 className="modalHeader">Welcome</h3>
+            <img src={`${process.env.PUBLIC_URL + LOGO_MODAL}`} alt="NC STATE UNIVERSITY" style={{ width: '300px', height: '500px', margin: '20px' }} />
                 <p className="modalBodyText">{MODALBODYTEXT}</p>
-                              
-                <button type="submit" className="chatButton" onClick={handleButtonClick}>
-                    Chat Now
-                </button>
+                <div className="modalButtonContainer">           
+                <button type="submit" className="chatButton" onClick={handleSignupClick}>
+                    Sign Up
+                </button>  
                 <button type="submit" className="chatButton" onClick={handleLoginClick}>
                     Login
                 </button>
-                <button type="submit" className="chatButton" onClick={handleSignupClick}>
-                    SignUp
-                </button>  
+                </div>
             </div>
             <p className="footerTextLeft">
                 {LFOOTER}

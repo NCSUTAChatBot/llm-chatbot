@@ -8,6 +8,13 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../globalStyles.css';
 
+// ENV VARIABLES
+const NAVBAR_HEADER = process.env.REACT_APP_NAVBAR_HEADER;
+const LFOOTER = process.env.REACT_APP_LFOOTER;
+const RFOOTER = process.env.REACT_APP_RFOOTER;
+const FEEDBACK_URL = process.env.REACT_APP_FEEDBACK_FORM_URL;
+const BACKGROUND_IMAGE_URL = process.env.REACT_APP_BACKGROUND_IMAGE_URL;
+
 function LoginPage(){
         
     // useState hook is used to create state variables for email and password
@@ -17,6 +24,10 @@ function LoginPage(){
     const [error, setError] = useState('');
     // This hook is used to store Token of users Logged in
     const [authToken, setAuthToken] = useState(localStorage.getItem('accessToken'));
+
+    const handleFeedback = () => {
+        window.open(FEEDBACK_URL);
+    };
 
     const navigate= useNavigate();
 
@@ -78,13 +89,20 @@ function LoginPage(){
     
     //HTML code for webpage
     return(
-        <div className="loginPageContainer" >
+        <div className="loginPageContainer" style={{ backgroundImage: `url(${BACKGROUND_IMAGE_URL})`}}>
+            <div className="top-bar">
+                <h1 className="title">{NAVBAR_HEADER} </h1>
+                <div className="buttons">
+                    <button className="feedback-button" onClick={handleFeedback}>Leave Feedback</button>
+                </div>
+            </div>
             <div className="loginModalContainer">
             <h3 className="loginModalHeader">Welcome Back</h3>
             <form onSubmit={handleLogin}>
                 <div className="email-container">
-                    <label htmlFor="email">Email</label>
                     <input
+                    placeholder="Email"
+                    style={{color: 'black'}} 
                     type="email"
                     id="email"
                     className="login-inputContainer"
@@ -94,10 +112,10 @@ function LoginPage(){
                     />
                 </div>
                 <div>
-                    <label htmlFor="password">Password</label>
                     <input
                     type="password"
                     id="password"
+                    placeholder='Password'
                     className="login-inputContainer"
                     value={password}
                     onChange={handlePasswordChanges}
@@ -108,10 +126,16 @@ function LoginPage(){
                 <button type="submit" className="loginButton" >Login</button>
                 <div className='buttonsContainer'>
                     <button type='button' className='forgotPasswordButton' onClick={handleForgotPassword}>Forgot Password?</button>
-                    <button type='button' className='newUserButton' onClick={handleNewUser}>New User</button>
+                    <button type='button' className='newUserButton' onClick={handleNewUser}>Don't have an account?</button>
                 </div>
             </form>
         </div>
+        <p className="footerTextLeft">
+                {LFOOTER}
+            </p>
+            <p className="footerTextRight">
+                {RFOOTER}
+            </p>
     </div>
     )
 }

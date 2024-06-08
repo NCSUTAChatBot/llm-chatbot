@@ -19,6 +19,7 @@
   margin: 0;
   overflow: hidden;
 }
+
 /* Styling for the welcome container for the Landing page */
 .modalContainer {
   background-color: rgba(5, 5, 7, 0.8);
@@ -27,7 +28,7 @@
   align-items: center;
   border: #7a7a7a 1px solid;
   width: 400px;
-  height: 450px;
+  height: 370px;
   max-width: 80%;
   box-sizing: border-box;
   z-index: 2;
@@ -37,20 +38,13 @@
   font-weight: 300;
   margin-top: 170px;
   position: absolute;
-  top: 25%;                           
-  left: 50%;                           
-  transform: translate(-50%, -50%);   
+  top: 25%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 /* Styling for the welcome container header for the Landing page */
-.modalHeader {
-  padding-top: 0px;
-  padding-bottom: 1px;
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 28px;
-  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-  text-align: center;
-}
+
 
 /* Styling for the welcome container text for the Landing page */
 .modalBodyText {
@@ -63,10 +57,10 @@
 
 /* Styling for the welcome container chat button for the Landing page */
 .chatButton {
-  width: 125px;
+  width: 110px;
   padding: 10px;
   color: rgb(255, 255, 255);
-  background-color: rgb(39, 39, 44);
+  background-color: rgb(179, 33, 33);
   border-radius: 10px;
   border: none;
   cursor: pointer;
@@ -108,7 +102,7 @@
 .top-bar {
   grid: top-bar;
   border-radius: 3px;
-  background-color: rgba(18, 18, 28, 0.8);
+  background-color: rgba(5, 5, 7, 0.8);
   color: white;
   display: flex;
   justify-content: space-between;
@@ -116,7 +110,8 @@
   padding: 10px 20px;
 }
 
-.sidebar{
+
+.sidebar {
   grid-area: history;
   overflow-y: auto;
   background-color: black;
@@ -125,7 +120,7 @@
   justify-content: space-between;
   height: 100vh;
   width: 240px;
-  font-family: 'Courier New', Monaco, monospace;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
 
 .sidebar ul {
@@ -137,10 +132,12 @@
   padding-top: 30px;
 }
 
+
+
 .sidebar ul li {
   color: white;
-  padding: 10px;  
-  border-radius: 10px;  
+  padding: 10px;
+  border-radius: 10px;
   position: relative;
 }
 
@@ -164,15 +161,15 @@
   border: none;
   border-radius: 4px;
   transition: background-color 0.3s;
+  
+
 }
-button:hover {
-  background-color: #292727;
-}
+
 /* Styling for the entire chat container page for the Chat page */
 .chat-page {
   display: grid;
-  grid-template-areas: "history top-bar" 
-                        "history main";
+  grid-template-areas: "history top-bar"
+    "history main";
   grid-template-columns: 240px 1fr;
   grid-template-rows: auto 1fr;
   flex-direction: column;
@@ -192,24 +189,34 @@ button:hover {
   margin-left: 20px;
   font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
-.userInfo{
+
+.userInfo {
   position: relative;
   display: flex;
   align-items: center;
-  padding-top: 10px;
+  padding-top: 8px;
+  font-size: 16px;
+  margin-left: 20px;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+
 }
+
 /* Styling for the exit button for the Chat page */
 .user-dropdown {
   position: absolute;
-  background-color: #585151;
+  background-color: rgb(179, 33, 33);
   min-width: 120px;
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
   z-index: 10;
   border-radius: 4px;
-  margin-top: 10px; 
+  margin-top: 12px;
+  font-size: 16px;
+  top: 100%;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  transition: opacity 0.5s, visibility 0.1000s;
 }
 
-.user-dropdown button {
+.user-dropdown-button {
   color: rgb(250, 250, 250);
   padding: 12px 16px;
   text-decoration: none;
@@ -218,6 +225,7 @@ button:hover {
   background: none;
   width: 100%;
   text-align: center;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
 
 /* Styling for the help button for the Chat page */
@@ -276,7 +284,8 @@ button:hover {
   gap: 10px;
   margin-top: 5px;
 }
-.warning-message{
+
+.warning-message {
   color: rgb(223, 223, 223);
   font-size: 12px;
   display: flex;
@@ -458,10 +467,9 @@ button:hover {
 
 /******************** STYLING FOR THE LOGIN PAGE *********************/
 .loginButton {
-  width: 125px;
+  width: 110px;
   padding: 10px;
   color: rgb(255, 255, 255);
-  background-color: rgb(4, 102, 53);
   border-radius: 10px;
   border: none;
   cursor: pointer;
@@ -469,43 +477,50 @@ button:hover {
   margin-left: auto;
   margin-right: auto;
   margin-top: 20px;
+  background-color: rgb(179, 33, 33);
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  display: block;
   font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-  font-size: 20px;
+  font-size: 13px;
+
 }
+
 .loginButton:hover {
-  background-color: #45a049; /* Darker green on hover */
+  background-color: #292727;
 }
 
 /* Error message styling */
 .loginError {
   color: red;
-  font-size: 0.9em;
+  font-size: 0.6em;
+  text-align: center;
+  margin: 0;
 }
 
 .loginPageContainer {
-  flex: 1 0 auto;
-  min-height: 0;
-  display: grid;
-  box-sizing: border-box;
-  grid-template-rows: [left-start center-start right-start] 1fr [left-end center-end right-end];
-  grid-template-columns: [left-start center-start] 1fr [left-end right-start] 1fr [center-end right-end];
-  align-items: center;
-  justify-content: center;
-  justify-items: center;
-  grid-column-gap: 160px;
-  column-gap: 160px;
-  padding: 80px;
-  width: 100%;
+  position: relative;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  margin: 0;
+  overflow: hidden;
 }
 
 .loginModalContainer {
-  background-color: rgba(255, 255, 255, 0.8);
+  background-color: rgba(5, 5, 7, 0.8);
   padding: 30px;
   border-radius: 30px;
   align-items: center;
   border: #7a7a7a 1px solid;
   width: 400px;
-  height: 470px;
+  height: 400px;
   max-width: 80%;
   box-sizing: border-box;
   z-index: 2;
@@ -515,19 +530,21 @@ button:hover {
   font-weight: 300;
   margin-top: 170px;
   position: absolute;
-  top: 25%;                           
-  left: 50%;                           
-  transform: translate(-50%, -50%);   
+  top: 25%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .loginModalHeader {
   padding-top: 0px;
   padding-bottom: 1px;
-  color: rgba(10, 0, 0, 0.7);
+  color: rgba(255, 255, 255, 0.7);
+  background-color: #212326;
   font-size: 28px;
   font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
   text-align: center;
 }
+
 
 .email-container {
   position: relative;
@@ -537,44 +554,58 @@ button:hover {
 }
 
 .login-inputContainer {
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    background-color: #fff;
-    border: 1px solid #c2c8d0;
-    border-radius: 6px;
-    box-sizing: border-box;
-    color: #2d333a;
-    font-family: inherit;
-    font-size: 16px;
-    height: 52px;
-    line-height: 1.1;
-    outline: none;
-    padding-block: 1px;
-    padding-inline: 2px;
-    padding: 0 16px;
-    transition: box-shadow .2s ease-in-out,border-color .2s ease-in-out;
-    width: 100%;
-    text-rendering: auto;
-    letter-spacing: normal;
-    word-spacing: normal;
-    text-transform: none;
-    text-indent: 0;
-    text-shadow: none;
-    display: inline-block;
-    text-align: start;
-    margin: 0;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-color: rgba(255, 255, 255, 0.8);
+  border: none;
+  border-radius: 10px;
+  box-sizing: border-box;
+  color: #2d333a;
+  font-family: inherit;
+  font-size: 16px;
+  height: 52px;
+  line-height: 1.1;
+  outline: none;
+  padding-block: 1px;
+  padding-inline: 2px;
+  padding: 0 16px;
+  transition: box-shadow .2s ease-in-out, border-color .2s ease-in-out;
+  width: 100%;
+  text-rendering: auto;
+  letter-spacing: normal;
+  word-spacing: normal;
+  text-transform: none;
+  text-indent: 0;
+  text-shadow: none;
+  display: inline-block;
+  text-align: start;
+  margin: 0;
+}
+
+.login-inputContainer::placeholder {
+  color: black;
 }
 
 .buttonsContainer {
   display: flex;
   justify-content: space-evenly;
-  width: 80%; /* Matches the input and button width */
+  align-self: center;
+  margin-top: 15px;
+  width: 100%;
+}
+
+.modalButtonContainer {
+  display: flex;
+  justify-content: space-evenly;
+  align-self: center;
   margin-top: 20px;
+  width: 90%;
 }
 
 /* Styling for 'Forgot Password?' and 'New User' buttons */
-.forgotPasswordButton, .newUserButton {
+.forgotPasswordButton,
+.newUserButton {
   background: none;
   border: none;
   color: #0066cc;
@@ -583,10 +614,12 @@ button:hover {
   text-decoration: underline;
 }
 
-.forgotPasswordButton:hover, .newUserButton:hover {
+.forgotPasswordButton:hover,
+.newUserButton:hover {
   color: #004499;
   text-decoration: none;
 }
+
 /******************** STYLING FOR THE SIGNUP PAGE *********************/
 .signupButton {
   width: 125px;
@@ -605,30 +638,27 @@ button:hover {
 }
 
 .signupPageContainer {
-  flex: 1 0 auto;
-  min-height: 0;
-  display: grid;
-  box-sizing: border-box;
-  grid-template-rows: [left-start center-start right-start] 1fr [left-end center-end right-end];
-  grid-template-columns: [left-start center-start] 1fr [left-end right-start] 1fr [center-end right-end];
-  align-items: center;
-  justify-content: center;
-  justify-items: center;
-  grid-column-gap: 160px;
-  column-gap: 160px;
-  padding: 80px;
-  width: 100%;
+  position: relative;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  margin: 0;
+  overflow: hidden;
 }
 
 .signupModalContainer {
-  background-color: rgba(255, 255, 255, 0.8);
   padding: 30px;
   border-radius: 30px;
   align-items: center;
   border: #7a7a7a 1px solid;
   width: 400px;
-  height: 570px;
-  max-width: 80%;
+  height: 550px;
+  max-width: 100%;
   box-sizing: border-box;
   z-index: 2;
   display: flex;
@@ -637,16 +667,24 @@ button:hover {
   font-weight: 300;
   margin-top: 170px;
   position: absolute;
-  top: 25%;                           
-  left: 50%;                           
-  transform: translate(-50%, -50%);   
+  top: 25%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(5, 5, 7, 0.8);
+
 }
 
 .signupModalHeader {
   padding-top: 0px;
   padding-bottom: 1px;
-  color: rgba(10, 0, 0, 0.7);
+  color: rgba(255, 255, 255, 0.7);
   font-size: 28px;
   font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
   text-align: center;
+}
+
+.signupInput {
+  margin-bottom: 30px;
+  width: 300px;
+  height: 52px;
 }
