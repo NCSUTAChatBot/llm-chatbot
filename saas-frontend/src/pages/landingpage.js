@@ -36,6 +36,9 @@ function LandingPage() {
                 <h1 className="title">{NAVBAR_HEADER} </h1>
                 <div className="buttons">
                     <button className="feedback-button" onClick={handleFeedback}>Leave Feedback</button>
+                    <button type="submit" className="login-button-landing" onClick={handleLoginClick}>
+                    Login
+                </button>
                 </div>
             </div>
             <div className="modalContainer">
@@ -45,9 +48,7 @@ function LandingPage() {
                 <button type="submit" className="chatButton" onClick={handleSignupClick}>
                     Sign Up
                 </button>  
-                <button type="submit" className="chatButton" onClick={handleLoginClick}>
-                    Login
-                </button>
+                
                 </div>
             </div>
             <p className="footerTextLeft">

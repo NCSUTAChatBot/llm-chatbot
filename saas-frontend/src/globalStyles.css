@@ -43,13 +43,10 @@
   transform: translate(-50%, -50%);
 }
 
-/* Styling for the welcome container header for the Landing page */
-
-
 /* Styling for the welcome container text for the Landing page */
 .modalBodyText {
   color: #ffffff;
-  padding-bottom: 50px;
+  padding-bottom: 45px;
   text-align: center;
   font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
   font-size: 16px;
@@ -144,8 +141,6 @@
   padding-top: 30px;
 }
 
-
-
 .sidebar ul li {
   color: white;
   padding: 10px;
@@ -156,6 +151,50 @@
 .sidebar ul li:hover {
   background-color: #212326;
   color: white;
+}
+
+.sidebar ul li.selected {
+  background-color: #212326;  
+  color: white;
+}
+
+.sidebar li .delete-button {
+  display: none; 
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: absolute; 
+  right: 10px; 
+  bottom: 5px;
+}
+
+.sidebar li:hover .delete-button {
+  display: block;
+  color: #ffffff;
+}
+
+.sidebar li.deleting {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  opacity: 0;
+  transform: scale(0);
+}
+
+.sidebar li.empty-message {
+  display: flex;
+  flex-direction: column; 
+  align-items: center; 
+  justify-content: center; 
+  text-align: center;
+  color: #888;
+  font-style: italic;
+  padding: 20px;
+  border: none;
+  background-color: transparent;
+  margin: 0px 0;
+}
+
+.sidebar li.empty-message:hover {
+  background-color: transparent; 
 }
 
 /* Styling for the title for the Chat page (SAAS Chatbot @2024 NCSU CSC Dept)*/
@@ -191,7 +230,7 @@
 }
 
 /* Styling for the exit button for the Chat page */
-.clearChat {
+.refreshChat {
   background: none;
   color: white;
   border: none;
@@ -259,8 +298,24 @@
   cursor: pointer;
   font-size: 16px;
   padding: 0;
-  margin-left: 20px;
   font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  display: flex;
+  align-content: 'center';
+  justify-content: 'center';
+  margin-right: 20px;
+}
+.login-button-landing {
+  background: none;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 0;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  display: flex;
+  align-content: 'center';
+  justify-content: 'center';
+  margin-right: 20px;
 }
 
 /* Styling for the start chat button for the Chat page */
@@ -429,6 +484,23 @@
   padding: 0 10px;
 }
 
+.typing-char {
+  display: inline-block;
+  opacity: 1;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.typing-char.delete {
+  opacity: 0;
+  transform: scale(0);
+}
+
+li.deleting {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  opacity: 0;
+  transform: scale(0);
+}
+
 /* General Styling for the popup header for the Chat page (Need Assistance? and X button) */
 .popup-header {
   display: flex;
@@ -467,6 +539,25 @@
     transform: translateY(-5px);
   }
 
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.chat-title-char {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(-5px);
+  animation: typing 0.5s forwards;
+  animation-delay: var(--delay); 
+}
+
+@keyframes typing {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
   to {
     opacity: 1;
     transform: translateY(0);

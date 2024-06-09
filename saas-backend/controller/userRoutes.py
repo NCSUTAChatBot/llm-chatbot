@@ -1,7 +1,7 @@
 '''
 This file contains the routes for the user API.
 
-@authored by Sanjit Verma
+@author Sanjit Verma
 '''
 from flask import Blueprint, request, jsonify, session
 from pymongo import MongoClient

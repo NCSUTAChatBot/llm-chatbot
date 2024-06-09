@@ -1,7 +1,7 @@
 '''
 This module contains the UserRepository class, which is responsible for handling user data in the database.
 
-@author by Sanjit Verma
+@author Sanjit Verma
 '''
 from flask import Flask, jsonify
 from pymongo.collection import Collection
