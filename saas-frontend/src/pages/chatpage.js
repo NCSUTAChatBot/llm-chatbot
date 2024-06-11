@@ -29,55 +29,66 @@ const ChatPage = () => {
     const [showHelpPopup, setShowHelpPopup] = useState(false);
     // This hook is used to store the information of the user currently logged in
     const [userInfo, setUserInfo] = React.useState(null);
-    const [currentChatTitle, setCurrentChatTitle] = useState(''); // state for current chat title
-    const [savedChatTitles, setSavedChatTitles] = useState([]); // State for saved chat titles
-    const [deletingChatTitle, setDeletingChatTitle] = useState(null);
-    const [isNewChat, setIsNewChat] = useState(false); // Track if new chat button was clicked
-    const [latestChatTitle, setLatestChatTitle] = useState('');
-
-    // This hook is used to set 
+    // This hook is used to store the chat session key
+    const [currentSessionKey, setCurrentSessionKey] = useState(''); 
+    // This hook is used to store the saved chat session keys
+    const [savedSessionKeys, setSavedSessionKeys] = useState([]); 
+    // This hook is used to store the session key that is being deleted
+    const [deletingSessionKey, setDeletingSessionKey] = useState(null);
+    // This hook is used to set  the state of the dropdown
     const [showDropdown, setShowDropdown] = useState(false);
+    // This hook is used to store the animated titles state
 
-    // This function is called when the user clicks on the refresh button
-    const handleRefreshChat = async () => {
+    // This function is called when the user clicks on the downloiad as pdf button
+    const handleDownloadChat = async () => {
+        if (!currentSessionKey) {
+            console.error("No chat session selected to download.");
+            return; 
+        }
         try {
-            if (!currentChatTitle) {
-                console.error("No chat selected to refresh.");
-                return;
-            }
-            const response = await fetch('http://127.0.0.1:8000/chat/get_chat_by_title', {
+            const response = await fetch('http://127.0.0.1:8000/chat/export_single_chat_to_pdf', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     email: userInfo.email,
-                    chatTitle: currentChatTitle
+                    sessionKey: currentSessionKey
                 })
             });
-
             if (response.ok) {
-                const data = await response.json();
-                setMessages(data.messages || []);
+                // Convert the response to a Blob representing the PDF file
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `chat_${currentSessionKey}.pdf`; 
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url); 
             } else {
-                throw new Error('Failed to fetch chat messages.');
+                throw new Error(`Failed to generate PDF. Status: ${response.status}`);
             }
         } catch (error) {
-            console.error('Error refreshing chat messages:', error);
+            console.error('Error downloading chat PDF:', error);
         }
     };
 
-    const selectChat = async (title) => {
-        setCurrentChatTitle(title); // Set the current chat for data operations
+    // This function is called when the user clicks on a saved chat session. It fetches the chat messages for the selected session
+    //and sets the chat session key to be used
+    const selectChat = async (sessionKey) => {
+        setCurrentSessionKey(sessionKey); 
         try {
-            const response = await fetch('http://127.0.0.1:8000/chat/get_chat_by_title', {
+            const response = await fetch('http://127.0.0.1:8000/chat/get_chat_by_session', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: userInfo.email, chatTitle: title })
+                body: JSON.stringify({ email: userInfo.email, sessionKey: sessionKey })
             });
+
             if (response.ok) {
                 const data = await response.json();
-                setMessages(data.messages);
+                setMessages(data.messages); 
             } else {
-                console.error('Failed to fetch messages for selected chat');
+                console.error('Failed to fetch messages for selected session', response.status);
             }
         } catch (error) {
             console.error('Error fetching chat messages:', error);
@@ -94,34 +105,43 @@ const ChatPage = () => {
         setShowHelpPopup(prev => !prev);
     };
 
-    // This function is called when the user clicks on the Start New Chat button
+    // This function is called when the user clicks on the Start New Chat button. It handles chat sessions and message history 
+    //when creating a new chat session using the new chat button
     const handleNewChat = async () => {
-    try {
-        const response = await fetch('http://127.0.0.1:8000/chat/clear_chat', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' }
-        });
-        if (response.ok) {
-            setMessages([]);
-            setCurrentChatTitle('');
-            setIsNewChat(true); // Indicate that a new chat was created
-            setLatestChatTitle(''); // Reset the latest chat title
-        } else {
-            throw new Error('Failed to clear chat history on the backend.');
+        try {
+            const clearResponse = await fetch('http://127.0.0.1:8000/chat/clear_chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            if (clearResponse.ok) {
+                // Successfully cleared the chat, now create a new session
+                const sessionResponse = await fetch('http://127.0.0.1:8000/chat/createSession', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: userInfo.email }) 
+                });
+                if (sessionResponse.ok) {
+                    const sessionData = await sessionResponse.json();
+                    setCurrentSessionKey(sessionData.sessionKey); 
+                    setMessages([]); 
+                } else {
+                    throw new Error('Failed to create a new chat session.');
+                }
+            } else {
+                throw new Error('Failed to clear chat history on the backend.');
+            }
+        } catch (error) {
+            console.error('Error during chat session handling:', error);
         }
-    } catch (error) {
-        console.error('Error clearing chat history:', error);
-    }
-};
-    
+    };
+
+    // This function is called when the user clicks on the Logout button
     const handleLogout = async () => {
         try {
-            // Make the API call to clear the backend chat history (set to localhost for now)
             const response = await fetch('http://127.0.0.1:8000/user/logout', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' }
             });
-            // If the response is successful, clear the chat history on the frontend
             if (response.ok) {
                 setMessages([]);
                 localStorage.removeItem('accessToken');
@@ -134,108 +154,137 @@ const ChatPage = () => {
             console.error('Error clearing chat history:', error);
         }
     };
-
     const handleExit = async () => {
         navigate('/');
     }
 
-    const handleDeleteChat = async (chatTitle) => {
-        let isMounted = true;
+    // This function is called when the user clicks on the delete button for a chat session
+    const handleDeleteChat = async (sessionKey) => {
         try {
-            // Add class to start animation
-            setDeletingChatTitle(chatTitle);
-
-            // Wait for animation to complete (300ms in this case)
+            setDeletingSessionKey(sessionKey);
             setTimeout(async () => {
-                // Make API call to delete chat
                 const response = await fetch('http://127.0.0.1:8000/chat/delete_chat', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email: userInfo.email, chatTitle })
+                    body: JSON.stringify({ email: userInfo.email, sessionKey: sessionKey })
                 });
 
                 if (response.ok) {
-                    // Update the state to remove the chat title after deletion
-                    setSavedChatTitles(titles => titles.filter(title => title !== chatTitle));
+                    setSavedSessionKeys(keys => keys.filter(session => session.sessionKey !== sessionKey));
+                    if (currentSessionKey === sessionKey) {
+                        setCurrentSessionKey('');
+                        setMessages([]);
+                    }
+                    setDeletingSessionKey(null);
                 } else {
                     throw new Error('Failed to delete chat');
                 }
-            }, 300); // Match this duration with your CSS transition duration
+            }, 300); 
         } catch (error) {
             console.error('Error deleting chat:', error);
         }
-        return () => { isMounted = false; };
     };
 
+    // This function is called when the user submits a question. It handles logic for creating session and managing message history
     const handleSubmit = async (event) => {
         event.preventDefault();
-        if (!question.trim() || !userInfo.email) return;
-    
+        if (!question.trim() || !userInfo.email) return; 
         const email = userInfo.email;
-        let newChatTitle = currentChatTitle;
-    
-        if (!currentChatTitle) {
-            newChatTitle = question.trim();
-            setCurrentChatTitle(newChatTitle);
-            setLatestChatTitle(newChatTitle); 
-        }
-    
         const userMessage = { text: question, sender: 'user' };
-        setMessages(prev => [...prev, userMessage]);
-        setQuestion('');
-    
+        setMessages(prevMessages => [...prevMessages, userMessage]);
+        setQuestion(''); 
+
         try {
-            const response = await fetch('http://127.0.0.1:8000/chat/ask', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: email, question: question, chatTitle: newChatTitle })
-            });
-            if (response.ok) {
-                const data = await response.json();
-                const botMessage = { text: data.botMessage.text, sender: 'bot' };
-                setMessages(messages => [...messages, botMessage]);
-    
-                if (!savedChatTitles.includes(newChatTitle)) {
-                    // Add the new chat title to the top of the list
-                    setSavedChatTitles(titles => [newChatTitle, ...titles]);
-                    setIsNewChat(false); // Reset the state after adding the new chat title
+            let response;
+            let data;
+
+            if (!currentSessionKey) {
+                response = await fetch('http://127.0.0.1:8000/chat/ask', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: email, question: question, chatTitle: question })
+                });
+
+                if (response.ok) {
+                    data = await response.json();
+                    setCurrentSessionKey(data.sessionKey); // Set the newly created session key
+                    // Add the new session to savedSessionKeys with the user's first message as the chatTitle
+                    setSavedSessionKeys(prevKeys => [
+                        { sessionKey: data.sessionKey, chatTitle: question },
+                        ...prevKeys
+                    ]);
+                } else {
+                    throw new Error('Failed to create a new chat session.');
                 }
             } else {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                // Add a message to the existing session
+                response = await fetch('http://127.0.0.1:8000/chat/ask', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: email, sessionKey: currentSessionKey, question: question })
+                });
+
+                if (response.ok) {
+                    data = await response.json();
+                    // Check if the current session is already in savedSessionKeys
+                    setSavedSessionKeys(prevKeys => {
+                        const sessionIndex = prevKeys.findIndex(session => session.sessionKey === currentSessionKey);
+                        if (sessionIndex === -1) {
+                            // If not found, add the session with the chatTitle
+                            return [{ sessionKey: currentSessionKey, chatTitle: question }, ...prevKeys];
+                        } else {
+                            // If found, only update the title if it's the first message
+                            const updatedSessions = [...prevKeys];
+                            if (!updatedSessions[sessionIndex].chatTitle) {
+                                updatedSessions[sessionIndex].chatTitle = question;
+                            }
+                            return updatedSessions;
+                        }
+                    });
+                } else {
+                    throw new Error(`Failed to submit message. Status: ${response.status}`);
+                }
             }
-            messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+
+            const botMessage = { text: data.botMessage.text, sender: 'bot' };
+            setMessages(messages => [...messages, botMessage]);
         } catch (error) {
             console.error('Error submitting question:', error);
-            setMessages(prev => prev.slice(0, -1)); // Remove the last message on error
+            setMessages(prevMessages => prevMessages.slice(0, -1)); // Remove the last message if there is error
         }
+
+        messageEndRef.current?.scrollIntoView({ behavior: 'smooth' }); 
     };
-    
+
     useEffect(() => {
         const fetchSavedChats = async () => {
-            if (userInfo) {
+            if (userInfo && userInfo.email) {  
                 try {
                     const response = await fetch(`http://127.0.0.1:8000/chat/get_saved_chats?email=${userInfo.email}`);
                     if (response.ok) {
                         const data = await response.json();
-                        setSavedChatTitles(data.savedChatTitles); // Sorted by backend
+
+                        if (Array.isArray(data.savedChatSessions)) {
+                            setSavedSessionKeys(data.savedChatSessions);  // Update state with sorted session keys and titles
+                        } else {
+                            console.error('Invalid format for saved chat sessions:', data.savedChatSessions);
+                            setSavedSessionKeys([]); // Set to empty array if the data format is not expected
+                        }
                     } else {
-                        throw new Error('Failed to fetch saved chats');
+                        console.error(`Failed to fetch saved chats with status: ${response.status}`);
+                        setSavedSessionKeys([]); 
                     }
                 } catch (error) {
                     console.error('Error fetching saved chats:', error);
+                    setSavedSessionKeys([]); 
                 }
             }
         };
 
         fetchSavedChats();
-    }, [userInfo]);
+    }, [userInfo]);  
 
-    useEffect(() => {
-        if (currentChatTitle) {
-            selectChat(currentChatTitle);
-        }
-    }, [currentChatTitle]);
-
+    // This hook is used to clear the chat history on page refresh
     useEffect(() => {
         const clearChatOnRefresh = async () => {
             try {
@@ -245,7 +294,7 @@ const ChatPage = () => {
                 });
                 if (response.ok) {
                     setMessages([]);
-                    setCurrentChatTitle('');
+                    setCurrentSessionKey('');
                 } else {
                     throw new Error('Failed to clear chat history on the backend.');
                 }
@@ -256,6 +305,7 @@ const ChatPage = () => {
         clearChatOnRefresh();
     }, []);
 
+    // This function is used to render the message text with a typing animation
     const renderMessageText = (text, sender) => {
         if (typeof text === 'string' && sender === 'bot') {
             return text.split('').map((char, index) => (
@@ -267,10 +317,23 @@ const ChatPage = () => {
             return text;
         }
     };
+    // This function is used to render the chat title with a typing animation
+    const renderChatTitle = (title) => {
+        return title.split('').map((char, index) => (
+            <span 
+                key={index} 
+                className="chat-title-char" 
+                style={{ '--delay': `${index * 0.05}s` }}
+            >
+                {char === ' ' ? '\u00A0' : char}  
+            </span>
+        ));
+    };
+    
 
+    // This hook is used to scroll to the last message with a smooth behavior
     useEffect(() => {
         if (messageEndRef.current) {
-            // Scroll to the last message with a smooth behavior
             messageEndRef.current.scrollIntoView({ behavior: 'smooth' });
         }
     }, [messages]);
@@ -284,8 +347,6 @@ const ChatPage = () => {
     }, []);
 
     const toggleDropdown = () => setShowDropdown(!showDropdown);
-
-
     return (
         <div className='chat-page'>
             <div className="top-barchat">
@@ -316,11 +377,10 @@ const ChatPage = () => {
                         </svg>
 
                     </button>
-                    <button type="submit" className="refreshChat" onClick={handleRefreshChat} title='Refresh Chat'>
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6" style={{ width: '22px', height: '22px' }}>
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+                    <button type="submit" className="refreshChat" onClick={handleDownloadChat} title='Download Chat'>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" style={{ width: '22px', height: '22px' }}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
                         </svg>
-
 
                     </button>
                     < div className="userInfo">
@@ -354,46 +414,39 @@ const ChatPage = () => {
                 </div>
             </div>
             <aside className="sidebar">
-    <ul>
-        {savedChatTitles.length === 0 ? (
-            <li className="empty-message">
-                Saved Chats appear here
-                <br />
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6" style={{ marginTop: '20px', color: '#888', width: '30px', height: '30px' }}>
-                    <path stroke-linecap="round" stroke-linejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0-3-3m3 3 3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" />
-                </svg>
-            </li>
-        ) : (
-            savedChatTitles.map((title, index) => (
-                <li key={index} className={`${currentChatTitle === title ? 'selected' : ''} ${deletingChatTitle === title ? 'deleting' : ''}`}
-                    onClick={() => selectChat(title)}>
-                    {title === latestChatTitle ? (
-                        title.split('').map((char, i) => (
-                            <span key={i} className="chat-char" style={{ animationDelay: `${i * 0.05}s` }}>{char}</span>
-                        ))
-                    ) : (
-                        <span>{title}</span>
-                    )}
-                    {currentChatTitle !== title && (
-                        <button
-                            className="delete-button"
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                handleDeleteChat(title);
-                            }}
-                            title="Delete Chat"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6" style={{ width: '20px', height: '20px' }}>
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                <ul>
+                    {savedSessionKeys.length === 0 ? (
+                        <li className="empty-message">
+                            Saved Chats appear here
+                            <br />
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6" style={{ marginTop: '20px', color: '#888', width: '30px', height: '30px' }}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0-3-3m3 3 3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" />
                             </svg>
-                        </button>
+                        </li>
+                    ) : (
+                        savedSessionKeys.map((session, index) => (
+                            <li key={index} className={`${currentSessionKey === session.sessionKey ? 'selected' : ''} ${deletingSessionKey === session.sessionKey ? 'deleting' : ''}`}
+                                onClick={() => selectChat(session.sessionKey)}>
+                                <span>{currentSessionKey === session.sessionKey ? renderChatTitle(session.chatTitle) : session.chatTitle}</span>
+                                {currentSessionKey !== session.sessionKey && (
+                                    <button
+                                        className="delete-button"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleDeleteChat(session.sessionKey);
+                                        }}
+                                        title="Delete Chat"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6" style={{ width: '20px', height: '20px' }}>
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                                        </svg>
+                                    </button>
+                                )}
+                            </li>
+                        ))
                     )}
-                </li>
-            ))
-        )}
-    </ul>
-</aside>
-
+                </ul>
+            </aside>
             <main style={{ flex: 1, overflowY: 'hidden', padding: '10px', display: 'flex', flexDirection: 'column' }}>
                 <div className="chat-container">
                     {messages.length === 0 ? (
