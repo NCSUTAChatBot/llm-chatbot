@@ -53,7 +53,7 @@ function ForgotPassword() {
             </div>
             <div className="forgotPasswordModalContainer">
                 <h3 className="loginModalHeader">Reset your password</h3>
-                <h5 className="forgotPasswordSubheader">Enter your email address and instructions to reset your password will be mailed</h5>
+                <p className="forgotPasswordSubheader">Enter your email address and instructions to reset your password will be mailed</p>
                 <div>
                     <input
                         type="email"
