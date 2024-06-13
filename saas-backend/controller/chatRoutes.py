@@ -266,23 +266,42 @@ def generate_pdf(email, chat_sessions):
 
     for session in chat_sessions:
         p.setFont("Helvetica-Bold", 16)
-        p.drawString(40, int(height) - 40, f"Chat Title: {session['chatTitle']}")
+        p.drawString(40, height - 40, f"Chat Title: {session['chatTitle']}")
         p.setFont("Helvetica", 12)
-        p.drawString(40, int(height) - 60, f"Session Key: {session['sessionKey']}")
-        p.drawString(40, int(height) - 80, f"Chat History for {email}")
-        p.drawString(40, int(height) - 100, "="*80)
-        text_object = p.beginText(int(40), int(height) - 140)
+        p.drawString(40, height - 60, f"Session Key: {session['sessionKey']}")
+        p.drawString(40, height - 80, f"Chat History for {email}")
+        p.drawString(40, height - 100, "="*80)
+
+        # Begin text object for chat history
+        text_object = p.beginText(40, int(height) - 120)
         text_object.setFont("Helvetica", 12)
+        text_object.setWordSpace(0.5)
+        text_object.setLeading(14)
+
+        # Iterate through each message
         for message in session['messages']:
             timestamp = message.get('timestamp', 'Unknown Time')
             sender = message.get('sender', 'Unknown Sender')
             text = message.get('text', 'No Text')
-            text_object.textLine(f"{timestamp} - {sender}: {text}")
+            # Prepare and wrap text
+            full_text = f"{timestamp} - {sender}: {text}"
+            while full_text:
+                # Find space to break line
+                space_index = full_text.rfind(' ', 0, 100)
+                if space_index == -1 or len(full_text) < 100:  # No space or short text
+                    space_index = len(full_text)
+                # Add line and update text
+                text_object.textLine(full_text[:space_index])
+                full_text = full_text[space_index:].strip()
+
+
         p.drawText(text_object)
-        p.showPage() 
+        p.showPage()
+
     p.save()
     buffer.seek(0)
     return buffer
+
 
 
 @chat_bp.route('/export_single_chat_to_pdf', methods=['POST'])
