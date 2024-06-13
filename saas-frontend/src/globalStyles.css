@@ -802,3 +802,93 @@ li.deleting {
   width: 300px;
   height: 52px;
 }
+
+/******************** STYLING FOR THE SIGNUP PAGE *********************/
+
+.forgotPasswordModalContainer {
+  padding: 30px;
+  border-radius: 30px;
+  align-items: center;
+  border: #7a7a7a 1px solid;
+  width: 450px;
+  height: 420px;
+  max-width: 100%;
+  box-sizing: border-box;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-weight: 300;
+  margin-top: 170px;
+  position: absolute;
+  top: 25%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(5, 5, 7, 0.8);
+
+}
+
+.forgotPasswordSubheader {
+  padding-top: 0px;
+  padding-bottom: 1px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 15px;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  text-align: center;
+}
+
+.resetButton {
+  width: 110px;
+  padding: 10px;
+  color: rgb(255, 255, 255);
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  background-color: rgb(179, 33, 33);
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  display: block;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  font-size: 13px;
+}
+
+
+.resetButton:hover {
+  background-color: #292727;
+}
+
+.password-inputContainer {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-color: rgba(255, 255, 255, 0.8);
+  border: none;
+  border-radius: 10px;
+  box-sizing: border-box;
+  color: #2d333a;
+  font-family: inherit;
+  font-size: 16px;
+  margin-bottom: 20px;
+  height: 52px;
+  line-height: 1.1;
+  outline: none;
+  padding-block: 1px;
+  padding-inline: 2px;
+  padding: 0 16px;
+  transition: box-shadow .2s ease-in-out, border-color .2s ease-in-out;
+  width: 80%;
+  text-rendering: auto;
+  letter-spacing: normal;
+  word-spacing: normal;
+  text-transform: none;
+  text-indent: 0;
+  text-shadow: none;
+  display: inline-block;
+  text-align: start;
+}

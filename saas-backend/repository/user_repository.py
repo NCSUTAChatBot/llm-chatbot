@@ -56,11 +56,17 @@ class UserRepository:
     def reset_password(self, email, token, new_password):
         """Reseting the password of the user with the new password recieved"""
         user= self.find_user_by_email(email)
-        if user and user.get('reset_token')== token and user.get("token_expiration") > datetime.now(timezone.utc):
-            hashed_password= bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt())
-            self.collection.update_one(
-                {"email": email},
-                {"$set": {"password": hashed_password}}
-            )
-            return "Password changed successfully"
+        current_time = datetime.now(timezone.utc)
+
+        if user and user.get('reset_token')== token:
+            token_expiration = user.get("token_expiration").replace(tzinfo=timezone.utc)
+            if token_expiration > current_time:
+                hashed_password= bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt())
+                self.collection.update_one(
+                    {"email": email},
+                    {"$set": {"password": hashed_password},
+                    "$unset": {"reset_token": "", "token_expiration": ""}}
+                )
+                return "Password changed successfully"
+            return "Link expired"
         return "Password could not be changed"
