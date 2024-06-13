@@ -6,7 +6,7 @@ This file contains the routes for the user API.
 from flask import Blueprint, request, jsonify, session
 from pymongo import MongoClient
 from flask_jwt_extended import create_access_token, unset_jwt_cookies
-from flask_mail import Mail, Message
+from flask_mail import Message
 from service.user_service import UserService
 from repository.user_repository import UserRepository
 from pydantic import ValidationError
@@ -73,20 +73,43 @@ def logout():
     session.pop('user_email', None)
     return response
 
+def get_mail():
+    from app import mail
+    return mail
+
 @user_bp.route("/forgot_password", methods=["POST"])
 def forgot_password():
     try:
+        mail= get_mail()
         data = request.get_json()
         email = data.get('email')
         user= user_repository.find_user_by_email(email)
         if not user:
-            return jsonify({"error":"no user found with that email address"}), 404
+            return jsonify({"error":"No user found with that email address"}), 404
         reset_token=user_repository.password_reset_token_generator(email)
-        #reset_link=f"http://localhost:3000/reset_password?token={reset_token}&email={email}"
-        #message= Message('Reset Your Password', sender='your-email@example.com', recipients=[email])
-        #message.body = f"Please click on the link to reset your password: {reset_link}"
-        #mail.send(message)
+        reset_link=f"http://localhost:3000/reset_password?token={reset_token}&email={email}"
+        message= Message('Reset Your Password', sender='your-email@example.com', recipients=[email])
+        message.body = f"Please click on the link to reset your password: {reset_link}"
+        mail.send(message)
         return jsonify({"message": "Please check your email for the password reset link"}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-        
+
+@user_bp.route('/reset_password', methods=['POST'])
+def reset_password():
+    try:
+        data = request.get_json()
+        email = data.get('email')
+        token = data.get('token')
+        new_password = data.get('new_password')
+
+        if not all([email, token, new_password]):
+            return jsonify({'error': 'Missing data'}), 400
+
+        result = user_repository.reset_password(email, token, new_password)
+        if result == "Password changed successfully":
+            return jsonify({'message': result}), 200
+        else:
+            return jsonify({'error': result}), 400
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500

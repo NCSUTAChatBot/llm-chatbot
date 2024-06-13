@@ -12,6 +12,7 @@ from flask_session import Session
 from flask_cors import CORS
 from llmbackend import make_query
 from flask_jwt_extended import JWTManager
+from flask_mail import Mail
 from controller.chatRoutes import chat_bp
 from controller.userRoutes import user_bp
 
@@ -23,6 +24,16 @@ app.config["SECRET_KEY"] = "8zMym2xRX3*wRu&2"
 app.config["SESSION_PERMANENT"] = False
 # Set the session type to filesystem to store session data on the local filesystem.
 app.config["SESSION_TYPE"] = "filesystem"
+
+#Mail Configuration
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+# Add valid email and app password(which can be generated from google accounts for gmail)
+# TODO: Add Admin email and app password using environment variables 
+app.config['MAIL_USERNAME'] = 'your_email@gmail.com'
+app.config['MAIL_PASSWORD'] = 'your_app_password'  # Use the app password here
+
 # Initialize session handling for the app.
 Session(app)
 
@@ -31,6 +42,9 @@ Session(app)
 CORS(app) 
 
 JWTManager(app)
+
+mail= Mail(app)
+
 app.register_blueprint(chat_bp, url_prefix='/chat')
 app.register_blueprint(user_bp, url_prefix='/user')
 
