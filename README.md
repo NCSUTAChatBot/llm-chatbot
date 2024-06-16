@@ -119,3 +119,12 @@ npm start
 *  @author dinesh kannan
 
 *  Created Login and Signup pages and connected it to the database
+
+## Version Update 2024/6/08
+
+*  @author sanjit verma
+
+*   UI changes for login and signup page
+
+*   chat history functionality added
+  
