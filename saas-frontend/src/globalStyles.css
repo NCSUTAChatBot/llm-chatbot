@@ -419,8 +419,7 @@
   padding: 10px;
   border-radius: 10px;
   margin-bottom: 8px;
-  max-width: 60%;
-  width: fit-content;
+  max-width: 70%;
 }
 
 /* Styling for the sender tags on the chat */
@@ -434,6 +433,9 @@
 .text {
   padding: 8px;
   border-radius: 5px;
+  text-align: justify; 
+  overflow-wrap: break-word;     /* Allows text to break at appropriate word boundaries */
+  word-break: keep-all;          /* Prevents breaking words at arbitrary points */
 }
 
 /* Styling for the user chat messages padding for the Chat page */
@@ -525,6 +527,11 @@ li.deleting {
 
 /******************** STYLING FOR THE CHAT PAGE ANIMATIONS *********************/
 /* Styling for the chat typing animation for the Chat page */
+.word {
+  display: inline-block; /* Ensures that words are inline elements */
+  white-space: pre-wrap; /* Prevents the words from breaking */
+}
+
 .chat-char {
   opacity: 0;
   display: inline-block;

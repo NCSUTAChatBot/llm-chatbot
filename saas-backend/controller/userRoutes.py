@@ -1,7 +1,7 @@
 '''
 This file contains the routes for the user API.
 
-@author Sanjit Verma
+@author Sanjit Verma and Dinesh Kannan
 '''
 from flask import Blueprint, request, jsonify, session
 from pymongo import MongoClient
@@ -33,6 +33,9 @@ user_bp = Blueprint('user', __name__)
 
 @user_bp.route('/signup', methods=['POST'])
 def create_user():
+    """
+    This method creates a new user profile.
+    """
     try:
         data = request.get_json()
         response, status = user_service.create_user(
@@ -49,6 +52,10 @@ def create_user():
 
 @user_bp.route('/login', methods=['POST'])
 def login_user():
+    """
+    This method allows registed user to login into their profile
+    Genreates a secure random access token and authenticates the user .
+    """
     try:
         data = request.get_json()
         email = data.get('email')
@@ -68,17 +75,27 @@ def login_user():
 
 @user_bp.route("/logout", methods=["POST"])
 def logout():
+    """
+    This method allows user to logout from their profile.
+    It unsets any cookie of the user and pops out their email from the local storage to end the session
+    """
     response = jsonify({"msg": "logout successful"})
     unset_jwt_cookies(response)
     session.pop('user_email', None)
     return response
 
 def get_mail():
+    """
+    This method allows to import the Mail instance from app.py file to avoid circular import
+    """
     from app import mail
     return mail
 
 @user_bp.route("/forgot_password", methods=["POST"])
 def forgot_password():
+    """
+    This method allows user to get a mail to reset their password incase they forgot it
+    """
     try:
         mail= get_mail()
         data = request.get_json()
@@ -97,6 +114,9 @@ def forgot_password():
 
 @user_bp.route('/reset_password', methods=['POST'])
 def reset_password():
+    """
+    This method allows user to reset their password to a new one
+    """
     try:
         data = request.get_json()
         email = data.get('email')

@@ -1,3 +1,8 @@
+/**
+ * @file forgotpassword.js is a file that contains the forgot password page components
+ * 
+ * @author dineshkannan (dkannan)
+ */
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 

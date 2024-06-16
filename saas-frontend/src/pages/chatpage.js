@@ -308,11 +308,17 @@ const ChatPage = () => {
     // This function is used to render the message text with a typing animation
     const renderMessageText = (text, sender) => {
         if (typeof text === 'string' && sender === 'bot') {
-            return text.split('').map((char, index) => (
-                <span key={index} className="chat-char" style={{ animationDelay: `${index * 0.015}s` }}>
-                    {char}
-                </span>
-            ));
+            const words = text.split(' ');
+            return words.map((word, wordIndex) => (
+                <span key={wordIndex} className="word">
+                {word.split('').map((char, charIndex) => (
+                    <span key={charIndex} className="chat-char" style={{ animationDelay: `${(wordIndex + charIndex) * 0.05}s` }}>
+                        {char}
+                    </span>
+                ))}
+                {wordIndex < words.length - 1 && '\u00A0'}
+            </span>
+        ));
         } else {
             return text;
         }

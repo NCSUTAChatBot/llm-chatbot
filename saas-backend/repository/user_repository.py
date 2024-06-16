@@ -1,7 +1,9 @@
 '''
 This module contains the UserRepository class, which is responsible for handling user data in the database.
 
-@author Sanjit Verma
+@author:
+- Sanjit Verma 
+- Dinesh Kannan (added [password_reset_token_generator, reset_password])
 '''
 from flask import Flask, jsonify
 from pymongo.collection import Collection
@@ -46,7 +48,7 @@ class UserRepository:
     def password_reset_token_generator(self,email):
         """Generating password reset token and saving it with an expiration time."""
         token= secrets.token_urlsafe(16)
-        expiration_time= datetime.now(timezone.utc) + timedelta(minutes=15) #15 minutes expiration
+        expiration_time= datetime.now(timezone.utc) + timedelta(minutes=15) #15 minutes expiration of token
         self.collection.update_one(
             {"email": email},
             {"$set": {"reset_token": token, "token_expiration": expiration_time}}

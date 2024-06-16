@@ -94,15 +94,19 @@ def new_chat():
     user_document = user_collection.find_one({"email": email})
     if not user_document:
         return jsonify({"error": "User not found"}), 404
+    
+    # Delete any existing chats with an empty chat title
+    if 'savedChats' in user_document:
+        updates = {}
+        for key, value in user_document['savedChats'].items():
+            if value.get('chatTitle') == '':
+                updates[f"savedChats.{key}"] = ""
 
-    # Initialize the chat session in the user's savedChats
-    user_collection.update_one(
-        {"email": email},
-        {"$set": {f"savedChats.{session_key}": {
-            "chatTitle": chat_title,
-            "messages": []
-        }}}
-    )
+        if updates:
+            user_collection.update_one(
+                {"email": email},
+                {"$unset": updates}
+            )
 
     return jsonify({"sessionKey": session_key})
 
@@ -123,6 +127,11 @@ def ask():
     session_key = input_data.get('sessionKey')
     question = input_data['question']
 
+     # Find the user in the collection
+    user = user_collection.find_one({"email": email})
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
     # If no session key is provided, create a new session and set the chat title to the question
     if not session_key:
         session_key = secrets.token_urlsafe(16)
@@ -133,12 +142,7 @@ def ask():
                 "messages": []
             }}}
         )
-
-    # Find the user in the collection
-    user = user_collection.find_one({"email": email})
-    if not user:
-        return jsonify({"error": "User not found"}), 404
-    
+  
     # Retrieve the chat session
     chat_session = user.get('savedChats', {}).get(session_key, {})
     chat_history = chat_session.get('messages', [])
