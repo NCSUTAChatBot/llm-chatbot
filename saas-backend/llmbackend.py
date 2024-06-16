@@ -76,7 +76,7 @@ def make_query(chat_history: list, question: str) -> str:
     
     # Set the OpenAI API key from an environment variable or directly in code.
     # It is generally safer to manage API keys using environment variables (@TODO we should fix this later).
-    os.environ["OPENAI_API_KEY"] = "sk-proj-2UmyCJUXpuc8BDM0n8OAT3BlbkFJPHoDTo756gWi6JqZkd9l"
+    os.environ["OPENAI_API_KEY"] = "KEY HERE"
 
     # Load text chunks from a pickle file, which are pre-processed segments of text data stored for quick retrieval.
     db = make_vector_database(chunks_list=get_text_chunks("textbook.pkl"))
