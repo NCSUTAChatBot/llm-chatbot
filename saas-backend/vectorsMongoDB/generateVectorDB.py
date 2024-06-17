@@ -38,8 +38,9 @@ current_script_dir = os.path.dirname(os.path.abspath(__file__))
 base_dir = os.path.dirname(current_script_dir) # navigate to the parent directory
 pdf_directory = os.path.join(base_dir, 'pdfData') # navigate to the pdfData directory
 
-# Suppress INFO logs from httpx
+# Suppress INFO logs from httpx, suppress not critical pdf reader formatting warnings
 logging.getLogger('httpx').setLevel(logging.WARNING)
+logging.getLogger('pypdf._reader').setLevel(logging.ERROR)
 
 docs = loadDocuments.load_pdfs(pdf_directory)
 print(f"Total chunks loaded: {len(docs)}\n")
@@ -55,6 +56,7 @@ try:
         )
         progress_bar.update(len(docs))
     
+    print("\n")
     logger.info(f"Successfully created embeddings in {collection_name}")
     logger.info(""" ***IMPORTANT*** You can't query your index yet. You must create a vector search index in MongoDB's UI now. See Create the Atlas Vector Search Index in https://www.mongodb.com/docs/atlas/atlas-vector-search/ai-integrations/langchain/""")
 except Exception as e:
