@@ -19,8 +19,9 @@ from langchain_openai import OpenAIEmbeddings               # import this to sup
 from langchain_community.vectorstores import FAISS          # Facebook AI Similarity Search (Faiss) provides an implemenation of the vector database.
 from langchain_community.llms import OpenAI                 # OpenAI is an open-source library for natural language understanding.
 from langchain.chains import ConversationalRetrievalChain   # The one popular chain from langchain, which concatenates the previous model's output to the new model's input.
+from dotenv import load_dotenv                              # Load environment variables from a .env file into the script's environment.
 
-
+load_dotenv()                                               # Load environment variables from a .env file into the script's environment.
 # This function is responsible for loading text data from a preprocessed pickle file. 
 # It returns the data as a list of text chunks, which are typically segments of text that have been stored in a serialized format using Python's pickle module.
 def get_text_chunks(filename: str) -> list: 
@@ -75,16 +76,14 @@ def make_query(chat_history: list, question: str) -> str:
     '''
     
     # Set the OpenAI API key from an environment variable or directly in code.
-    # It is generally safer to manage API keys using environment variables (@TODO we should fix this later).
-    os.environ["OPENAI_API_KEY"] = "KEY HERE"
+    openai_api_key = os.getenv("OPENAI_API_KEY")
 
     # Load text chunks from a pickle file, which are pre-processed segments of text data stored for quick retrieval.
     db = make_vector_database(chunks_list=get_text_chunks("textbook.pkl"))
 
     # Instantiate a ConversationalRetrievalChain with an OpenAI language model and the vector database retriever.
     # Setting verbose to True will print detailed logs about the retrieval process.
-    qa = ConversationalRetrievalChain.from_llm(OpenAI(temperature=0.1), db.as_retriever(), verbose=True)
-
+    qa = ConversationalRetrievalChain.from_llm(OpenAI(api_key=openai_api_key, temperature=0.1), db.as_retriever(), verbose=True)
     # Execute the conversational retrieval chain by passing the current chat history and the new question.
     # This process integrates both historical context and the current question to generate a relevant response.
     result = qa({"chat_history": chat_history, "question": question})
