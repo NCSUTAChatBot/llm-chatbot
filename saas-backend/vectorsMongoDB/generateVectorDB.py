@@ -10,6 +10,7 @@ from pymongo import MongoClient
 from dotenv import load_dotenv
 import loadDocuments
 import logging
+from tqdm import tqdm
 
 # Load environment variables and logger
 load_dotenv()
@@ -37,21 +38,25 @@ current_script_dir = os.path.dirname(os.path.abspath(__file__))
 base_dir = os.path.dirname(current_script_dir) # navigate to the parent directory
 pdf_directory = os.path.join(base_dir, 'pdfData') # navigate to the pdfData directory
 
+# Suppress INFO logs from httpx
+logging.getLogger('httpx').setLevel(logging.WARNING)
+
 docs = loadDocuments.load_pdfs(pdf_directory)
 print(f"Total chunks loaded: {len(docs)}\n")
 
-# initialize the vector store object and create the embeddings
+# Initialize the vector store object and create the embeddings
 try:
-    #:This method (from_documents) is used to create and initialize a new vector search object that includes indexing or re-indexing a collection of documents.
-    vector_search = MongoDBAtlasVectorSearch.from_documents(
-        documents=docs,
-        embedding=OpenAIEmbeddings(disallowed_special=()),
-        collection=collection,
-        index_name=vector_search_idx,
-    )
+    with tqdm(total=len(docs), desc="Creating Embeddings") as progress_bar:
+        vector_search = MongoDBAtlasVectorSearch.from_documents(
+            documents=docs,
+            embedding=OpenAIEmbeddings(disallowed_special=()),
+            collection=collection,
+            index_name=vector_search_idx,
+        )
+        progress_bar.update(len(docs))
+    
     logger.info(f"Successfully created embeddings in {collection_name}")
-    logger.info(""" ***IMPORTANT*** You can't query your index yet. You must create a vector search index in MongoDB's UI now.
-                See Create the Atlas Vector Search Index in https://www.mongodb.com/docs/atlas/atlas-vector-search/ai-integrations/langchain/""")
+    logger.info(""" ***IMPORTANT*** You can't query your index yet. You must create a vector search index in MongoDB's UI now. See Create the Atlas Vector Search Index in https://www.mongodb.com/docs/atlas/atlas-vector-search/ai-integrations/langchain/""")
 except Exception as e:
     logger.error(f"Failed to create embeddings: {str(e)}")
 
