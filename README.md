@@ -127,4 +127,12 @@ npm start
 *   UI changes for login and signup page
 
 *   chat history functionality added
+
+## Version Update 2024/6/16
+
+*  @author sanjit verma
+
+*   New Backend System for LLM 
+
+*   MongoDB Vector Store implemented
   
