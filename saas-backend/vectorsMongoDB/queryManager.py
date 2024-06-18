@@ -1,5 +1,5 @@
 '''
-@file vectorSearchHelper.py
+@file queryManager.py
 This file contains the code to perform vector search on a MongoDB collection using the OpenAI embeddings and the MongoDB Atlas Vector Search.
 The code uses the langchain_openai, langchain_mongodb, langchain_core libraries to perform the vector search and retrieve the most relevant documents.
 

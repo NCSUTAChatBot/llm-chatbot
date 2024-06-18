@@ -14,7 +14,7 @@ import secrets
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 import io
-import vectorsMongoDB.vectorSearchHelper as vectorSearchHelper
+import vectorsMongoDB.queryManager as queryManager
 
 # a blueprint named 'chat'
 chat_bp = Blueprint('chat', __name__)
@@ -100,7 +100,7 @@ def ask():
     chat_session = user.get('savedChats', {}).get(session_key, {})
 
     # Process the question through the model
-    response_text = vectorSearchHelper.make_query(question)
+    response_text = queryManager.make_query(question)
 
     user_message = {
         "sender": "user",
