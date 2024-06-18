@@ -30,20 +30,21 @@ const ChatPage = () => {
     // This hook is used to store the information of the user currently logged in
     const [userInfo, setUserInfo] = React.useState(null);
     // This hook is used to store the chat session key
-    const [currentSessionKey, setCurrentSessionKey] = useState(''); 
+    const [currentSessionKey, setCurrentSessionKey] = useState('');
     // This hook is used to store the saved chat session keys
-    const [savedSessionKeys, setSavedSessionKeys] = useState([]); 
+    const [savedSessionKeys, setSavedSessionKeys] = useState([]);
     // This hook is used to store the session key that is being deleted
     const [deletingSessionKey, setDeletingSessionKey] = useState(null);
     // This hook is used to set  the state of the dropdown
     const [showDropdown, setShowDropdown] = useState(false);
     // This hook is used to store the animated titles state
+    const [isLastMessageNew, setIsLastMessageNew] = useState(false);
 
     // This function is called when the user clicks on the downloiad as pdf button
     const handleDownloadChat = async () => {
         if (!currentSessionKey) {
             console.error("No chat session selected to download.");
-            return; 
+            return;
         }
         try {
             const response = await fetch('http://127.0.0.1:8000/chat/export_single_chat_to_pdf', {
@@ -60,11 +61,11 @@ const ChatPage = () => {
                 const url = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = `chat_${currentSessionKey}.pdf`; 
+                a.download = `chat_${currentSessionKey}.pdf`;
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
-                window.URL.revokeObjectURL(url); 
+                window.URL.revokeObjectURL(url);
             } else {
                 throw new Error(`Failed to generate PDF. Status: ${response.status}`);
             }
@@ -76,7 +77,7 @@ const ChatPage = () => {
     // This function is called when the user clicks on a saved chat session. It fetches the chat messages for the selected session
     //and sets the chat session key to be used
     const selectChat = async (sessionKey) => {
-        setCurrentSessionKey(sessionKey); 
+        setCurrentSessionKey(sessionKey);
         try {
             const response = await fetch('http://127.0.0.1:8000/chat/get_chat_by_session', {
                 method: 'POST',
@@ -86,7 +87,8 @@ const ChatPage = () => {
 
             if (response.ok) {
                 const data = await response.json();
-                setMessages(data.messages); 
+                setMessages(data.messages);
+                setIsLastMessageNew(false);
             } else {
                 console.error('Failed to fetch messages for selected session', response.status);
             }
@@ -118,12 +120,12 @@ const ChatPage = () => {
                 const sessionResponse = await fetch('http://127.0.0.1:8000/chat/createSession', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email: userInfo.email }) 
+                    body: JSON.stringify({ email: userInfo.email })
                 });
                 if (sessionResponse.ok) {
                     const sessionData = await sessionResponse.json();
-                    setCurrentSessionKey(sessionData.sessionKey); 
-                    setMessages([]); 
+                    setCurrentSessionKey(sessionData.sessionKey);
+                    setMessages([]);
                 } else {
                     throw new Error('Failed to create a new chat session.');
                 }
@@ -179,7 +181,7 @@ const ChatPage = () => {
                 } else {
                     throw new Error('Failed to delete chat');
                 }
-            }, 300); 
+            }, 300);
         } catch (error) {
             console.error('Error deleting chat:', error);
         }
@@ -188,12 +190,12 @@ const ChatPage = () => {
     // This function is called when the user submits a question. It handles logic for creating session and managing message history
     const handleSubmit = async (event) => {
         event.preventDefault();
-        if (!question.trim() || !userInfo.email) return; 
+        if (!question.trim() || !userInfo.email) return;
         const email = userInfo.email;
         const userMessage = { text: question, sender: 'user' };
         setMessages(prevMessages => [...prevMessages, userMessage]);
-        setQuestion(''); 
-
+        setQuestion('');
+        setIsLastMessageNew(true);
         try {
             let response;
             let data;
@@ -253,12 +255,12 @@ const ChatPage = () => {
             setMessages(prevMessages => prevMessages.slice(0, -1)); // Remove the last message if there is error
         }
 
-        messageEndRef.current?.scrollIntoView({ behavior: 'smooth' }); 
+        messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
 
     useEffect(() => {
         const fetchSavedChats = async () => {
-            if (userInfo && userInfo.email) {  
+            if (userInfo && userInfo.email) {
                 try {
                     const response = await fetch(`http://127.0.0.1:8000/chat/get_saved_chats?email=${userInfo.email}`);
                     if (response.ok) {
@@ -272,17 +274,17 @@ const ChatPage = () => {
                         }
                     } else {
                         console.error(`Failed to fetch saved chats with status: ${response.status}`);
-                        setSavedSessionKeys([]); 
+                        setSavedSessionKeys([]);
                     }
                 } catch (error) {
                     console.error('Error fetching saved chats:', error);
-                    setSavedSessionKeys([]); 
+                    setSavedSessionKeys([]);
                 }
             }
         };
 
         fetchSavedChats();
-    }, [userInfo]);  
+    }, [userInfo]);
 
     // This hook is used to clear the chat history on page refresh
     useEffect(() => {
@@ -305,37 +307,75 @@ const ChatPage = () => {
         clearChatOnRefresh();
     }, []);
 
+    //cutrs off length for long chat titles
+    const truncateText = (text, maxLength) => {
+        return text.length > maxLength ? `${text.substring(0, maxLength)}` : text;
+    };
+
     // This function is used to render the message text with a typing animation
-    const renderMessageText = (text, sender) => {
-        if (typeof text === 'string' && sender === 'bot') {
-            const words = text.split(' ');
-            return words.map((word, wordIndex) => (
-                <span key={wordIndex} className="word">
-                {word.split('').map((char, charIndex) => (
-                    <span key={charIndex} className="chat-char" style={{ animationDelay: `${(wordIndex + charIndex) * 0.05}s` }}>
-                        {char}
-                    </span>
-                ))}
-                {wordIndex < words.length - 1 && '\u00A0'}
-            </span>
-        ));
+    const renderMessageText = (text, sender, isLatest) => {
+        if (typeof text === 'string' && sender === 'bot' && isLatest) {
+            const words = text.split(' '); 
+            let cumulativeIndex = 0; 
+            return (
+                <span className="sentence">
+                    {words.map((word, wordIndex) => {
+                        return (
+                            <span key={wordIndex} className="word">
+                                {Array.from(word).map((char, charIndex) => {
+                                    const style = {
+                                        animationDelay: `${cumulativeIndex * 0.025}s`,
+                                        animationName: 'typing'
+                                    };
+                                    cumulativeIndex++;
+                                    return (
+                                        <span key={charIndex} className="chat-char" style={style}>
+                                            {char}
+                                        </span>
+                                    );
+                                })}
+                                {wordIndex < words.length - 1 && <span className="space">{' '}</span>}
+                            </span>
+                        );
+                    })}
+                </span>
+            );
         } else {
             return text;
         }
     };
+
+    const displayText = (text, sender) => {
+        if (typeof text === 'string' && sender === 'bot') {
+            const words = text.split(' ');
+            return words.map((word, wordIndex) => (
+                <span key={wordIndex} className="word">
+                    {word.split('').map((char, charIndex) => (
+                        <span key={charIndex} className="chat-char-no-animation">
+                            {char}
+                        </span>
+                    ))}
+                    {wordIndex < words.length - 1 && '\u00A0'}
+                </span>
+            ));
+        } else {
+            return text;
+        }
+    };
+
     // This function is used to render the chat title with a typing animation
     const renderChatTitle = (title) => {
         return title.split('').map((char, index) => (
-            <span 
-                key={index} 
-                className="chat-title-char" 
+            <span
+                key={index}
+                className="chat-title-char"
                 style={{ '--delay': `${index * 0.05}s` }}
             >
-                {char === ' ' ? '\u00A0' : char}  
+                {char === ' ' ? '\u00A0' : char}
             </span>
         ));
     };
-    
+
 
     // This hook is used to scroll to the last message with a smooth behavior
     useEffect(() => {
@@ -433,7 +473,7 @@ const ChatPage = () => {
                         savedSessionKeys.map((session, index) => (
                             <li key={index} className={`${currentSessionKey === session.sessionKey ? 'selected' : ''} ${deletingSessionKey === session.sessionKey ? 'deleting' : ''}`}
                                 onClick={() => selectChat(session.sessionKey)}>
-                                <span>{currentSessionKey === session.sessionKey ? renderChatTitle(session.chatTitle) : session.chatTitle}</span>
+                                <span>{currentSessionKey === session.sessionKey ? renderChatTitle(truncateText(session.chatTitle, 53)) : truncateText(session.chatTitle, 53)}</span>
                                 {currentSessionKey !== session.sessionKey && (
                                     <button
                                         className="delete-button"
@@ -469,7 +509,7 @@ const ChatPage = () => {
                             <div key={index} className={`message ${msg.sender}`}>
                                 <div className="sender">{msg.sender === 'user' ? 'You' : 'SAAS Chatbot'}</div>
                                 <div className="text">
-                                    {msg.sender === 'bot' ? renderMessageText(msg.text, msg.sender) : msg.text}
+                                    {msg.sender === 'bot' && index === messages.length - 1 && isLastMessageNew ? renderMessageText(msg.text, msg.sender, true) : displayText(msg.text, msg.sender)}
                                 </div>
                             </div>
                         ))

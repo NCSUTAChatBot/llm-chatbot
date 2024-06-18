@@ -95,6 +95,22 @@
 
 
 /******************** STYLING FOR THE CHAT PAGE *********************/
+
+::-webkit-scrollbar {
+  width: 10px;  
+  height: 10px; 
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: darkgrey;
+  border-radius: 10px;
+}
+
+/* This styles the part of the track not covered by the thumb */
+::-webkit-scrollbar-track {
+  background: rgb(20, 21, 21);
+  border-radius: 10px;
+}
 /* Styling for the top bar for the Chat page */
 .top-bar {
   grid: top-bar;
@@ -140,16 +156,45 @@
   justify-content: space-between;
   height: 100vh;
   width: 240px;
+  position: relative;
   font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
 
 .sidebar ul {
-  max-height: 100vh;
+  max-height: 91vh;
   overflow-y: auto;
-  padding-right: 10px;
+  padding-right: 0px;
   margin-bottom: 0;
   padding-left: 5px;
   padding-top: 30px;
+  scrollbar-width: none;  
+  padding-right: 10px;
+}
+
+/* Hiding the scrollbar by default for WebKit browsers */
+.sidebar ul::-webkit-scrollbar {
+  width: 10px;  
+}
+/* Showing the scrollbar on hover */
+.sidebar ul:hover::-webkit-scrollbar {
+  width: 10px; 
+  background: rgb(0, 0, 0); 
+}
+/* Styling the scrollbar track */
+.sidebar ul:hover::-webkit-scrollbar-track {
+  background: rgb(0, 0, 0); /* Background color of the track */
+  border-radius: 10px; 
+  width: 0px; 
+}
+/* Styling the scrollbar thumb */
+.sidebar ul:hover::-webkit-scrollbar-thumb {
+  background: darkgrey; 
+  border-radius: 10px; 
+}
+.sidebar ul:hover {
+  scrollbar-width: thin; 
+  scrollbar-color: darkgrey rgb(0, 0, 0); 
+  
 }
 
 .sidebar ul li {
@@ -571,6 +616,11 @@ li.deleting {
   animation: typing 0.2s forwards;
 }
 
+.chat-char-no-animation {
+  display: inline-block;
+  white-space: pre-wrap;
+}
+
 /* Styling for the chat typing animation keyframes for the Chat page */
 @keyframes typing {
   from {
@@ -639,7 +689,7 @@ li.deleting {
   position: absolute;
   text-align: center;
   justify-content: center;
-  margin: 0;
+  margin-top: 16px;
   width: 100%;
   top: 80%;
   left: 50%;
