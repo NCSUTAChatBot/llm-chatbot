@@ -1,7 +1,5 @@
 # TAChatBot
 
-## TODO: some description
-
 ## For Collaborators
 
 *   Feel free to create your version of this repo by creating a new branch with your name and what you plan to do, e.g. haoze/multi-files
@@ -29,11 +27,12 @@ pip install -r requirements.txt
 
 3. Add the following .env File under the saas-backend folder (replace username and password with your unity ID, I have set this up please me skverma@ncsu.edu if there is an connection error)
 ```
-MONGODB_URI="mongodb+srv://USERNAME:PASSWORD@chatbot.3zncvhn.mongodb.net/?retryWrites=true&w=majority&appName=chatbot"
+MONGODB_URI="mongodb+srv://skverma:skverma@chatbot.3zncvhn.mongodb.net/?retryWrites=true&w=majority&appName=chatbot"
 MONGODB_DATABASE=chatbot
 MONGODB_VECTORS= MONGODB_VECTORS
 MONGODB_VECTOR_INDEX= MONGODB_VECTOR_INDEX
 MONGODB_USERS= MONGODB_USERS
+OPENAI_API_KEY= <YOU API KEY HERE>
 
 ```
 
@@ -118,3 +117,20 @@ npm start
 *  @author dinesh kannan
 
 *  Created Login and Signup pages and connected it to the database
+
+## Version Update 2024/6/08
+
+*  @author sanjit verma
+
+*   UI changes for login and signup page
+
+*   chat history functionality added
+
+## Version Update 2024/6/16
+
+*  @author sanjit verma
+
+*   New Backend System for LLM 
+
+*   MongoDB Vector Store implemented
+  

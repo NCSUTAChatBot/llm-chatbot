@@ -7,10 +7,9 @@ The backend logic includes functions for loading text data, creating a vector da
 @commented by: Sanjit Verma 
 '''
 
-from flask import Flask, render_template, request, jsonify
+from flask import Flask
 from flask_session import Session
 from flask_cors import CORS
-from llmbackend import make_query
 from flask_jwt_extended import JWTManager
 from flask_mail import Mail
 from controller.chatRoutes import chat_bp

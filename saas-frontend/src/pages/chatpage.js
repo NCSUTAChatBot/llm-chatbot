@@ -1,7 +1,7 @@
 /**
  * @file ChatPage.js is a file that contains the chat page components
  * 
- * @author sanjitkverma (skverma)
+ * @author Sanjit Verma (skverma)
  */
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -356,7 +356,7 @@ const ChatPage = () => {
     return (
         <div className='chat-page'>
             <div className="top-barchat">
-                <h1 className="title">{NAVBAR_HEADER}</h1>
+                <h1 className="title-chatpage">{NAVBAR_HEADER}</h1>
                 <div className="buttons">
                     {showHelpPopup && (
                         <div className="overlay" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0, 0, 0, .8)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>

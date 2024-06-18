@@ -1,7 +1,7 @@
 '''
 This module contains the UserService class, which is responsible for handling business logic related to user operations.
 
-@author by Sanjit Verma
+@author Sanjit Verma (skverma)
 '''
 from repository.user_repository import UserRepository
 from model.user_model import User

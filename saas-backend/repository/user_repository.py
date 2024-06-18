@@ -2,7 +2,7 @@
 This module contains the UserRepository class, which is responsible for handling user data in the database.
 
 @author:
-- Sanjit Verma 
+- Sanjit Verma (skverma)
 - Dinesh Kannan (added [password_reset_token_generator, reset_password])
 '''
 from flask import Flask, jsonify

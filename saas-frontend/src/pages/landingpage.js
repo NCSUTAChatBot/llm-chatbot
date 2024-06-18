@@ -1,6 +1,7 @@
 /**
  * @file landingpage.js is a file that contains the landing page components 
- * @author sanjitkverma (skverma)
+ * 
+ * @author Sanjit Verma (skverma)
  */
 
 import { useNavigate } from 'react-router-dom';
@@ -32,23 +33,22 @@ function LandingPage() {
 
     return (
         <div className="landingPageContainer" style={{ backgroundImage: `url(${BACKGROUND_IMAGE_URL})`}}>
-            <div className="top-bar">
+            <div className="top-bar-landing">
                 <h1 className="title">{NAVBAR_HEADER} </h1>
                 <div className="buttons">
-                    <button className="feedback-button" onClick={handleFeedback}>Leave Feedback</button>
+                    <button className="feedback-button-landing" onClick={handleFeedback}>Leave Feedback</button>
                     <button type="submit" className="login-button-landing" onClick={handleLoginClick}>
                     Login
                 </button>
+                <button type="submit" className="chatButton" onClick={handleSignupClick}>
+                    Sign Up
+                </button> 
                 </div>
             </div>
             <div className="modalContainer">
-            <img src={`${process.env.PUBLIC_URL + LOGO_MODAL}`} alt="NC STATE UNIVERSITY" style={{ width: '300px', height: '500px', margin: '20px' }} />
+            <img src={`${process.env.PUBLIC_URL + LOGO_MODAL}`} alt="NC STATE UNIVERSITY" style={{ width: '300px', height: '500px', margin: '30px' }} />
                 <p className="modalBodyText">{MODALBODYTEXT}</p>
-                <div className="modalButtonContainer">           
-                <button type="submit" className="chatButton" onClick={handleSignupClick}>
-                    Sign Up
-                </button>  
-                
+                <div className="modalButtonContainer">    
                 </div>
             </div>
             <p className="footerTextLeft">
