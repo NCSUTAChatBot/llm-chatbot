@@ -1,6 +1,11 @@
 '''
 This file is responsible for generating the vector database from the text chunks. 
 
+Needs to be ran once to load the DB with embeddings and text chunks.
+
+***IMPORTANT*** You can't query your index yet. You must create a vector search index in MongoDB's UI now. 
+See Create the Atlas Vector Search Index in https://www.mongodb.com/docs/atlas/atlas-vector-search/ai-integrations/langchain/"""
+
 @Author: Sanjit Verma
 '''
 import os
@@ -28,6 +33,9 @@ if not all([OPENAI_KEY, MONGODB_URI, db_name, collection_name, vector_search_idx
     logger.error("One or more environment variables are missing.")
     exit(1) 
 
+if db_name is None or collection_name is None:
+    raise ValueError("Database name or collection name is not set.")
+
 # Connect to db
 client = MongoClient(MONGODB_URI)
 db = client[db_name]
@@ -38,7 +46,7 @@ current_script_dir = os.path.dirname(os.path.abspath(__file__))
 base_dir = os.path.dirname(current_script_dir) # navigate to the parent directory
 pdf_directory = os.path.join(base_dir, 'pdfData') # navigate to the pdfData directory
 
-# Suppress INFO logs from httpx, suppress not critical pdf reader formatting warnings
+# s[uppress INFO logs from httpx, suppress not critical pdf reader formatting warnings
 logging.getLogger('httpx').setLevel(logging.WARNING)
 logging.getLogger('pypdf._reader').setLevel(logging.ERROR)
 

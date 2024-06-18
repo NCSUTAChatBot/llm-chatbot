@@ -2,11 +2,10 @@
 @file chatRoutes.py
 This file contains the routes for the chat API.
 
-@author Sanjit Verma
+@author Sanjit Verma (skverma)
 '''
 
 from flask import Blueprint, request, jsonify, send_file
-from llmbackend import make_query
 from datetime import datetime
 from pymongo import MongoClient, ReturnDocument
 from dotenv import load_dotenv
@@ -15,6 +14,7 @@ import secrets
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 import io
+import vectorsMongoDB.vectorSearchHelper as vectorSearchHelper
 
 # a blueprint named 'chat'
 chat_bp = Blueprint('chat', __name__)
@@ -27,54 +27,15 @@ MONGODB_URI = os.getenv('MONGODB_URI')
 MONGODB_USERS = os.getenv('MONGODB_USERS')
 MONGODB_DB = os.getenv('MONGODB_DATABASE')
 
+if MONGODB_URI is None or MONGODB_USERS is None or MONGODB_DB is None:
+    raise ValueError("MongoDB URI, database name, or collection name is not set.")
+
 # Connect to MongoDB
 client = MongoClient(MONGODB_URI)
 db = client[MONGODB_DB]
 user_collection = db[MONGODB_USERS]
 
 chatReset = False
-
-def make_query_wrapper(chat_history, input_text: str | None) -> str:
-    """
-    Wrapper function to handle the processing of user queries using the language model.
-    This function takes the chat history and the new question as input, and returns the response from the language model.
-    """
-    if input_text is None:
-        raise ValueError("No input provided")
-    # Ensure chat_history is in the expected format (list of tuples)
-    if isinstance(chat_history, list) and all(isinstance(item, dict) for item in chat_history):
-        # Convert list of message dictionaries to a list of tuples 
-        formatted_history = []
-        it = iter(chat_history)
-        try:
-            while True:
-                user_msg = next(it)  # User message
-                bot_msg = next(it)  # Bot response
-                formatted_history.append((user_msg['text'], bot_msg['text']))
-        except StopIteration:
-            # End of iteration occur if there's an unmatched user message without a bot response
-            pass
-
-    elif isinstance(chat_history, list):
-        # If chat_history is already in the correct format (tuples), use it directly
-        formatted_history = chat_history
-    else:
-        raise TypeError("Unsupported chat history format: Expected a list of message dictionaries or tuples.")
-
-    try:
-        # Pass the properly formatted chat history and the new question to the make_query function
-        response = make_query(formatted_history, input_text)
-        # Process the response
-        if isinstance(response, dict):
-            # Check if the response is a dictionary and contains the 'answer' key
-            return response.get('answer', "No answer found in response")
-        elif isinstance(response, str):
-            return response
-        else:
-            raise RuntimeError("Unexpected response format from the language model.")
-    except Exception as e:
-        raise RuntimeError(f"An error occurred while processing the query: {e}")
-
 
 @chat_bp.route('/createSession', methods=['POST'])
 def new_chat():
@@ -113,12 +74,6 @@ def new_chat():
 
 @chat_bp.route('/ask', methods=['POST'])
 def ask():
-    """
-    This method processes a user's question and generates a response using the language model.
-    It also updates the chat history with the user's question and the bot's response.
-    Handless the creation of a new chat session if no session key is provided.
-
-    """
     input_data = request.json
     if not input_data or 'email' not in input_data or 'question' not in input_data:
         return jsonify({"error": "Required data is missing"}), 400
@@ -127,12 +82,11 @@ def ask():
     session_key = input_data.get('sessionKey')
     question = input_data['question']
 
-     # Find the user in the collection
+    # Find the user or create a new entry in the collection
     user = user_collection.find_one({"email": email})
     if not user:
         return jsonify({"error": "User not found"}), 404
 
-    # If no session key is provided, create a new session and set the chat title to the question
     if not session_key:
         session_key = secrets.token_urlsafe(16)
         user_collection.update_one(
@@ -143,14 +97,11 @@ def ask():
             }}}
         )
   
-    # Retrieve the chat session
     chat_session = user.get('savedChats', {}).get(session_key, {})
-    chat_history = chat_session.get('messages', [])
 
-    # Processing the question through the model
-    response_text = make_query_wrapper(chat_history, question)
+    # Process the question through the model
+    response_text = vectorSearchHelper.make_query(question)
 
-    # Create message objects for user and bot
     user_message = {
         "sender": "user",
         "text": question,
@@ -162,18 +113,18 @@ def ask():
         "timestamp": datetime.now().isoformat()
     }
 
-    # Append new messages to the chat history
+    # Update the chat history in MongoDB
     user_collection.update_one(
         {"email": email},
         {"$push": {f"savedChats.{session_key}.messages": {"$each": [user_message, bot_response]}}}
     )
 
-    # fail safe to update the chat title if it is not set or if it's the first message
     if not chat_session.get("chatTitle"):
         user_collection.update_one(
             {"email": email},
             {"$set": {f"savedChats.{session_key}.chatTitle": question}}
         )
+
     return jsonify({"userMessage": user_message, "botMessage": bot_response, "sessionKey": session_key})
 
 

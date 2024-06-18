@@ -1,7 +1,5 @@
 # TAChatBot
 
-## TODO: some description
-
 ## For Collaborators
 
 *   Feel free to create your version of this repo by creating a new branch with your name and what you plan to do, e.g. haoze/multi-files

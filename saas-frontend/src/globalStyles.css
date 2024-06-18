@@ -27,8 +27,8 @@
   border-radius: 30px;
   align-items: center;
   border: #7a7a7a 1px solid;
-  width: 400px;
-  height: 370px;
+  width: 450px;
+  height: 400px;
   max-width: 80%;
   box-sizing: border-box;
   z-index: 2;
@@ -46,7 +46,8 @@
 /* Styling for the welcome container text for the Landing page */
 .modalBodyText {
   color: #ffffff;
-  padding-bottom: 45px;
+  padding-top: 20px;
+  padding-bottom: 80px;
   text-align: center;
   font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
   font-size: 16px;
@@ -55,7 +56,7 @@
 /* Styling for the welcome container chat button for the Landing page */
 .chatButton {
   width: 110px;
-  padding: 10px;
+  padding: 7px;
   color: rgb(255, 255, 255);
   background-color: rgb(179, 33, 33);
   border-radius: 10px;
@@ -64,9 +65,8 @@
   display: block;
   margin-left: auto;
   margin-right: auto;
-  margin-bottom: 10px;
   font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-  font-size: 13px;
+  font-size: 14px;
 }
 
 /* Styling for the left footer for the Landing page */
@@ -97,6 +97,17 @@
 /******************** STYLING FOR THE CHAT PAGE *********************/
 /* Styling for the top bar for the Chat page */
 .top-bar {
+  grid: top-bar;
+  border-radius: 3px;
+  background-color: rgba(5, 5, 7, 0.8);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+}
+
+.top-bar-landing {
   grid: top-bar;
   border-radius: 3px;
   background-color: rgba(5, 5, 7, 0.8);
@@ -200,6 +211,11 @@
 /* Styling for the title for the Chat page (SAAS Chatbot @2024 NCSU CSC Dept)*/
 .title {
   margin-top: .75px;
+  font-size: 14px;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+.title-chatpage {
+  margin-top: .75px;
   font-size: 18px;
   font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
@@ -254,7 +270,7 @@
 /* Styling for the exit button for the Chat page */
 .user-dropdown {
   position: absolute;
-  background-color: rgb(160, 27, 27);
+  background-color: rgb(49, 46, 46);
   min-width: 120px;
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
   z-index: 10;
@@ -296,25 +312,41 @@
   color: white;
   border: none;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 14px;
   padding: 0;
   font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
   display: flex;
   align-content: 'center';
   justify-content: 'center';
   margin-right: 20px;
+  margin-top: 0 px;
+}
+.feedback-button-landing {
+  background: none;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  display: flex;
+  align-content: 'center';
+  justify-content: 'center';
+  margin-right: 20px;
+  margin-top: 6px;
 }
 .login-button-landing {
   background: none;
   color: white;
   border: none;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 14px;
   padding: 0;
   font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
   display: flex;
   align-content: 'center';
   justify-content: 'center';
+  margin-top: 6px;
   margin-right: 20px;
 }
 
@@ -573,7 +605,7 @@ li.deleting {
 
 /******************** STYLING FOR THE LOGIN PAGE *********************/
 .loginButton {
-  width: 110px;
+  width: 70%;
   padding: 10px;
   color: rgb(255, 255, 255);
   border-radius: 10px;
@@ -582,15 +614,15 @@ li.deleting {
   display: block;
   margin-left: auto;
   margin-right: auto;
-  margin-top: 20px;
+  margin-top: 40px;
   background-color: rgb(179, 33, 33);
-  border-radius: 10px;
+  border-radius: 15px;
   border: none;
   cursor: pointer;
   display: block;
   font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
   font-size: 13px;
-  margin-bottom: 40px;
+  margin-bottom: 20px;
 
 }
 
@@ -739,7 +771,7 @@ li.deleting {
 
 /******************** STYLING FOR THE SIGNUP PAGE *********************/
 .signupButton {
-  width: 110px;
+  width: 70%;
   padding: 10px;
   color: rgb(255, 255, 255);
   border-radius: 10px;
@@ -749,7 +781,7 @@ li.deleting {
   margin-left: auto;
   margin-right: auto;
   background-color: rgb(179, 33, 33);
-  border-radius: 10px;
+  border-radius: 20px;
   border: none;
   cursor: pointer;
   display: block;
