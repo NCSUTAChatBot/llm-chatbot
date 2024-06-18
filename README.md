@@ -8,6 +8,8 @@
 
 *   One more thing, you may need an openai gpt api key to get the response from them. If you only work on UI and front end, you might not need this.
 
+*   Need help setting up: contact me at skverma@ncsu.edu
+
 ## Steps to Run Application
 
 1.  Start the Backend Server: Navigate to the backend directory and run the command to launch the backend server.
@@ -15,6 +17,7 @@
 2.  Launch the Frontend: Open a new terminal window, go to the saas-frontend directory, and start the frontend application.
 
 3.  Access the Application: Once both servers are running, open your web browser and visit <http://localhost:3000> to access the application.
+
 
 ### Running the Backend
 1.  Navigate to the folder saas-backend
@@ -25,7 +28,7 @@ pip install -r requirements.txt
 ```
 (Optional) The `requirments.txt` might be out of date. Install the package prompted from the terminal.
 
-3. Add the following .env File under the saas-backend folder (replace username and password with your unity ID, I have set this up please me skverma@ncsu.edu if there is an connection error)
+3. Add the following .env File under the saas-backend folder (replace username and password with your unity ID, I have set this up please contact me if there is an connection error)
 ```
 MONGODB_URI="mongodb+srv://skverma:skverma@chatbot.3zncvhn.mongodb.net/?retryWrites=true&w=majority&appName=chatbot"
 MONGODB_DATABASE=chatbot
@@ -132,5 +135,13 @@ npm start
 
 *   New Backend System for LLM 
 
-*   MongoDB Vector Store implemented
+*   MongoDB Vector Store generate and load implemented
+  
+## Version Update 2024/6/18
+
+*  @author sanjit verma
+
+*   Implemented backend/query system into API and integrated with exsisting frontend
+
+*   UI improvements
   
