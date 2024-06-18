@@ -167,6 +167,22 @@
   background: rgb(0, 0, 0); 
 }
 
+::-webkit-scrollbar {
+  width: 10px;  
+  height: 10px; 
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: darkgrey;
+  border-radius: 10px;
+}
+
+
+::-webkit-scrollbar-track {
+  background: rgb(20, 20, 21);
+  border-radius: 10px;
+}
+
 /* Styling the scrollbar track */
 .sidebar ul:hover::-webkit-scrollbar-track {
   background: rgb(0, 0, 0); /* Background color of the track */
