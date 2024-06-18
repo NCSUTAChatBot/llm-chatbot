@@ -95,6 +95,7 @@
 
 
 /******************** STYLING FOR THE CHAT PAGE *********************/
+
 /* Styling for the top bar for the Chat page */
 .top-bar {
   grid: top-bar;
@@ -104,7 +105,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 20px;
+  padding: 19px 20px;
 }
 
 .top-bar-landing {
@@ -115,7 +116,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 20px;
+  padding: 17px 20px;
 }
 
 .top-barchat {
@@ -140,16 +141,63 @@
   justify-content: space-between;
   height: 100vh;
   width: 240px;
+  position: relative;
   font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
 
 .sidebar ul {
-  max-height: 100vh;
+  max-height: 91vh;
   overflow-y: auto;
-  padding-right: 10px;
+  padding-right: 0px;
   margin-bottom: 0;
   padding-left: 5px;
   padding-top: 30px;
+  scrollbar-width: none;  
+  padding-right: 10px;
+}
+
+/* Hiding the scrollbar by default for WebKit browsers */
+.sidebar ul::-webkit-scrollbar {
+  width: 0px;  
+  background: transparent
+}
+/* Showing the scrollbar on hover */
+.sidebar ul:hover::-webkit-scrollbar {
+  width: 10px; 
+  background: rgb(0, 0, 0); 
+}
+
+::-webkit-scrollbar {
+  width: 10px;  
+  height: 10px; 
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: darkgrey;
+  border-radius: 10px;
+}
+
+
+::-webkit-scrollbar-track {
+  background: rgb(20, 20, 21);
+  border-radius: 10px;
+}
+
+/* Styling the scrollbar track */
+.sidebar ul:hover::-webkit-scrollbar-track {
+  background: rgb(0, 0, 0); /* Background color of the track */
+  border-radius: 10px; 
+  width: 0px; 
+}
+/* Styling the scrollbar thumb */
+.sidebar ul:hover::-webkit-scrollbar-thumb {
+  background: darkgrey; 
+  border-radius: 10px; 
+}
+.sidebar ul:hover {
+  scrollbar-width: thin; 
+  scrollbar-color: darkgrey rgb(0, 0, 0); 
+  
 }
 
 .sidebar ul li {
@@ -210,7 +258,7 @@
 
 /* Styling for the title for the Chat page (SAAS Chatbot @2024 NCSU CSC Dept)*/
 .title {
-  margin-top: .75px;
+  margin-top: 1px;
   font-size: 14px;
   font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
@@ -571,6 +619,11 @@ li.deleting {
   animation: typing 0.2s forwards;
 }
 
+.chat-char-no-animation {
+  display: inline-block;
+  white-space: pre-wrap;
+}
+
 /* Styling for the chat typing animation keyframes for the Chat page */
 @keyframes typing {
   from {
@@ -639,7 +692,7 @@ li.deleting {
   position: absolute;
   text-align: center;
   justify-content: center;
-  margin: 0;
+  margin-top: 16px;
   width: 100%;
   top: 80%;
   left: 50%;
@@ -668,7 +721,7 @@ li.deleting {
   border-radius: 30px;
   align-items: center;
   border: #7a7a7a 1px solid;
-  width: 400px;
+  width: 450px;
   height: 400px;
   max-width: 80%;
   box-sizing: border-box;
@@ -809,7 +862,7 @@ li.deleting {
   border-radius: 30px;
   align-items: center;
   border: #7a7a7a 1px solid;
-  width: 400px;
+  width: 450px;
   height: 570px;
   max-width: 100%;
   box-sizing: border-box;
