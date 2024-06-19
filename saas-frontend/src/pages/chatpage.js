@@ -288,44 +288,47 @@ const ChatPage = () => {
     //use this to scroll vertically on suggested row
     useEffect(() => {
         const container = suggestedContainerRef.current;
+    
         const handleWheel = (event) => {
             if (container) {
                 event.preventDefault();
                 container.scrollLeft += event.deltaY;
             }
         };
-
+    
         if (container) {
             container.addEventListener('wheel', handleWheel);
         }
-
+    
         return () => {
             if (container) {
                 container.removeEventListener('wheel', handleWheel);
             }
         };
-    }, []);
+    }, [suggestedContainerRef]);
 
     // This hook is used to clear the chat history on page refresh
     useEffect(() => {
-        const clearChatOnRefresh = async () => {
-            try {
-                const response = await fetch('http://127.0.0.1:8000/chat/clear_chat', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' }
-                });
-                if (response.ok) {
-                    setMessages([]);
-                    setCurrentSessionKey('');
-                } else {
-                    throw new Error('Failed to clear chat history on the backend.');
-                }
-            } catch (error) {
-                console.error('Error clearing chat history:', error);
+        const container = suggestedContainerRef.current;
+    
+        const handleWheel = (event) => {
+            if (container) {
+                event.preventDefault();
+                container.scrollLeft += event.deltaY;
             }
         };
-        clearChatOnRefresh();
-    }, []);
+    
+        if (container) {
+            container.addEventListener('wheel', handleWheel);
+        } else {
+        }
+    
+        return () => {
+            if (container) {
+                container.removeEventListener('wheel', handleWheel);
+            }
+        };
+    }, [suggestedContainerRef.current]);
 
     //cutrs off length for long chat titles
     const truncateText = (text, maxLength) => {
