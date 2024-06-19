@@ -97,7 +97,7 @@ function LoginPage(){
                 </div>
             </div>
             <div className="loginModalContainer">
-            <h3 className="loginModalHeader">Welcome Back</h3>
+            <div className="loginModalHeader">Welcome Back</div>
             <form onSubmit={handleLogin}>
                 <div className="email-container">
                     <input

@@ -3,6 +3,17 @@
   Description: This file contains the global styles for the application.
   Author: sanjitkverma (skverma)
 */
+@font-face {
+  font-family: 'Arimo';
+  src: url('./fonts/Arimo-Variable.ttf') format('truetype');
+  font-display: swap;
+}
+
+@font-face {
+	font-family: 'Mona';
+	src: url('./fonts/Mona-Sans.woff2');
+	font-display: swap;
+}
 
 /******************** STYLING FOR THE LANDING PAGE *********************/
 /* Styling for the Background for the Landing page */
@@ -49,7 +60,7 @@
   padding-top: 20px;
   padding-bottom: 80px;
   text-align: center;
-  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  font-family: 'Mona';
   font-size: 16px;
 }
 
@@ -65,7 +76,7 @@
   display: block;
   margin-left: auto;
   margin-right: auto;
-  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  font-family: 'Mona';
   font-size: 14px;
 }
 
@@ -106,6 +117,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 19px 20px;
+  
 }
 
 .top-bar-landing {
@@ -116,6 +128,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  font-family: 'Mona';
+  font-weight: 100;
   padding: 17px 20px;
 }
 
@@ -130,19 +144,26 @@
   padding: 10px 20px;
 }
 
-
 .sidebar {
   grid-area: history;
   overflow-y: auto;
   background-color: rgb(12, 12, 12);
   display: flex;
-  border-radius: 10px;
+  border-radius: 18px;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
   height: 100vh;
   width: 240px;
   position: relative;
-  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  font-family: 'Mona';
+  font-size: 15px;
+}
+
+.sidebar-newchat {
+  display: flex;
+  justify-content: space-between; 
+  align-items: center;
+  padding: 7px;
 }
 
 .sidebar ul {
@@ -151,7 +172,6 @@
   padding-right: 0px;
   margin-bottom: 0;
   padding-left: 5px;
-  padding-top: 30px;
   scrollbar-width: none;  
   padding-right: 10px;
 }
@@ -260,24 +280,22 @@
 .title {
   margin-top: 1px;
   font-size: 14px;
-  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  font-family: 'Mona';
 }
 .title-chatpage {
   margin-top: .75px;
-  font-size: 18px;
-  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  font-size: 15px;
+  font-family: 'Mona';
+  font-weight: 600;
 }
 
 /* General Styling for the buttons for the Chat page */
 .buttons {
   display: flex;
-  gap: 10px;
   cursor: pointer;
   border: none;
   border-radius: 4px;
   transition: background-color 0.3s;
-
-
 }
 
 /* Styling for the entire chat container page for the Chat page */
@@ -301,8 +319,8 @@
   cursor: pointer;
   font-size: 16px;
   padding: 0;
-  margin-left: 20px;
-  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  margin-left: 10px;
+  font-family: 'Mona';
 }
 
 .userInfo {
@@ -311,8 +329,7 @@
   align-items: center;
   font-size: 16px;
   margin-left: 10px;
-  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-
+  font-family: 'Mona';
 }
 
 /* Styling for the exit button for the Chat page */
@@ -326,7 +343,7 @@
   margin-top: 12px;
   font-size: 16px;
   top: 100%;
-  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  font-family: 'Mona';
   transition: opacity 0.5s, visibility 0.1000s;
 }
 
@@ -339,7 +356,7 @@
   background: none;
   width: 100%;
   text-align: center;
-  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  font-family: 'Mona';
 }
 
 /* Styling for the help button for the Chat page */
@@ -348,10 +365,9 @@
   color: white;
   border: none;
   cursor: pointer;
-  font-size: 16px;
   padding: 0;
-  margin-left: 20px;
-  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  margin-left: none;
+  font-family: 'Mona';
 }
 
 /* Styling for the feedback button for the Chat page */
@@ -362,12 +378,12 @@
   cursor: pointer;
   font-size: 14px;
   padding: 0;
-  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  font-family: 'Mona';
   display: flex;
   align-content: 'center';
   justify-content: 'center';
   margin-right: 20px;
-  margin-top: 0 px;
+  margin-top: 0px;
 }
 .feedback-button-landing {
   background: none;
@@ -376,7 +392,7 @@
   cursor: pointer;
   font-size: 14px;
   padding: 0;
-  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  font-family: 'Mona';
   display: flex;
   align-content: 'center';
   justify-content: 'center';
@@ -390,7 +406,7 @@
   cursor: pointer;
   font-size: 14px;
   padding: 0;
-  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  font-family: 'Mona';
   display: flex;
   align-content: 'center';
   justify-content: 'center';
@@ -400,33 +416,52 @@
 
 /* Styling for the start chat button for the Chat page */
 .start-chat {
+  background-color: transparent;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 10px 10px; 
+  border-radius: 10px; 
+  display: flex;
+  align-items: center;
+  margin-right: 10px; 
+}
+.start-chat svg {
+  margin-left: 80px; 
+}
+
+.start-chat:hover {
+  background-color: #212326;
+}
+
+.refresh-button{
   background: none;
   color: white;
   border: none;
   cursor: pointer;
   font-size: 16px;
-  padding: 0;
-  margin-left: 20px;
-  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  padding: 0px;
+  display: flex;
+  align-items: center;
 }
-
 /* Styling for the chatting container for the Chat page */
 .chat-container {
   grid-area: main;
-  padding: 10px;
+  padding: 1px;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  height: calc(100vh - 210px);
+  height: calc(100vh - 160px);
   overflow-y: auto;
 }
 
 /* Styling for the chat input row containing the input field and submit prompt button*/
 .input-row {
-  padding: 10px 0;
+  padding: 0px 0;
   display: flex;
   gap: 10px;
-  margin-top: 5px;
+  margin-top: 15px;
 }
 
 .warning-message {
@@ -434,7 +469,8 @@
   font-size: 12px;
   display: flex;
   justify-content: center;
-  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  font-family: 'Mona';
+  margin-top: 1px;
 }
 
 /* Styling for the chat submit button for the Chat page */
@@ -451,19 +487,91 @@
 /* Styling for the chat welcome text for the Chat page (Ask the SAAS Chatbot)*/
 .chat-welcome {
   color: white;
-  text-align: center;
-  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-  font-size: 40px;
-  margin-top: 120px;
+  text-align: flex-start;
+  font-family: 'Mona';
+  font-size: 30px;
+  margin-top: 175px;
+  margin-left: 0px;
+  font-weight: 600; 
+  margin-bottom: 0px; 
+  padding-bottom: 6px; 
+  line-height: 1
+  
+}
+
+.chatModal{
+  background-color: none;
+  border: none;
+  width: 100vh;
+  height: 100vh;
+  max-width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  font-weight: 300;
+  margin-top: 40px;
+  position: relative;
+  margin-left: auto; 
+  margin-right: auto; 
+  
+}
+
+.suggested-section {
+  text-align: left;
+}
+
+.suggested-title {
+  font-size: 14px;
+  font-weight: 400;
+  color: #a0a0a0;
+  margin-bottom: 10px;
+}
+
+.suggested-container {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-start;
+  overflow-x: auto; 
+  padding-bottom: 10px;
+}
+
+.suggested-container::-webkit-scrollbar {
+  display: none; 
+}
+
+.suggested-box {
+  background-color: #262626;
+  padding: 20px;
+  border-radius: 20px;
+  color: #fff;
+  min-width: 220px;
+  height: 100px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.suggested-box:hover {
+  background-color: #333333;
+}
+.suggested-box-small{
+  color: rgb(156, 150, 150);
+}
+.suggested-box p {
+  font-size: 16px;
+  margin: 0;
+  font-weight: 600;
+  margin-bottom: 0px;
 }
 
 /* Styling for the chat welcome subtext for the Chat page*/
 .chat-welcome-text {
-  color: white;
-  text-align: center;
-  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-  font-size: 20px;
-  margin-top: 20px;
+  color: rgb(156, 150, 150);
+  text-align: flex-start;
+  font-family: 'Mona';
+  font-size: 30px;
+  margin-top: 0px;
+  font-weight: 500;
 }
 
 
@@ -476,11 +584,11 @@
   border-radius: 20px;
   padding-left: 20px;
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
-  background-color: rgb(5, 5, 5);
+  background-color: #262626;
   color: #ffffff;
-  font-size: 14px;
+  font-size: 16px;
   height: 49px;
-  font-family: 'Courier New', Courier, monospace;
+  font-family: "Arimo";
   outline: none;
   border: none;
   border-radius: 20px;
@@ -542,6 +650,18 @@
   color: white;
   border-radius: 10px;
 }
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent backdrop */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; 
+}
 
 /* Styling for the Assistance popup box for the Chat page */
 .name-chat-popup {
@@ -552,7 +672,7 @@
   width: 350px;
   max-width: 400px;
   margin-bottom: 350px;
-  z-index: 10000;
+  z-index: 1001;
 }
 
 /* Styling for the popup cancel button for the Chat page */
@@ -594,12 +714,12 @@ li.deleting {
 /* Styling for the popup title for the Chat page (Need Assistance?)*/
 .popup-title {
   font-size: 24px;
-  font-family: 'Courier New', Courier, monospace;
+  font-family: 'Mona';
 }
 
 /* Styling for the popup body for the Chat page */
 .popup-body {
-  font-family: 'Courier New', Courier, monospace;
+  font-family: 'Mona';
   margin-bottom: 10px;
   margin-bottom: 10px;
   white-space: pre-wrap;
@@ -673,7 +793,7 @@ li.deleting {
   border: none;
   cursor: pointer;
   display: block;
-  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  font-family: 'Mona';
   font-size: 13px;
   margin-bottom: 20px;
 
@@ -739,11 +859,12 @@ li.deleting {
 
 .loginModalHeader {
   padding-top: 0px;
-  padding-bottom: 1px;
+  padding-bottom: 40px;
+  box-shadow: none;
   color: rgba(255, 255, 255, 0.7);
-  background-color: #212326;
+  background-color: none;
   font-size: 28px;
-  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  font-family: 'Mona';
   text-align: center;
 }
 
@@ -812,6 +933,7 @@ li.deleting {
   border: none;
   color: #0066cc;
   cursor: pointer;
+  font-family: 'Mona';
   padding: 5px 10px;
   text-decoration: underline;
 }
@@ -838,7 +960,7 @@ li.deleting {
   border: none;
   cursor: pointer;
   display: block;
-  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  font-family: 'Mona';
   font-size: 13px;
   margin-top: 60px;
 }
@@ -882,10 +1004,12 @@ li.deleting {
 
 .signupModalHeader {
   padding-top: 0px;
-  padding-bottom: 1px;
+  padding-bottom: 40px;
+  box-shadow: none;
   color: rgba(255, 255, 255, 0.7);
+  background-color: none;
   font-size: 28px;
-  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  font-family: 'Mona';
   text-align: center;
 }
 
@@ -925,7 +1049,7 @@ li.deleting {
   padding-bottom: 1px;
   color: rgba(255, 255, 255, 0.7);
   font-size: 15px;
-  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  font-family: 'Mona';
   text-align: center;
 }
 
@@ -946,7 +1070,7 @@ li.deleting {
   border: none;
   cursor: pointer;
   display: block;
-  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  font-family: 'Mona';
   font-size: 13px;
 }
 

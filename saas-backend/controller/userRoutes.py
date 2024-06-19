@@ -64,7 +64,7 @@ def login_user():
         if valid:
             session['user_email']= email
             access_token = create_access_token(identity=email)
-            user_info={'name': user['first_name'], 'email': user['email']}
+            user_info={'name': user['first_name'], 'last_name': user['last_name'], 'email': user['email']}
             return jsonify({"access_token":access_token, "message":message, "user_info": user_info} ), 200
         else:
             return jsonify({'error': message}), 401

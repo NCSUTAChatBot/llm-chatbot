@@ -95,7 +95,7 @@ function SignupPage() {
                 </div>
             </div>
             <div className="signupModalContainer">
-                <h3 className="signupModalHeader">Create an account</h3>
+                <div className="signupModalHeader">Create an account</div>
                 <form onSubmit={handleSignup}>
                     <div className="signupInput">
                         
