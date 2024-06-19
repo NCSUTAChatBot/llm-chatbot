@@ -6,7 +6,8 @@ import LoginPage from './pages/loginpage.js';
 import SignupPage from './pages/signuppage.js';
 import ForgotPassword from './pages/forgotpassword.js';
 import ResetPassword from './pages/resetpassword.js';
-
+import './fonts/Arimo-Variable.ttf';
+import './fonts/Mona-Sans.woff2';
 function App() {
   return (
     <Routes>

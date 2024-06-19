@@ -39,6 +39,7 @@ const ChatPage = () => {
     const [showDropdown, setShowDropdown] = useState(false);
     // This hook is used to store the animated titles state
     const [isLastMessageNew, setIsLastMessageNew] = useState(false);
+    const suggestedContainerRef = useRef(null);
 
     // This function is called when the user clicks on the downloiad as pdf button
     const handleDownloadChat = async () => {
@@ -286,6 +287,27 @@ const ChatPage = () => {
         fetchSavedChats();
     }, [userInfo]);
 
+    //use this to scroll vertically on suggested row
+    useEffect(() => {
+        const container = suggestedContainerRef.current;
+        const handleWheel = (event) => {
+            if (container) {
+                event.preventDefault();
+                container.scrollLeft += event.deltaY;
+            }
+        };
+
+        if (container) {
+            container.addEventListener('wheel', handleWheel);
+        }
+
+        return () => {
+            if (container) {
+                container.removeEventListener('wheel', handleWheel);
+            }
+        };
+    }, []);
+
     // This hook is used to clear the chat history on page refresh
     useEffect(() => {
         const clearChatOnRefresh = async () => {
@@ -315,8 +337,8 @@ const ChatPage = () => {
     // This function is used to render the message text with a typing animation
     const renderMessageText = (text, sender, isLatest) => {
         if (typeof text === 'string' && sender === 'bot' && isLatest) {
-            const words = text.split(' '); 
-            let cumulativeIndex = 0; 
+            const words = text.split(' ');
+            let cumulativeIndex = 0;
             return (
                 <span className="sentence">
                     {words.map((word, wordIndex) => {
@@ -376,7 +398,6 @@ const ChatPage = () => {
         ));
     };
 
-
     // This hook is used to scroll to the last message with a smooth behavior
     useEffect(() => {
         if (messageEndRef.current) {
@@ -396,7 +417,7 @@ const ChatPage = () => {
     return (
         <div className='chat-page'>
             <div className="top-barchat">
-                <h1 className="title-chatpage">{NAVBAR_HEADER}</h1>
+                <div className="title-chatpage">{NAVBAR_HEADER} @2024 NCSU CSC Dept</div>
                 <div className="buttons">
                     {showHelpPopup && (
                         <div className="overlay" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0, 0, 0, .8)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
@@ -416,18 +437,6 @@ const ChatPage = () => {
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5" style={{ width: '22px', height: '22px' }}>
                             <path strokeLinecap="round" strokeLinejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
                         </svg>
-                    </button>
-                    <button className="start-chat" onClick={handleNewChat} title="Start a new chat">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5=" stroke="currentColor" style={{ width: '22px', height: '22px' }} >
-                            <path strokeLinecap="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
-                        </svg>
-
-                    </button>
-                    <button type="submit" className="refreshChat" onClick={handleDownloadChat} title='Download Chat'>
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" style={{ width: '22px', height: '22px' }}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
-                        </svg>
-
                     </button>
                     < div className="userInfo">
                         {userInfo ? (
@@ -460,6 +469,20 @@ const ChatPage = () => {
                 </div>
             </div>
             <aside className="sidebar">
+                <div className="sidebar-newchat">
+    <button className="start-chat" onClick={handleNewChat} >
+        
+        New Chat
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" style={{ width: '22px', height: '22px' }}>
+            <path strokeLinecap="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+        </svg>
+    </button>
+    <button className="refresh-button" onClick={handleDownloadChat} title="Download Chat">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" style={{ width: '22px', height: '22px' }}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+        </svg>
+    </button>
+</div>
                 <ul>
                     {savedSessionKeys.length === 0 ? (
                         <li className="empty-message">
@@ -496,12 +519,40 @@ const ChatPage = () => {
             <main style={{ flex: 1, overflowY: 'hidden', padding: '10px', display: 'flex', flexDirection: 'column' }}>
                 <div className="chat-container">
                     {messages.length === 0 ? (
-                        <div >
-                            <p className="chat-welcome">{CHAT_WELCOME}</p>
+                        <div className='chatModal' >
+                            <p className="chat-welcome">
+                                {CHAT_WELCOME}
+                                {userInfo ? `${userInfo.name} ${userInfo.last_name}` : 'Guest'}
+                            </p>
                             <p className="chat-welcome-text">{CHAT_WELCOME_TEXT}</p>
-                            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                <img src={`${process.env.PUBLIC_URL + LEFT_IMAGE_URL}`} alt="NC STATE UNIVERSITY" style={{ width: '200px', height: 'auto', margin: '40px' }} />
-                                <img src={`${process.env.PUBLIC_URL + RIGHT_IMAGE_URL}`} alt="Open AI" style={{ width: '190px', height: '98px', margin: '40px' }} />
+                            <div className="suggested-section">
+                                <p className="suggested-title">Suggested</p>
+                                <div className="suggested-container" ref={suggestedContainerRef}>
+                                    <div className="suggested-box">
+                                        <p>Explain Homework 1 Problem 1A </p>
+                                        <small className='suggested-box-small'>I need help with problem 1</small>
+                                    </div>
+                                    <div className="suggested-box">
+                                        <p>When is my professor's office hours?</p>
+                                        <small className='suggested-box-small'>I need to discuss my last exam</small>
+                                    </div>
+                                    <div className="suggested-box">
+                                        <p>Can you explain Chapter 2.2 of the Engineering SAAS textbook?</p>
+                                        <small className='suggested-box-small'> I need a refresher of the content </small>
+                                    </div>
+                                    <div className="suggested-box">
+                                        <p>When is our midterm 1 exam?</p>
+                                        <small className='suggested-box-small'> I'm not sure when our next midterm is</small>
+                                    </div>
+                                    <div className="suggested-box">
+                                        <p>What percentage of our class grade is projects?</p>
+                                        <small className='suggested-box-small'>I want to know the project weight for our class</small>
+                                    </div>
+                                    <div className="suggested-box">
+                                        <p>How can I contact my TA, Sanjit, for help?</p>
+                                        <small className='suggested-box-small'>I need help debugging a issue in my code</small>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     ) : (
