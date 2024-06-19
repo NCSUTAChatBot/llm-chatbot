@@ -58,21 +58,19 @@ cd saas-frontend
 # @author Sanjit Verma
 
 # NAVBAR
-REACT_APP_NAVBAR_HEADER="SAAS Chatbot @2024 NCSU CSC Dept"
+REACT_APP_NAVBAR_HEADER="Virtual TA"
 REACT_APP_FEEDBACK_FORM_URL="https://forms.gle/5swJdyyfSdQxGww69"
 
 # LANDING PAGE
 REACT_APP_MODALBODYTEXT="Please login or create an account. This Chatbot supports asking questions from the textbook: Engineering SAAS: An Agile Approach Using Cloud Computing"
 REACT_APP_BACKGROUND_IMAGE_URL="/_MAH0122.jpg"
-REACT_APP_LFOOTER="SAAS beta v1.0.0"
+REACT_APP_LFOOTER="beta v1.0.0"
 REACT_APP_RFOOTER="@2024 NCSU CSC Dept"
 REACT_APP_FRONT_LOGO="/ncstate-brick-4x1-blk-max.png"
 
 # CHAT PAGE
-REACT_APP_CHAT_WELCOME="Ask the SAAS Chatbot"
-REACT_APP_CHAT_WELCOME_TEXT="Please wait patiently after asking a question. The chatbot may take a moment to generate a response."
-REACT_APP_LEFT_IMAGE_URL="/ncstate-brick-2x2-blk.png"
-REACT_APP_RIGHT_IMAGE_URL="/openAI.png"
+REACT_APP_CHAT_WELCOME="Hello, "
+REACT_APP_CHAT_WELCOME_TEXT="How can I help you today?"
 
 ```
 3.  Install the packages for the frontend.
@@ -143,5 +141,7 @@ npm start
 
 *   Implemented backend/query system into API and integrated with exsisting frontend
 
-*   UI improvements
+*   UI improvements to the chat page
+
+*   Added Font packs
   
