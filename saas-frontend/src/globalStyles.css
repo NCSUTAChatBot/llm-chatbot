@@ -470,6 +470,7 @@
   display: flex;
   justify-content: center;
   font-family: 'Mona';
+  margin-top: 2px;
 }
 
 /* Styling for the chat submit button for the Chat page */
