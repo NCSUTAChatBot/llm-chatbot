@@ -17,6 +17,7 @@ from langchain_mongodb import MongoDBAtlasVectorSearch
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
 from dotenv import load_dotenv
+import streamlit as st
 
 load_dotenv()
 logging.basicConfig(level=logging.INFO)
@@ -88,23 +89,31 @@ rag_chain = (
 )
 
 # Function to process a query
+
 def process_query(question):
-    # STEP 1
-    response = rag_chain.invoke(question)
-    return response
-
-
-def make_query(input_text: str | None) -> str:
-    """
-    Wrapper function to handle the processing of user queries using the MongoDB-backed language model.
-    """
-    if input_text is None:
-        raise ValueError("No input provided")
+    logger.debug(f"Processing question: {question} (type: {type(question)})")
+    if not isinstance(question, str):
+        raise ValueError("The question must be a string.")
 
     try:
-        # Pass the question directly to the process_query function
-        response = process_query(input_text)
-        return response
+        stream_response = rag_chain.invoke(question)
+
+        for chunk in stream_response:
+            yield chunk
+
+    except Exception as e:
+        logger.error(f"Error during streaming: {e}")
+        raise RuntimeError(f"An error occurred while processing the query: {e}")
+
+
+
+def make_query(input_text: str | None):
+    if input_text is None or not isinstance(input_text, str):
+        raise ValueError("No valid input provided")
+
+    try:
+        response_generator = process_query(input_text)
+        return response_generator
     except Exception as e:
         raise RuntimeError(f"An error occurred while processing the query: {e}")
 

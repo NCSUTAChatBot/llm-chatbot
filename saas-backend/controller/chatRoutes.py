@@ -5,7 +5,9 @@ This file contains the routes for the chat API.
 @author Sanjit Verma (skverma)
 '''
 
-from flask import Blueprint, request, jsonify, send_file
+from flask import Blueprint, request, jsonify, send_file, stream_with_context, Response
+import json
+from json import JSONDecodeError 
 from datetime import datetime
 from pymongo import MongoClient, ReturnDocument
 from dotenv import load_dotenv
@@ -14,10 +16,12 @@ import secrets
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 import io
+from flask_cors import CORS
 import vectorsMongoDB.queryManager as queryManager
 
 # a blueprint named 'chat'
 chat_bp = Blueprint('chat', __name__)
+CORS(chat_bp, resources={r"/*": {"origins": "http://localhost:3000"}})
 
 chat_history = []  # Initialize an empty list to keep track of the chat history.
 
@@ -48,15 +52,15 @@ def new_chat():
         return jsonify({"error": "Email is required"}), 400
 
     email = input_data['email']
-    chat_title = input_data.get('chatTitle', '')  # Get chatTitle if provided, else default to empty string
-    session_key = secrets.token_urlsafe(16)  # Generate a secure random session key
+    chat_title = input_data.get('chatTitle', '')  
+    session_key = secrets.token_urlsafe(16) 
 
-    # Check if the user exists
+
     user_document = user_collection.find_one({"email": email})
     if not user_document:
         return jsonify({"error": "User not found"}), 404
     
-    # Delete any existing chats with an empty chat title
+
     if 'savedChats' in user_document:
         updates = {}
         for key, value in user_document['savedChats'].items():
@@ -72,8 +76,11 @@ def new_chat():
     return jsonify({"sessionKey": session_key})
 
 
-@chat_bp.route('/ask', methods=['POST'])
+@chat_bp.route('/ask', methods=['POST', 'OPTIONS'])
 def ask():
+    if request.method == 'OPTIONS':
+        return '', 200
+    
     input_data = request.json
     if not input_data or 'email' not in input_data or 'question' not in input_data:
         return jsonify({"error": "Required data is missing"}), 400
@@ -81,8 +88,6 @@ def ask():
     email = input_data['email']
     session_key = input_data.get('sessionKey')
     question = input_data['question']
-
-    # Find the user or create a new entry in the collection
     user = user_collection.find_one({"email": email})
     if not user:
         return jsonify({"error": "User not found"}), 404
@@ -92,40 +97,67 @@ def ask():
         user_collection.update_one(
             {"email": email},
             {"$set": {f"savedChats.{session_key}": {
-                "chatTitle": question,  # Set initial chat title to the question
+                "chatTitle": question, 
                 "messages": []
             }}}
         )
-  
-    chat_session = user.get('savedChats', {}).get(session_key, {})
 
-    # Process the question through the model
-    response_text = queryManager.make_query(question)
+    chat_session = user.get('savedChats', {}).get(session_key, {})
 
     user_message = {
         "sender": "user",
         "text": question,
         "timestamp": datetime.now().isoformat()
     }
-    bot_response = {
-        "sender": "bot",
-        "text": response_text,
-        "timestamp": datetime.now().isoformat()
-    }
 
-    # Update the chat history in MongoDB
+    # Update the user message to MongoDB
     user_collection.update_one(
         {"email": email},
-        {"$push": {f"savedChats.{session_key}.messages": {"$each": [user_message, bot_response]}}}
+        {"$push": {f"savedChats.{session_key}.messages": user_message}}
     )
 
-    if not chat_session.get("chatTitle"):
-        user_collection.update_one(
-            {"email": email},
-            {"$set": {f"savedChats.{session_key}.chatTitle": question}}
-        )
+    def generate_response():
+        try:
+            for chunk in queryManager.make_query(question):
+                try:
+                    chunk_data = json.loads(chunk)
+                except JSONDecodeError:
+                    chunk_data = chunk 
 
-    return jsonify({"userMessage": user_message, "botMessage": bot_response, "sessionKey": session_key})
+                if isinstance(chunk_data, dict) and "choices" in chunk_data:
+                    for choice in chunk_data["choices"]:
+                        if "text" in choice:
+                            bot_response_text = choice["text"]
+                            yield f"{bot_response_text}"
+
+                            bot_response = {
+                                "sender": "bot",
+                                "text": bot_response_text,
+                                "timestamp": datetime.now().isoformat()
+                            }
+
+                            user_collection.update_one(
+                                {"email": email},
+                                {"$push": {f"savedChats.{session_key}.messages": bot_response}}
+                            )
+                else:
+                    yield f"{chunk}"
+
+                    bot_response = {
+                        "sender": "bot",
+                        "text": chunk,
+                        "timestamp": datetime.now().isoformat()
+                    }
+                    user_collection.update_one(
+                        {"email": email},
+                        {"$push": {f"savedChats.{session_key}.messages": bot_response}}
+                    )
+        except Exception as e:
+            yield f"Error: {str(e)}"
+
+    return Response(stream_with_context(generate_response()), content_type='text/plain')
+
+    
 
 
 @chat_bp.route('/clear_chat', methods=['POST'])

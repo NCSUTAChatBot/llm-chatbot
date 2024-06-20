@@ -190,70 +190,56 @@ const ChatPage = () => {
     const handleSubmit = async (event) => {
         event.preventDefault();
         if (!question.trim() || !userInfo.email) return;
+    
         const email = userInfo.email;
         const userMessage = { text: question, sender: 'user' };
         setMessages(prevMessages => [...prevMessages, userMessage]);
         setQuestion('');
         setIsLastMessageNew(true);
+    
         try {
             let response;
-            let data;
-
-            if (!currentSessionKey) {
-                response = await fetch('http://127.0.0.1:8000/chat/ask', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email: email, question: question, chatTitle: question })
-                });
-
-                if (response.ok) {
-                    data = await response.json();
-                    setCurrentSessionKey(data.sessionKey); // Set the newly created session key
-                    // Add the new session to savedSessionKeys with the user's first message as the chatTitle
-                    setSavedSessionKeys(prevKeys => [
-                        { sessionKey: data.sessionKey, chatTitle: question },
-                        ...prevKeys
-                    ]);
-                } else {
-                    throw new Error('Failed to create a new chat session.');
-                }
-            } else {
-                // Add a message to the existing session
-                response = await fetch('http://127.0.0.1:8000/chat/ask', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email: email, sessionKey: currentSessionKey, question: question })
-                });
-
-                if (response.ok) {
-                    data = await response.json();
-                    // Check if the current session is already in savedSessionKeys
-                    setSavedSessionKeys(prevKeys => {
-                        const sessionIndex = prevKeys.findIndex(session => session.sessionKey === currentSessionKey);
-                        if (sessionIndex === -1) {
-                            // If not found, add the session with the chatTitle
-                            return [{ sessionKey: currentSessionKey, chatTitle: question }, ...prevKeys];
+    
+            const payload = currentSessionKey 
+                ? { email, sessionKey: currentSessionKey, question } 
+                : { email, question, chatTitle: question };
+    
+            response = await fetch('http://127.0.0.1:8000/chat/ask', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+    
+            if (response.ok) {
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let aggregatedText = ''; // Buffer for the streamed text
+    
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+    
+                    const chunk = decoder.decode(value, { stream: true });
+                    aggregatedText += chunk;
+                    // Update messages without duplicating or adding unnecessary spaces
+                    setMessages(messages => {
+                        const lastMessage = messages[messages.length - 1];
+                        if (lastMessage && lastMessage.sender === 'bot') {
+                            lastMessage.text += chunk;  
+                            return [...messages.slice(0, -1), lastMessage];
                         } else {
-                            // If found, only update the title if it's the first message
-                            const updatedSessions = [...prevKeys];
-                            if (!updatedSessions[sessionIndex].chatTitle) {
-                                updatedSessions[sessionIndex].chatTitle = question;
-                            }
-                            return updatedSessions;
+                            return [...messages, { text: chunk, sender: 'bot' }];
                         }
                     });
-                } else {
-                    throw new Error(`Failed to submit message. Status: ${response.status}`);
                 }
-            }
-
-            const botMessage = { text: data.botMessage.text, sender: 'bot' };
-            setMessages(messages => [...messages, botMessage]);
+    
+                // Final check to add any remaining aggregated text
+            } 
         } catch (error) {
             console.error('Error submitting question:', error);
-            setMessages(prevMessages => prevMessages.slice(0, -1)); // Remove the last message if there is error
+            setMessages(prevMessages => prevMessages.slice(0, -1)); // Remove the last user message if there is an error
         }
-
+    
         messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
 
@@ -336,55 +322,55 @@ const ChatPage = () => {
     };
 
     // This function is used to render the message text with a typing animation
-    const renderMessageText = (text, sender, isLatest) => {
-        if (typeof text === 'string' && sender === 'bot' && isLatest) {
-            const words = text.split(' ');
-            let cumulativeIndex = 0;
-            return (
-                <span className="sentence">
-                    {words.map((word, wordIndex) => {
-                        return (
-                            <span key={wordIndex} className="word">
-                                {Array.from(word).map((char, charIndex) => {
-                                    const style = {
-                                        animationDelay: `${cumulativeIndex * 0.025}s`,
-                                        animationName: 'typing'
-                                    };
-                                    cumulativeIndex++;
-                                    return (
-                                        <span key={charIndex} className="chat-char" style={style}>
-                                            {char}
-                                        </span>
-                                    );
-                                })}
-                                {wordIndex < words.length - 1 && <span className="space">{' '}</span>}
-                            </span>
-                        );
-                    })}
-                </span>
-            );
-        } else {
-            return text;
-        }
-    };
+    // const renderMessageText = (text, sender, isLatest) => {
+    //     if (typeof text === 'string' && sender === 'bot' && isLatest) {
+    //         const words = text.split(' ');
+    //         let cumulativeIndex = 0;
+    //         return (
+    //             <span className="sentence">
+    //                 {words.map((word, wordIndex) => {
+    //                     return (
+    //                         <span key={wordIndex} className="word">
+    //                             {Array.from(word).map((char, charIndex) => {
+    //                                 const style = {
+    //                                     animationDelay: `${cumulativeIndex * 0.025}s`,
+    //                                     animationName: 'typing'
+    //                                 };
+    //                                 cumulativeIndex++;
+    //                                 return (
+    //                                     <span key={charIndex} className="chat-char" style={style}>
+    //                                         {char}
+    //                                     </span>
+    //                                 );
+    //                             })}
+    //                             {wordIndex < words.length - 1 && <span className="space">{' '}</span>}
+    //                         </span>
+    //                     );
+    //                 })}
+    //             </span>
+    //         );
+    //     } else {
+    //         return text;
+    //     }
+    // };
 
-    const displayText = (text, sender) => {
-        if (typeof text === 'string' && sender === 'bot') {
-            const words = text.split(' ');
-            return words.map((word, wordIndex) => (
-                <span key={wordIndex} className="word">
-                    {word.split('').map((char, charIndex) => (
-                        <span key={charIndex} className="chat-char-no-animation">
-                            {char}
-                        </span>
-                    ))}
-                    {wordIndex < words.length - 1 && '\u00A0'}
-                </span>
-            ));
-        } else {
-            return text;
-        }
-    };
+    // const displayText = (text, sender) => {
+    //     if (typeof text === 'string' && sender === 'bot') {
+    //         const words = text.split(' ');
+    //         return words.map((word, wordIndex) => (
+    //             <span key={wordIndex} className="word">
+    //                 {word.split('').map((char, charIndex) => (
+    //                     <span key={charIndex} className="chat-char-no-animation">
+    //                         {char}
+    //                     </span>
+    //                 ))}
+    //                 {wordIndex < words.length - 1 && '\u00A0'}
+    //             </span>
+    //         ));
+    //     } else {
+    //         return text;
+    //     }
+    // };
 
     // This function is used to render the chat title with a typing animation
     const renderChatTitle = (title) => {
@@ -561,7 +547,7 @@ const ChatPage = () => {
                             <div key={index} className={`message ${msg.sender}`}>
                                 <div className="sender">{msg.sender === 'user' ? 'You' : 'SAAS Chatbot'}</div>
                                 <div className="text">
-                                    {msg.sender === 'bot' && index === messages.length - 1 && isLastMessageNew ? renderMessageText(msg.text, msg.sender, true) : displayText(msg.text, msg.sender)}
+                                 {msg.text}
                                 </div>
                             </div>
                         ))
