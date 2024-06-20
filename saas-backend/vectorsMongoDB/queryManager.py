@@ -91,23 +91,27 @@ rag_chain = (
 # Function to process a query
 
 def process_query(question):
-    logger.debug(f"Processing question: {question} (type: {type(question)})")
+    '''
+    This function processes a query by invoking the RAG chain with the given question.
+    It returns a generator that yields the response in chunks.
+    The function iterates over stream_response and yields each chunk of the response
+    '''
     if not isinstance(question, str):
         raise ValueError("The question must be a string.")
 
     try:
         stream_response = rag_chain.invoke(question)
 
-        for chunk in stream_response:
+        for chunk in stream_response: #chunking allows user to see response as processed,  
             yield chunk
 
     except Exception as e:
-        logger.error(f"Error during streaming: {e}")
         raise RuntimeError(f"An error occurred while processing the query: {e}")
 
-
-
 def make_query(input_text: str | None):
+    '''
+    This is the entry function that processes a given query from payload
+    '''
     if input_text is None or not isinstance(input_text, str):
         raise ValueError("No valid input provided")
 
