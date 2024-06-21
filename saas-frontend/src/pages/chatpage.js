@@ -303,6 +303,9 @@ const ChatPage = () => {
         } catch (error) {
             console.error('Error submitting question:', error);
             setMessages(prevMessages => prevMessages.slice(0, -1)); // Remove the last user message if there is an error
+        } finally {
+            // Enable the submit button again
+            setIsLastMessageNew(false);
         }
     
         messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -461,8 +464,11 @@ const ChatPage = () => {
         const storedUserInfo = localStorage.getItem('userInfo');
         if (storedUserInfo) {
             setUserInfo(JSON.parse(storedUserInfo));
+        }else{
+            navigate('/');
         }
-    }, []);
+    }, [navigate]);
+
 
     const toggleDropdown = () => setShowDropdown(!showDropdown);
     return (
@@ -634,7 +640,7 @@ const ChatPage = () => {
                             }
                         }}
                     />
-                    <button type="submit" className="submit-chat" onClick={handleSubmit}>
+                    <button type="submit" className="submit-chat" onClick={handleSubmit} disabled={isLastMessageNew}>
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" width="20" height="20">
                             <path strokeLinecap="round" strokeLinejoin="round" d="m9 9 6-6m0 0 6 6m-6-6v12a6 6 0 0 1-12 0v-3" />
                         </svg>
