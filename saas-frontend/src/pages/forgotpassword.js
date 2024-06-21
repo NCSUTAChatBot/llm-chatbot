@@ -57,8 +57,8 @@ function ForgotPassword() {
                 <h1 className="title">{NAVBAR_HEADER} </h1>
             </div>
             <div className="forgotPasswordModalContainer">
-                <h3 className="loginModalHeader">Reset your password</h3>
-                <p className="forgotPasswordSubheader">Enter your email address and instructions to reset your password will be mailed</p>
+                <div className="loginModalHeader">Reset your password</div>
+                <div className="forgotPasswordSubheader">Enter your email address and instructions to reset your password will be mailed</div>
                 <div>
                     <input
                         type="email"
@@ -67,10 +67,10 @@ function ForgotPassword() {
                         placeholder="Enter your email"
                         style={{color: 'black'}} 
                         id="email"
-                        className="login-inputContainer"
+                        className="reset-inputContainer"
                         required
                     />
-                    {message && <p style={{ color: 'white', textAlign: 'center' }} >{message}</p>}
+                    {message && <div className="resetError">{message}</div>}
                     <button type="submit" className="resetButton" onClick={handleForgotPassword} >Reset Password</button>
                     <div className='buttonsContainer'>
                         <button type='button' className='forgotPasswordButton' onClick={handleLoginPage}>Back to login page</button>
