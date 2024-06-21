@@ -149,7 +149,8 @@
   overflow-y: auto;
   background-color: rgb(12, 12, 12);
   display: flex;
-  border-radius: 18px;
+  border-top-right-radius: 18px;
+  border-bottom-right-radius: 18px;
   flex-direction: column;
   justify-content: flex-start;
   height: 100vh;
@@ -640,12 +641,13 @@
 /* Styling for the user text messages for the Chat page */
 .message.user .text {
   background-color: #414344;
+  line-height: 1.5;
   color: white;
   border-radius: 10px;
 }
 /* Styling for the bot text messages for the Chat page */
 .message.bot .text {
-  
+  line-height: 1.5;
   color: white;
   border-radius: 10px;
 }
