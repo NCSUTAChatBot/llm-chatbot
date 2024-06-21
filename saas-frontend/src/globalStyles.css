@@ -621,9 +621,8 @@
 .text {
   padding: 8px;
   border-radius: 5px;
-  text-align: justify; 
-  overflow-wrap: break-word;     /* Allows text to break at appropriate word boundaries */
-  word-break: keep-all;          /* Prevents breaking words at arbitrary points */
+    
+           
 }
 
 /* Styling for the user chat messages padding for the Chat page */

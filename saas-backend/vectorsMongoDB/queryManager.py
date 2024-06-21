@@ -88,23 +88,35 @@ rag_chain = (
 )
 
 # Function to process a query
+
 def process_query(question):
-    # STEP 1
-    response = rag_chain.invoke(question)
-    return response
-
-
-def make_query(input_text: str | None) -> str:
-    """
-    Wrapper function to handle the processing of user queries using the MongoDB-backed language model.
-    """
-    if input_text is None:
-        raise ValueError("No input provided")
+    '''
+    This function processes a query by invoking the RAG chain with the given question.
+    It returns a generator that yields the response in chunks.
+    The function iterates over stream_response and yields each chunk of the response
+    '''
+    if not isinstance(question, str):
+        raise ValueError("The question must be a string.")
 
     try:
-        # Pass the question directly to the process_query function
-        response = process_query(input_text)
-        return response
+        stream_response = rag_chain.invoke(question)
+
+        for chunk in stream_response: #chunking allows user to see response as processed,  
+            yield chunk
+
+    except Exception as e:
+        raise RuntimeError(f"An error occurred while processing the query: {e}")
+
+def make_query(input_text: str | None):
+    '''
+    This is the entry function that processes a given query from payload
+    '''
+    if input_text is None or not isinstance(input_text, str):
+        raise ValueError("No valid input provided")
+
+    try:
+        response_generator = process_query(input_text)
+        return response_generator
     except Exception as e:
         raise RuntimeError(f"An error occurred while processing the query: {e}")
 

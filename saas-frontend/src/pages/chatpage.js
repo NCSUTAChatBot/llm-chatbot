@@ -38,6 +38,7 @@ const ChatPage = () => {
     // This hook is used to store the animated titles state
     const [isLastMessageNew, setIsLastMessageNew] = useState(false);
     const suggestedContainerRef = useRef(null);
+    const [chatTitle, setChatTitle] = useState('');
 
     // This function is called when the user clicks on the downloiad as pdf button
     const handleDownloadChat = async () => {
@@ -110,29 +111,23 @@ const ChatPage = () => {
     //when creating a new chat session using the new chat button
     const handleNewChat = async () => {
         try {
-            const clearResponse = await fetch('http://127.0.0.1:8000/chat/clear_chat', {
+            setCurrentSessionKey('');  
+            setMessages([]);
+
+            const sessionResponse = await fetch('http://127.0.0.1:8000/chat/createSession', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' }
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: userInfo.email })
             });
-            if (clearResponse.ok) {
-                // Successfully cleared the chat, now create a new session
-                const sessionResponse = await fetch('http://127.0.0.1:8000/chat/createSession', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email: userInfo.email })
-                });
-                if (sessionResponse.ok) {
-                    const sessionData = await sessionResponse.json();
-                    setCurrentSessionKey(sessionData.sessionKey);
-                    setMessages([]);
-                } else {
-                    throw new Error('Failed to create a new chat session.');
-                }
+    
+            if (sessionResponse.ok) {
+                const sessionData = await sessionResponse.json();
+                setCurrentSessionKey(sessionData.sessionKey);  // Set the new session key
             } else {
-                throw new Error('Failed to clear chat history on the backend.');
+                throw new Error('Failed to create a new chat session.');
             }
         } catch (error) {
-            console.error('Error during chat session handling:', error);
+            
         }
     };
 
@@ -185,11 +180,32 @@ const ChatPage = () => {
             console.error('Error deleting chat:', error);
         }
     };
+    //used to update chat title of a session key that already exists
+    const updateChatTitle = async (email, sessionKey, newTitle) => {
+        await fetch('http://127.0.0.1:8000/chat/update_chat_title', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                email: email,
+                sessionKey: sessionKey,
+                newTitle: newTitle
+            })
+        }).then(response => response.json())
+          .then(data => {
+              console.log("Title updated:", data);
+          })
+          .catch(error => {
+              console.error("Error updating title:", error);
+          });
+    };
 
     // This function is called when the user submits a question. It handles logic for creating session and managing message history
     const handleSubmit = async (event) => {
         event.preventDefault();
         if (!question.trim() || !userInfo.email) return;
+    
         const email = userInfo.email;
         const userMessage = { text: question, sender: 'user' };
         setMessages(prevMessages => [...prevMessages, userMessage]);
@@ -197,44 +213,82 @@ const ChatPage = () => {
         setIsLastMessageNew(true);
         try {
             let response;
-            let data;
-
+            let payload;
+            //if no session key is set, assume we are creating a new session
             if (!currentSessionKey) {
                 response = await fetch('http://127.0.0.1:8000/chat/ask', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email: email, question: question, chatTitle: question })
                 });
+                 // If a session key exists, continue the existing session with a new message
+            } else {
+                payload = { email, sessionKey: currentSessionKey, question };
+                response = await fetch('http://127.0.0.1:8000/chat/ask', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+            }
+            if (response.ok) {
+                // If no session key was set assume we are creating a new session
+                if (!currentSessionKey) {
+                    const data = await response.json();
+                    setCurrentSessionKey(data.sessionKey);
+    
+                    //  re-fetch the ask endpoint with the new sessionKey for streaming
+                    response = await fetch('http://127.0.0.1:8000/chat/ask', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, sessionKey: data.sessionKey, question })
+                    });
 
-                if (response.ok) {
-                    data = await response.json();
-                    setCurrentSessionKey(data.sessionKey); // Set the newly created session key
-                    // Add the new session to savedSessionKeys with the user's first message as the chatTitle
+                    // Add the new session to the saved sessions list with the chat title
                     setSavedSessionKeys(prevKeys => [
                         { sessionKey: data.sessionKey, chatTitle: question },
                         ...prevKeys
                     ]);
-                } else {
-                    throw new Error('Failed to create a new chat session.');
                 }
-            } else {
-                // Add a message to the existing session
-                response = await fetch('http://127.0.0.1:8000/chat/ask', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email: email, sessionKey: currentSessionKey, question: question })
-                });
 
-                if (response.ok) {
-                    data = await response.json();
-                    // Check if the current session is already in savedSessionKeys
+                // If the response body is present, handle streaming responses for displaying chat messages
+                if (response.body) {
+                    const reader = response.body.getReader();
+                    const decoder = new TextDecoder();
+                    let aggregatedText = ''; // Buffer for the streamed text
+    
+                    while (true) {
+                        const { done, value } = await reader.read();
+                        if (done) break;
+    
+                        const chunk = decoder.decode(value, { stream: true });
+                        aggregatedText += chunk;
+                        
+                        // Update messages without duplicating or adding unnecessary spaces
+                        setMessages(messages => {
+                            const lastMessage = messages[messages.length - 1];
+                            if (lastMessage && lastMessage.sender === 'bot') {
+                                lastMessage.text += chunk;
+                                return [...messages.slice(0, -1), lastMessage];
+                            } else {
+                                return [...messages, { text: chunk, sender: 'bot' }];
+                            }
+                        });
+                    }
+                    
+                    // Ensure the reader is closed
+                    reader.releaseLock();
+                }
+    
+                 // Update the session title in local state if necessary, based on session history
+                if (currentSessionKey) {
                     setSavedSessionKeys(prevKeys => {
                         const sessionIndex = prevKeys.findIndex(session => session.sessionKey === currentSessionKey);
                         if (sessionIndex === -1) {
-                            // If not found, add the session with the chatTitle
+                             // If the session is not found in the local state add it with the new title
+                            updateChatTitle(email, currentSessionKey, question);
                             return [{ sessionKey: currentSessionKey, chatTitle: question }, ...prevKeys];
                         } else {
-                            // If found, only update the title if it's the first message
+                            // If found, check if it's the first message or if the title is 'Untitled Chat'
                             const updatedSessions = [...prevKeys];
                             if (!updatedSessions[sessionIndex].chatTitle) {
                                 updatedSessions[sessionIndex].chatTitle = question;
@@ -242,20 +296,23 @@ const ChatPage = () => {
                             return updatedSessions;
                         }
                     });
-                } else {
-                    throw new Error(`Failed to submit message. Status: ${response.status}`);
                 }
+            } else {
+                throw new Error('Failed to submit message. Status: ' + response.status);
             }
-
-            const botMessage = { text: data.botMessage.text, sender: 'bot' };
-            setMessages(messages => [...messages, botMessage]);
         } catch (error) {
             console.error('Error submitting question:', error);
-            setMessages(prevMessages => prevMessages.slice(0, -1)); // Remove the last message if there is error
+            setMessages(prevMessages => prevMessages.slice(0, -1)); // Remove the last user message if there is an error
         }
-
+    
         messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
+
+    useEffect(() => {
+        if (messageEndRef.current) {
+            messageEndRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, [messages]);
 
     useEffect(() => {
         const fetchSavedChats = async () => {
@@ -288,18 +345,18 @@ const ChatPage = () => {
     //use this to scroll vertically on suggested row
     useEffect(() => {
         const container = suggestedContainerRef.current;
-    
+
         const handleWheel = (event) => {
             if (container) {
                 event.preventDefault();
                 container.scrollLeft += event.deltaY;
             }
         };
-    
+
         if (container) {
             container.addEventListener('wheel', handleWheel);
         }
-    
+
         return () => {
             if (container) {
                 container.removeEventListener('wheel', handleWheel);
@@ -310,19 +367,19 @@ const ChatPage = () => {
     // This hook is used to clear the chat history on page refresh
     useEffect(() => {
         const container = suggestedContainerRef.current;
-    
+
         const handleWheel = (event) => {
             if (container) {
                 event.preventDefault();
                 container.scrollLeft += event.deltaY;
             }
         };
-    
+
         if (container) {
             container.addEventListener('wheel', handleWheel);
         } else {
         }
-    
+
         return () => {
             if (container) {
                 container.removeEventListener('wheel', handleWheel);
@@ -336,55 +393,55 @@ const ChatPage = () => {
     };
 
     // This function is used to render the message text with a typing animation
-    const renderMessageText = (text, sender, isLatest) => {
-        if (typeof text === 'string' && sender === 'bot' && isLatest) {
-            const words = text.split(' ');
-            let cumulativeIndex = 0;
-            return (
-                <span className="sentence">
-                    {words.map((word, wordIndex) => {
-                        return (
-                            <span key={wordIndex} className="word">
-                                {Array.from(word).map((char, charIndex) => {
-                                    const style = {
-                                        animationDelay: `${cumulativeIndex * 0.025}s`,
-                                        animationName: 'typing'
-                                    };
-                                    cumulativeIndex++;
-                                    return (
-                                        <span key={charIndex} className="chat-char" style={style}>
-                                            {char}
-                                        </span>
-                                    );
-                                })}
-                                {wordIndex < words.length - 1 && <span className="space">{' '}</span>}
-                            </span>
-                        );
-                    })}
-                </span>
-            );
-        } else {
-            return text;
-        }
-    };
+    // const renderMessageText = (text, sender, isLatest) => {
+    //     if (typeof text === 'string' && sender === 'bot' && isLatest) {
+    //         const words = text.split(' ');
+    //         let cumulativeIndex = 0;
+    //         return (
+    //             <span className="sentence">
+    //                 {words.map((word, wordIndex) => {
+    //                     return (
+    //                         <span key={wordIndex} className="word">
+    //                             {Array.from(word).map((char, charIndex) => {
+    //                                 const style = {
+    //                                     animationDelay: `${cumulativeIndex * 0.025}s`,
+    //                                     animationName: 'typing'
+    //                                 };
+    //                                 cumulativeIndex++;
+    //                                 return (
+    //                                     <span key={charIndex} className="chat-char" style={style}>
+    //                                         {char}
+    //                                     </span>
+    //                                 );
+    //                             })}
+    //                             {wordIndex < words.length - 1 && <span className="space">{' '}</span>}
+    //                         </span>
+    //                     );
+    //                 })}
+    //             </span>
+    //         );
+    //     } else {
+    //         return text;
+    //     }
+    // };
 
-    const displayText = (text, sender) => {
-        if (typeof text === 'string' && sender === 'bot') {
-            const words = text.split(' ');
-            return words.map((word, wordIndex) => (
-                <span key={wordIndex} className="word">
-                    {word.split('').map((char, charIndex) => (
-                        <span key={charIndex} className="chat-char-no-animation">
-                            {char}
-                        </span>
-                    ))}
-                    {wordIndex < words.length - 1 && '\u00A0'}
-                </span>
-            ));
-        } else {
-            return text;
-        }
-    };
+    // const displayText = (text, sender) => {
+    //     if (typeof text === 'string' && sender === 'bot') {
+    //         const words = text.split(' ');
+    //         return words.map((word, wordIndex) => (
+    //             <span key={wordIndex} className="word">
+    //                 {word.split('').map((char, charIndex) => (
+    //                     <span key={charIndex} className="chat-char-no-animation">
+    //                         {char}
+    //                     </span>
+    //                 ))}
+    //                 {wordIndex < words.length - 1 && '\u00A0'}
+    //             </span>
+    //         ));
+    //     } else {
+    //         return text;
+    //     }
+    // };
 
     // This function is used to render the chat title with a typing animation
     const renderChatTitle = (title) => {
@@ -398,13 +455,6 @@ const ChatPage = () => {
             </span>
         ));
     };
-
-    // This hook is used to scroll to the last message with a smooth behavior
-    useEffect(() => {
-        if (messageEndRef.current) {
-            messageEndRef.current.scrollIntoView({ behavior: 'smooth' });
-        }
-    }, [messages]);
 
     // This hook is used to load and set user information from localStorage
     useEffect(() => {
@@ -527,7 +577,9 @@ const ChatPage = () => {
                             </p>
                             <p className="chat-welcome-text">{CHAT_WELCOME_TEXT}</p>
                             <div className="suggested-section">
-                                <p className="suggested-title">Suggested</p>
+                                <p className="suggested-title">Suggested </p>
+                                
+
                                 <div className="suggested-container" ref={suggestedContainerRef}>
                                     <div className="suggested-box">
                                         <p>Explain Homework 1 Problem 1A </p>
@@ -561,7 +613,7 @@ const ChatPage = () => {
                             <div key={index} className={`message ${msg.sender}`}>
                                 <div className="sender">{msg.sender === 'user' ? 'You' : 'SAAS Chatbot'}</div>
                                 <div className="text">
-                                    {msg.sender === 'bot' && index === messages.length - 1 && isLastMessageNew ? renderMessageText(msg.text, msg.sender, true) : displayText(msg.text, msg.sender)}
+                                    {msg.text}
                                 </div>
                             </div>
                         ))
