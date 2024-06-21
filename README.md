@@ -144,4 +144,14 @@ npm start
 *   UI improvements to the chat page
 
 *   Added Font packs
+
+## Version Update 2024/6/20
+
+*  @author sanjit verma
+
+*    Implemented chat streaming support in backend system
+
+*    Adjusted frontend logic to incorporate chat streaming
+
+
   
