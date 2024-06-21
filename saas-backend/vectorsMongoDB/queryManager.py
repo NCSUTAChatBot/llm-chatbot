@@ -17,7 +17,6 @@ from langchain_mongodb import MongoDBAtlasVectorSearch
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
 from dotenv import load_dotenv
-import streamlit as st
 
 load_dotenv()
 logging.basicConfig(level=logging.INFO)

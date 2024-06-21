@@ -113,6 +113,7 @@ const ChatPage = () => {
         try {
             setCurrentSessionKey('');  
             setMessages([]);
+
             const sessionResponse = await fetch('http://127.0.0.1:8000/chat/createSession', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -121,19 +122,14 @@ const ChatPage = () => {
     
             if (sessionResponse.ok) {
                 const sessionData = await sessionResponse.json();
-                console.log('New chat session created:', sessionData);
                 setCurrentSessionKey(sessionData.sessionKey);  // Set the new session key
             } else {
                 throw new Error('Failed to create a new chat session.');
             }
         } catch (error) {
-            console.error('Error during chat session handling:', error);
+            
         }
     };
-
-    useEffect(() => {
-        console.log('Session key changed:', currentSessionKey);
-    }, [currentSessionKey]);
 
     // This function is called when the user clicks on the Logout button
     const handleLogout = async () => {
@@ -184,6 +180,26 @@ const ChatPage = () => {
             console.error('Error deleting chat:', error);
         }
     };
+    //used to update chat title of a session key that already exists
+    const updateChatTitle = async (email, sessionKey, newTitle) => {
+        await fetch('http://127.0.0.1:8000/chat/update_chat_title', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                email: email,
+                sessionKey: sessionKey,
+                newTitle: newTitle
+            })
+        }).then(response => response.json())
+          .then(data => {
+              console.log("Title updated:", data);
+          })
+          .catch(error => {
+              console.error("Error updating title:", error);
+          });
+    };
 
     // This function is called when the user submits a question. It handles logic for creating session and managing message history
     const handleSubmit = async (event) => {
@@ -195,20 +211,19 @@ const ChatPage = () => {
         setMessages(prevMessages => [...prevMessages, userMessage]);
         setQuestion('');
         setIsLastMessageNew(true);
-    
         try {
             let response;
             let payload;
-    
+            //if no session key is set, assume we are creating a new session
             if (!currentSessionKey) {
                 response = await fetch('http://127.0.0.1:8000/chat/ask', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email: email, question: question, chatTitle: question })
                 });
+                 // If a session key exists, continue the existing session with a new message
             } else {
-                console.log(JSON.stringify({ email: email, question: question, sessionKey: currentSessionKey }));
-                payload = { email, sessionKey: currentSessionKey, chatTitle: question };
+                payload = { email, sessionKey: currentSessionKey, question };
                 response = await fetch('http://127.0.0.1:8000/chat/ask', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -216,26 +231,26 @@ const ChatPage = () => {
                 });
             }
             if (response.ok) {
-                // If no session key was set, we assume we are creating a new session
+                // If no session key was set assume we are creating a new session
                 if (!currentSessionKey) {
                     const data = await response.json();
                     setCurrentSessionKey(data.sessionKey);
     
-                    // Add the new session to savedSessionKeys with the provided chatTitle
-                    setSavedSessionKeys(prevKeys => [
-                        { sessionKey: data.sessionKey, chatTitle: question },
-                        ...prevKeys
-                    ]);
-    
-                    // Now, re-fetch the ask endpoint with the new sessionKey for streaming
+                    //  re-fetch the ask endpoint with the new sessionKey for streaming
                     response = await fetch('http://127.0.0.1:8000/chat/ask', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ email, sessionKey: data.sessionKey, question })
                     });
+
+                    // Add the new session to the saved sessions list with the chat title
+                    setSavedSessionKeys(prevKeys => [
+                        { sessionKey: data.sessionKey, chatTitle: question },
+                        ...prevKeys
+                    ]);
                 }
-    
-                // Handle streaming response for existing or newly created session
+
+                // If the response body is present, handle streaming responses for displaying chat messages
                 if (response.body) {
                     const reader = response.body.getReader();
                     const decoder = new TextDecoder();
@@ -247,7 +262,7 @@ const ChatPage = () => {
     
                         const chunk = decoder.decode(value, { stream: true });
                         aggregatedText += chunk;
-    
+                        
                         // Update messages without duplicating or adding unnecessary spaces
                         setMessages(messages => {
                             const lastMessage = messages[messages.length - 1];
@@ -264,17 +279,18 @@ const ChatPage = () => {
                     reader.releaseLock();
                 }
     
-                // Update session title in case of an existing session
+                 // Update the session title in local state if necessary, based on session history
                 if (currentSessionKey) {
                     setSavedSessionKeys(prevKeys => {
                         const sessionIndex = prevKeys.findIndex(session => session.sessionKey === currentSessionKey);
                         if (sessionIndex === -1) {
-                            // If not found, add the session with the chatTitle
+                             // If the session is not found in the local state add it with the new title
+                            updateChatTitle(email, currentSessionKey, question);
                             return [{ sessionKey: currentSessionKey, chatTitle: question }, ...prevKeys];
                         } else {
-                            // If found, update the title only if it's the first message or if the title is 'Untitled Chat'
+                            // If found, check if it's the first message or if the title is 'Untitled Chat'
                             const updatedSessions = [...prevKeys];
-                            if (!updatedSessions[sessionIndex].chatTitle || updatedSessions[sessionIndex].chatTitle === "Untitled Chat") {
+                            if (!updatedSessions[sessionIndex].chatTitle) {
                                 updatedSessions[sessionIndex].chatTitle = question;
                             }
                             return updatedSessions;
@@ -291,6 +307,12 @@ const ChatPage = () => {
     
         messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
+
+    useEffect(() => {
+        if (messageEndRef.current) {
+            messageEndRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, [messages]);
 
     useEffect(() => {
         const fetchSavedChats = async () => {
@@ -434,13 +456,6 @@ const ChatPage = () => {
         ));
     };
 
-    // This hook is used to scroll to the last message with a smooth behavior
-    useEffect(() => {
-        if (messageEndRef.current) {
-            messageEndRef.current.scrollIntoView({ behavior: 'smooth' });
-        }
-    }, [messages]);
-
     // This hook is used to load and set user information from localStorage
     useEffect(() => {
         const storedUserInfo = localStorage.getItem('userInfo');
@@ -562,7 +577,9 @@ const ChatPage = () => {
                             </p>
                             <p className="chat-welcome-text">{CHAT_WELCOME_TEXT}</p>
                             <div className="suggested-section">
-                                <p className="suggested-title">Suggested</p>
+                                <p className="suggested-title">Suggested </p>
+                                
+
                                 <div className="suggested-container" ref={suggestedContainerRef}>
                                     <div className="suggested-box">
                                         <p>Explain Homework 1 Problem 1A </p>
