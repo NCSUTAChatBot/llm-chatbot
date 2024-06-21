@@ -815,13 +815,28 @@ li.deleting {
   justify-content: center;
   margin-top: 16px;
   width: 100%;
-  top: 80%;
+  top: 77%;
   left: 50%;
   width: 80%;
   transform: translate(-50%, -50%);
 
 }
 
+.signUpError {
+  color: red;
+  font-size: 0.7em;
+  display: flex-box;
+  position: absolute;
+  text-align: center;
+  justify-content: center;
+  margin-top: 16px;
+  width: 100%;
+  top: 73%;
+  left: 50%;
+  width: 80%;
+  transform: translate(-50%, -50%);
+
+}
 .resetError {
   color: red;
   font-size: 0.7em;
