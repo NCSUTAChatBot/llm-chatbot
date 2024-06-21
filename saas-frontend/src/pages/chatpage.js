@@ -205,12 +205,12 @@ const ChatPage = () => {
     const handleSubmit = async (event) => {
         event.preventDefault();
         if (!question.trim() || !userInfo.email) return;
+        setIsLastMessageNew(true);
     
         const email = userInfo.email;
         const userMessage = { text: question, sender: 'user' };
         setMessages(prevMessages => [...prevMessages, userMessage]);
         setQuestion('');
-        setIsLastMessageNew(true);
         try {
             let response;
             let payload;
@@ -635,7 +635,8 @@ const ChatPage = () => {
                         value={question}
                         onChange={(e) => setQuestion(e.target.value)}
                         onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
+                            if (e.key === 'Enter' && !isLastMessageNew) {
+                                e.preventDefault();
                                 handleSubmit(e);
                             }
                         }}
