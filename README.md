@@ -153,5 +153,13 @@ npm start
 
 *    Adjusted frontend logic to incorporate chat streaming
 
+## Version Update 2024/6/21
+
+*  @author Dinesh Kannan
+
+*    Guest mode removed, app authentication protection 
+
+*    Input Disabling while chat streaming
+
 
   
