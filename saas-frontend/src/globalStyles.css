@@ -485,6 +485,11 @@
   margin-left: 5px;
 }
 
+.submit-chat:disabled {
+  background-color: #262626; 
+  color: #ffffff;  
+}
+
 /* Styling for the chat welcome text for the Chat page (Ask the SAAS Chatbot)*/
 .chat-welcome {
   color: white;
