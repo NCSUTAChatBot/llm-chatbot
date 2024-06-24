@@ -1,0 +1,1176 @@
+/* 
+  File: globalStyles.css
+  Description: This file contains the global styles for the application.
+  Author: sanjitkverma (skverma)
+*/
+@font-face {
+  font-family: 'Arimo';
+  src: url('./fonts/Arimo-Variable.ttf') format('truetype');
+  font-display: swap;
+}
+
+@font-face {
+	font-family: 'Mona';
+	src: url('./fonts/Mona-Sans.woff2');
+	font-display: swap;
+}
+
+/******************** STYLING FOR THE LANDING PAGE *********************/
+/* Styling for the Background for the Landing page */
+.landingPageContainer {
+  position: relative;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  margin: 0;
+  overflow: hidden;
+}
+
+/* Styling for the welcome container for the Landing page */
+.modalContainer {
+  background-color: rgba(5, 5, 7, 0.8);
+  padding: 30px;
+  border-radius: 30px;
+  align-items: center;
+  border: #7a7a7a 1px solid;
+  width: 450px;
+  height: 400px;
+  max-width: 80%;
+  box-sizing: border-box;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-weight: 300;
+  margin-top: 170px;
+  position: absolute;
+  top: 25%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Styling for the welcome container text for the Landing page */
+.modalBodyText {
+  color: #ffffff;
+  padding-top: 20px;
+  padding-bottom: 80px;
+  text-align: center;
+  font-family: 'Mona';
+  font-size: 16px;
+}
+
+/* Styling for the welcome container chat button for the Landing page */
+.chatButton {
+  width: 110px;
+  padding: 7px;
+  color: rgb(255, 255, 255);
+  background-color: rgb(179, 33, 33);
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  font-family: 'Mona';
+  font-size: 14px;
+}
+
+/* Styling for the left footer for the Landing page */
+.footerTextLeft {
+  position: absolute;
+  bottom: 1px;
+  left: 10px;
+  color: white;
+  font-size: 18px;
+  z-index: 2;
+  font-weight: 400;
+  font-family: 'Courier New', Monaco, monospace;
+}
+
+/* Styling for the right footer for the Landing page */
+.footerTextRight {
+  position: absolute;
+  bottom: 1px;
+  right: 10px;
+  color: white;
+  font-size: 18px;
+  z-index: 2;
+  font-weight: 400;
+  font-family: 'Courier New', Monaco, monospace;
+}
+
+
+/******************** STYLING FOR THE CHAT PAGE *********************/
+
+/* Styling for the top bar for the Chat page */
+.top-bar {
+  grid: top-bar;
+  border-radius: 3px;
+  background-color: rgba(5, 5, 7, 0.8);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 19px 20px;
+  
+}
+
+.top-bar-landing {
+  grid: top-bar;
+  border-radius: 3px;
+  background-color: rgba(5, 5, 7, 0.8);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'Mona';
+  font-weight: 100;
+  padding: 17px 20px;
+}
+
+.top-barchat {
+  grid: top-bar;
+  border-radius: 3px;
+  background-color: rgb(20, 21, 21);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+}
+
+.sidebar {
+  grid-area: history;
+  overflow-y: auto;
+  background-color: rgb(12, 12, 12);
+  display: flex;
+  border-top-right-radius: 18px;
+  border-bottom-right-radius: 18px;
+  flex-direction: column;
+  justify-content: flex-start;
+  height: 100vh;
+  width: 240px;
+  position: relative;
+  font-family: 'Mona';
+  font-size: 15px;
+}
+
+.sidebar-newchat {
+  display: flex;
+  justify-content: space-between; 
+  align-items: center;
+  padding: 7px;
+}
+
+.sidebar ul {
+  max-height: 91vh;
+  overflow-y: auto;
+  padding-right: 0px;
+  margin-bottom: 0;
+  padding-left: 5px;
+  scrollbar-width: none;  
+  padding-right: 10px;
+}
+
+/* Hiding the scrollbar by default for WebKit browsers */
+.sidebar ul::-webkit-scrollbar {
+  width: 0px;  
+  background: transparent
+}
+/* Showing the scrollbar on hover */
+.sidebar ul:hover::-webkit-scrollbar {
+  width: 10px; 
+  background: rgb(0, 0, 0); 
+}
+
+::-webkit-scrollbar {
+  width: 10px;  
+  height: 10px; 
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: darkgrey;
+  border-radius: 10px;
+}
+
+
+::-webkit-scrollbar-track {
+  background: rgb(20, 20, 21);
+  border-radius: 10px;
+}
+
+/* Styling the scrollbar track */
+.sidebar ul:hover::-webkit-scrollbar-track {
+  background: rgb(0, 0, 0); /* Background color of the track */
+  border-radius: 10px; 
+  width: 0px; 
+}
+/* Styling the scrollbar thumb */
+.sidebar ul:hover::-webkit-scrollbar-thumb {
+  background: darkgrey; 
+  border-radius: 10px; 
+}
+.sidebar ul:hover {
+  scrollbar-width: thin; 
+  scrollbar-color: darkgrey rgb(0, 0, 0); 
+  
+}
+
+.sidebar ul li {
+  color: white;
+  padding: 10px;
+  border-radius: 10px;
+  position: relative;
+}
+
+.sidebar ul li:hover {
+  background-color: #212326;
+  color: white;
+}
+
+.sidebar ul li.selected {
+  background-color: #212326;  
+  color: white;
+}
+
+.sidebar li .delete-button {
+  display: none; 
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: absolute; 
+  right: 10px; 
+  bottom: 5px;
+}
+
+.sidebar li:hover .delete-button {
+  display: block;
+  color: #ffffff;
+}
+
+.sidebar li.deleting {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  opacity: 0;
+  transform: scale(0);
+}
+
+.sidebar li.empty-message {
+  display: flex;
+  flex-direction: column; 
+  align-items: center; 
+  justify-content: center; 
+  text-align: center;
+  color: #888;
+  font-style: italic;
+  padding: 20px;
+  border: none;
+  background-color: transparent;
+  margin: 0px 0;
+}
+
+.sidebar li.empty-message:hover {
+  background-color: transparent; 
+}
+
+/* Styling for the title for the Chat page (SAAS Chatbot @2024 NCSU CSC Dept)*/
+.title {
+  margin-top: 1px;
+  font-size: 14px;
+  font-family: 'Mona';
+}
+.title-chatpage {
+  margin-top: .75px;
+  font-size: 15px;
+  font-family: 'Mona';
+  font-weight: 600;
+}
+
+/* General Styling for the buttons for the Chat page */
+.buttons {
+  display: flex;
+  cursor: pointer;
+  border: none;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+/* Styling for the entire chat container page for the Chat page */
+.chat-page {
+  display: grid;
+  grid-template-areas: "history top-bar"
+    "history main";
+  grid-template-columns: 240px 1fr;
+  grid-template-rows: auto 1fr;
+  flex-direction: column;
+  min-height: 100vh;
+  margin: 0;
+  background-color: rgb(20, 21, 21);
+}
+
+/* Styling for the exit button for the Chat page */
+.refreshChat {
+  background: none;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 0;
+  margin-left: 10px;
+  font-family: 'Mona';
+}
+
+.userInfo {
+  position: relative;
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  margin-left: 10px;
+  font-family: 'Mona';
+}
+
+/* Styling for the exit button for the Chat page */
+.user-dropdown {
+  position: absolute;
+  background-color: rgb(49, 46, 46);
+  min-width: 120px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+  border-radius: 4px;
+  margin-top: 12px;
+  font-size: 16px;
+  top: 100%;
+  font-family: 'Mona';
+  transition: opacity 0.5s, visibility 0.1000s;
+}
+
+.user-dropdown-button {
+  color: rgb(250, 250, 250);
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: center;
+  font-family: 'Mona';
+}
+
+/* Styling for the help button for the Chat page */
+.help-button {
+  background: none;
+  color: white;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin-left: none;
+  font-family: 'Mona';
+}
+
+/* Styling for the feedback button for the Chat page */
+.feedback-button {
+  background: none;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0;
+  font-family: 'Mona';
+  display: flex;
+  align-content: 'center';
+  justify-content: 'center';
+  margin-right: 20px;
+  margin-top: 0px;
+}
+.feedback-button-landing {
+  background: none;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0;
+  font-family: 'Mona';
+  display: flex;
+  align-content: 'center';
+  justify-content: 'center';
+  margin-right: 20px;
+  margin-top: 6px;
+}
+.login-button-landing {
+  background: none;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0;
+  font-family: 'Mona';
+  display: flex;
+  align-content: 'center';
+  justify-content: 'center';
+  margin-top: 6px;
+  margin-right: 20px;
+}
+
+/* Styling for the start chat button for the Chat page */
+.start-chat {
+  background-color: transparent;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 10px 10px; 
+  border-radius: 10px; 
+  display: flex;
+  align-items: center;
+  margin-right: 10px; 
+}
+.start-chat svg {
+  margin-left: 80px; 
+}
+
+.start-chat:hover {
+  background-color: #212326;
+}
+
+.refresh-button{
+  background: none;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 0px;
+  display: flex;
+  align-items: center;
+}
+/* Styling for the chatting container for the Chat page */
+.chat-container {
+  grid-area: main;
+  padding: 1px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: calc(100vh - 160px);
+  overflow-y: auto;
+}
+
+/* Styling for the chat input row containing the input field and submit prompt button*/
+.input-row {
+  padding: 0px 0;
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.warning-message {
+  color: rgb(223, 223, 223);
+  font-size: 12px;
+  display: flex;
+  justify-content: center;
+  font-family: 'Mona';
+  margin-top: 1px;
+}
+
+/* Styling for the chat submit button for the Chat page */
+.submit-chat {
+  padding: 1rem;
+  color: white;
+  background-color: rgb(4, 4, 4);
+  border-radius: 1.25rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+  border: none;
+  margin-left: 5px;
+}
+
+.submit-chat:disabled {
+  background-color: #262626; 
+  color: #ffffff;  
+}
+
+/* Styling for the chat welcome text for the Chat page (Ask the SAAS Chatbot)*/
+.chat-welcome {
+  color: white;
+  text-align: flex-start;
+  font-family: 'Mona';
+  font-size: 30px;
+  margin-top: 175px;
+  margin-left: 0px;
+  font-weight: 600; 
+  margin-bottom: 0px; 
+  padding-bottom: 6px; 
+  line-height: 1
+  
+}
+
+.chatModal{
+  background-color: none;
+  border: none;
+  width: 100vh;
+  height: 100vh;
+  max-width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  font-weight: 300;
+  margin-top: 40px;
+  position: relative;
+  margin-left: auto; 
+  margin-right: auto; 
+  
+}
+
+.suggested-section {
+  text-align: left;
+}
+
+.suggested-title {
+  font-size: 14px;
+  font-weight: 400;
+  color: #a0a0a0;
+  margin-bottom: 10px;
+}
+
+.suggested-container {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-start;
+  overflow-x: auto; 
+  padding-bottom: 10px;
+}
+
+.suggested-container::-webkit-scrollbar {
+  display: none; 
+}
+
+.suggested-box {
+  background-color: #262626;
+  padding: 20px;
+  border-radius: 20px;
+  color: #fff;
+  min-width: 220px;
+  height: 100px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.suggested-box:hover {
+  background-color: #333333;
+}
+.suggested-box-small{
+  color: rgb(156, 150, 150);
+}
+.suggested-box p {
+  font-size: 16px;
+  margin: 0;
+  font-weight: 600;
+  margin-bottom: 0px;
+}
+
+/* Styling for the chat welcome subtext for the Chat page*/
+.chat-welcome-text {
+  color: rgb(156, 150, 150);
+  text-align: flex-start;
+  font-family: 'Mona';
+  font-size: 30px;
+  margin-top: 0px;
+  font-weight: 500;
+}
+
+
+
+/* Styling for the chat input field for the Chat page */
+.input-field {
+  width: 100%;
+  padding-top: 20;
+  padding: 15;
+  border-radius: 20px;
+  padding-left: 20px;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: #262626;
+  color: #ffffff;
+  font-size: 16px;
+  height: 49px;
+  font-family: "Arimo";
+  outline: none;
+  border: none;
+  border-radius: 20px;
+}
+
+
+
+/* Styling for the user chat messages for the Chat page */
+.user {
+  align-self: flex-start;
+  color: white;
+}
+
+/* Genral styling for any messages on the chat container */
+.message {
+  padding: 10px;
+  border-radius: 10px;
+  margin-bottom: 8px;
+  max-width: 70%;
+}
+
+/* Styling for the sender tags on the chat */
+.sender {
+  font-weight: bold;
+  margin-bottom: 4px;
+  color: white;
+}
+
+/* Genreal styling for the chat text fields */
+.text {
+  padding: 8px;
+  border-radius: 5px;
+    
+           
+}
+
+/* Styling for the user chat messages padding for the Chat page */
+.message.user {
+  align-self: flex-end;
+  background-color: transparent;
+}
+
+/* Styling for the bot chat message padding for the Chat page */
+.message.bot {
+  align-self: flex-start;
+  background-color: transparent;
+}
+
+/* Styling for the user text messages for the Chat page */
+.message.user .text {
+  background-color: #414344;
+  line-height: 1.5;
+  color: white;
+  border-radius: 10px;
+}
+/* Styling for the bot text messages for the Chat page */
+.message.bot .text {
+  line-height: 1.5;
+  color: white;
+  border-radius: 10px;
+}
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent backdrop */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; 
+}
+
+/* Styling for the Assistance popup box for the Chat page */
+.name-chat-popup {
+  padding: 50px;
+  border-radius: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+  background-color: rgba(29, 29, 30, 0.8);
+  width: 350px;
+  max-width: 400px;
+  margin-bottom: 350px;
+  z-index: 1001;
+}
+
+/* Styling for the popup cancel button for the Chat page */
+.popup-cancel-button {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  outline: none;
+  padding: 0 10px;
+}
+
+.typing-char {
+  display: inline-block;
+  opacity: 1;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.typing-char.delete {
+  opacity: 0;
+  transform: scale(0);
+}
+
+li.deleting {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  opacity: 0;
+  transform: scale(0);
+}
+
+/* General Styling for the popup header for the Chat page (Need Assistance? and X button) */
+.popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+/* Styling for the popup title for the Chat page (Need Assistance?)*/
+.popup-title {
+  font-size: 24px;
+  font-family: 'Mona';
+}
+
+/* Styling for the popup body for the Chat page */
+.popup-body {
+  font-family: 'Mona';
+  margin-bottom: 10px;
+  margin-bottom: 10px;
+  white-space: pre-wrap;
+}
+
+/******************** STYLING FOR THE CHAT PAGE ANIMATIONS *********************/
+/* Styling for the chat typing animation for the Chat page */
+.word {
+  display: inline-block; /* Ensures that words are inline elements */
+  white-space: pre-wrap; /* Prevents the words from breaking */
+}
+
+.chat-char {
+  opacity: 0;
+  display: inline-block;
+  white-space: pre-wrap;
+  animation: typing 0.2s forwards;
+}
+
+.chat-char-no-animation {
+  display: inline-block;
+  white-space: pre-wrap;
+}
+
+/* Styling for the chat typing animation keyframes for the Chat page */
+@keyframes typing {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.chat-title-char {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(-5px);
+  animation: typing 0.5s forwards;
+  animation-delay: var(--delay); 
+}
+
+@keyframes typing {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/******************** STYLING FOR THE LOGIN PAGE *********************/
+.loginButton {
+  width: 70%;
+  padding: 10px;
+  color: rgb(255, 255, 255);
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 40px;
+  background-color: rgb(179, 33, 33);
+  border-radius: 15px;
+  border: none;
+  cursor: pointer;
+  display: block;
+  font-family: 'Mona';
+  font-size: 13px;
+  margin-bottom: 20px;
+
+}
+
+
+.loginButton:hover {
+  background-color: #292727;
+}
+
+/* Error message styling */
+.loginError {
+  color: red;
+  font-size: 0.7em;
+  display: flex-box;
+  position: absolute;
+  text-align: center;
+  justify-content: center;
+  margin-top: 16px;
+  width: 100%;
+  top: 77%;
+  left: 50%;
+  width: 80%;
+  transform: translate(-50%, -50%);
+
+}
+
+.signUpError {
+  color: red;
+  font-size: 0.7em;
+  display: flex-box;
+  position: absolute;
+  text-align: center;
+  justify-content: center;
+  margin-top: 16px;
+  width: 100%;
+  top: 73%;
+  left: 50%;
+  width: 80%;
+  transform: translate(-50%, -50%);
+
+}
+.resetError {
+  color: red;
+  font-size: 0.7em;
+  display: flex-box;
+  position: absolute;
+  text-align: center;
+  justify-content: center;
+  width: 100%;
+  top: 58%;
+  left: 50%;
+  width: 80%;
+  transform: translate(-50%, -50%);
+
+}
+
+.loginPageContainer {
+  position: relative;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  margin: 0;
+  overflow: hidden;
+}
+
+.loginModalContainer {
+  background-color: rgba(5, 5, 7, 0.8);
+  padding: 30px;
+  border-radius: 30px;
+  align-items: center;
+  border: #7a7a7a 1px solid;
+  width: 450px;
+  height: 400px;
+  max-width: 80%;
+  box-sizing: border-box;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-weight: 300;
+  margin-top: 170px;
+  position: absolute;
+  top: 25%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.loginModalHeader {
+  padding-top: 0px;
+  padding-bottom: 40px;
+  box-shadow: none;
+  color: rgba(255, 255, 255, 0.7);
+  background-color: none;
+  font-size: 28px;
+  font-family: 'Mona';
+  text-align: center;
+}
+
+
+.email-container {
+  position: relative;
+  margin-bottom: 25px;
+  width: 320px;
+  box-sizing: content-box;
+}
+
+.login-inputContainer {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-color: rgba(255, 255, 255, 0.8);
+  border: none;
+  border-radius: 10px;
+  box-sizing: border-box;
+  color: #2d333a;
+  font-family: inherit;
+  font-size: 16px;
+  height: 52px;
+  line-height: 1.1;
+  outline: none;
+  padding-block: 1px;
+  padding-inline: 2px;
+  padding: 0 16px;
+  transition: box-shadow .2s ease-in-out, border-color .2s ease-in-out;
+  width: 100%;
+  text-rendering: auto;
+  letter-spacing: normal;
+  word-spacing: normal;
+  text-transform: none;
+  text-indent: 0;
+  text-shadow: none;
+  display: inline-block;
+  text-align: start;
+  margin: 0;
+}
+
+.reset-inputContainer {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-color: rgba(255, 255, 255, 0.8);
+  border: none;
+  border-radius: 10px;
+  box-sizing: border-box;
+  color: #2d333a;
+  font-family: inherit;
+  font-size: 16px;
+  height: 52px;
+  line-height: 1.1;
+  outline: none;
+  padding-block: 1px;
+  padding-inline: 2px;
+  padding: 0 16px;
+  transition: box-shadow .2s ease-in-out, border-color .2s ease-in-out;
+  min-width: 315px;
+  text-rendering: auto;
+  letter-spacing: normal;
+  word-spacing: normal;
+  text-transform: none;
+  text-indent: 0;
+  text-shadow: none;
+  display: inline-block;
+  text-align: start;
+  margin: 0;
+}
+
+.login-inputContainer::placeholder {
+  color: black;
+}
+
+.buttonsContainer {
+  display: flex;
+  justify-content: space-evenly;
+  align-self: center;
+  margin-top: 15px;
+  width: 100%;
+}
+
+.modalButtonContainer {
+  display: flex;
+  justify-content: space-evenly;
+  align-self: center;
+  margin-top: 20px;
+  width: 90%;
+}
+
+/* Styling for 'Forgot Password?' and 'New User' buttons */
+.forgotPasswordButton,
+.newUserButton {
+  background: none;
+  border: none;
+  color: #0066cc;
+  cursor: pointer;
+  font-family: 'Mona';
+  padding: 5px 10px;
+  text-decoration: underline;
+}
+
+.forgotPasswordButton:hover,
+.newUserButton:hover {
+  color: #004499;
+  text-decoration: none;
+}
+
+/******************** STYLING FOR THE SIGNUP PAGE *********************/
+.signupButton {
+  width: 70%;
+  padding: 10px;
+  color: rgb(255, 255, 255);
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: rgb(179, 33, 33);
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+  display: block;
+  font-family: 'Mona';
+  font-size: 13px;
+  margin-top: 60px;
+}
+
+.signupPageContainer {
+  position: relative;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  margin: 0;
+  overflow: hidden;
+}
+
+.signupModalContainer {
+  padding: 30px;
+  border-radius: 30px;
+  align-items: center;
+  border: #7a7a7a 1px solid;
+  width: 450px;
+  height: 570px;
+  max-width: 100%;
+  box-sizing: border-box;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-weight: 300;
+  margin-top: 170px;
+  position: absolute;
+  top: 25%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(5, 5, 7, 0.8);
+
+}
+
+.signupModalHeader {
+  padding-top: 0px;
+  padding-bottom: 40px;
+  box-shadow: none;
+  color: rgba(255, 255, 255, 0.7);
+  background-color: none;
+  font-size: 28px;
+  font-family: 'Mona';
+  text-align: center;
+}
+
+.signupInput {
+  margin-bottom: 30px;
+  width: 300px;
+  height: 52px;
+}
+
+/******************** STYLING FOR THE SIGNUP PAGE *********************/
+
+.forgotPasswordModalContainer {
+  background-color: rgba(5, 5, 7, 0.8);
+  padding: 30px;
+  border-radius: 30px;
+  align-items: center;
+  border: #7a7a7a 1px solid;
+  width: 450px;
+  height: 400px;
+  max-width: 80%;
+  box-sizing: border-box;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-weight: 300;
+  margin-top: 170px;
+  position: absolute;
+  top: 25%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.forgotPasswordSubheader {
+  padding-top: 0px;
+  padding-bottom: 20px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 15px;
+  font-family: 'Mona';
+  text-align: center;
+}
+
+.resetButton {
+  width: 70%;
+  padding: 10px;
+  color: rgb(255, 255, 255);
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 61px;
+  background-color: rgb(179, 33, 33);
+  border-radius: 15px;
+  border: none;
+  cursor: pointer;
+  display: block;
+  font-family: 'Mona';
+  font-size: 13px;
+  min-width: 225px;
+  margin-bottom: 20px;
+}
+
+
+.resetButton:hover {
+  background-color: #292727;
+}
+
+.password-inputContainer {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-color: rgba(255, 255, 255, 0.8);
+  border: none;
+  border-radius: 10px;
+  box-sizing: border-box;
+  color: #2d333a;
+  font-family: inherit;
+  font-size: 16px;
+  margin-bottom: 20px;
+  height: 52px;
+  line-height: 1.1;
+  outline: none;
+  padding-block: 1px;
+  padding-inline: 2px;
+  padding: 0 16px;
+  transition: box-shadow .2s ease-in-out, border-color .2s ease-in-out;
+  width: 80%;
+  text-rendering: auto;
+  letter-spacing: normal;
+  word-spacing: normal;
+  text-transform: none;
+  text-indent: 0;
+  text-shadow: none;
+  display: inline-block;
+  text-align: start;
+}
