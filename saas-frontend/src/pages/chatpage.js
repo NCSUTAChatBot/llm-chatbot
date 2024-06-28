@@ -14,6 +14,7 @@ const ChatPage = () => {
     const FEEDBACK_URL = process.env.REACT_APP_FEEDBACK_FORM_URL;
     const CHAT_WELCOME = process.env.REACT_APP_CHAT_WELCOME;
     const CHAT_WELCOME_TEXT = process.env.REACT_APP_CHAT_WELCOME_TEXT;
+    const apiUrl = process.env.REACT_APP_API_URL;
 
     // This hook is used to navigate between different pages
     const navigate = useNavigate();
@@ -38,7 +39,6 @@ const ChatPage = () => {
     // This hook is used to store the animated titles state
     const [isLastMessageNew, setIsLastMessageNew] = useState(false);
     const suggestedContainerRef = useRef(null);
-    const [chatTitle, setChatTitle] = useState('');
 
     // This function is called when the user clicks on the downloiad as pdf button
     const handleDownloadChat = async () => {
@@ -47,7 +47,7 @@ const ChatPage = () => {
             return;
         }
         try {
-            const response = await fetch('http://127.0.0.1:8000/chat/export_single_chat_to_pdf', {
+            const response = await fetch(`${apiUrl}/chat/export_single_chat_to_pdf`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -79,7 +79,7 @@ const ChatPage = () => {
     const selectChat = async (sessionKey) => {
         setCurrentSessionKey(sessionKey);
         try {
-            const response = await fetch('http://127.0.0.1:8000/chat/get_chat_by_session', {
+            const response = await fetch(`${apiUrl}/chat/get_chat_by_session`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email: userInfo.email, sessionKey: sessionKey })
@@ -114,7 +114,7 @@ const ChatPage = () => {
             setCurrentSessionKey('');  
             setMessages([]);
 
-            const sessionResponse = await fetch('http://127.0.0.1:8000/chat/createSession', {
+            const sessionResponse = await fetch(`${apiUrl}/chat/createSession`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email: userInfo.email })
@@ -134,7 +134,7 @@ const ChatPage = () => {
     // This function is called when the user clicks on the Logout button
     const handleLogout = async () => {
         try {
-            const response = await fetch('http://127.0.0.1:8000/user/logout', {
+            const response = await fetch(`${apiUrl}/user/logout`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' }
             });
@@ -159,7 +159,7 @@ const ChatPage = () => {
         try {
             setDeletingSessionKey(sessionKey);
             setTimeout(async () => {
-                const response = await fetch('http://127.0.0.1:8000/chat/delete_chat', {
+                const response = await fetch(`${apiUrl}/chat/delete_chat`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email: userInfo.email, sessionKey: sessionKey })
@@ -182,7 +182,7 @@ const ChatPage = () => {
     };
     //used to update chat title of a session key that already exists
     const updateChatTitle = async (email, sessionKey, newTitle) => {
-        await fetch('http://127.0.0.1:8000/chat/update_chat_title', {
+        await fetch(`${apiUrl}/chat/update_chat_title`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -216,7 +216,7 @@ const ChatPage = () => {
             let payload;
             //if no session key is set, assume we are creating a new session
             if (!currentSessionKey) {
-                response = await fetch('http://127.0.0.1:8000/chat/ask', {
+                response = await fetch(`${apiUrl}/chat/ask`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email: email, question: question, chatTitle: question })
@@ -224,7 +224,7 @@ const ChatPage = () => {
                  // If a session key exists, continue the existing session with a new message
             } else {
                 payload = { email, sessionKey: currentSessionKey, question };
-                response = await fetch('http://127.0.0.1:8000/chat/ask', {
+                response = await fetch(`${apiUrl}/chat/ask`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
@@ -237,7 +237,7 @@ const ChatPage = () => {
                     setCurrentSessionKey(data.sessionKey);
     
                     //  re-fetch the ask endpoint with the new sessionKey for streaming
-                    response = await fetch('http://127.0.0.1:8000/chat/ask', {
+                    response = await fetch(`${apiUrl}/chat/ask`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ email, sessionKey: data.sessionKey, question })
@@ -321,7 +321,7 @@ const ChatPage = () => {
         const fetchSavedChats = async () => {
             if (userInfo && userInfo.email) {
                 try {
-                    const response = await fetch(`http://127.0.0.1:8000/chat/get_saved_chats?email=${userInfo.email}`);
+                    const response = await fetch(`${apiUrl}/chat/get_saved_chats?email=${userInfo.email}`);
                     if (response.ok) {
                         const data = await response.json();
 

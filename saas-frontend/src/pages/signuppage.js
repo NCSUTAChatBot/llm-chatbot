@@ -14,6 +14,8 @@ function SignupPage() {
     const RFOOTER = process.env.REACT_APP_RFOOTER;
     const FEEDBACK_URL = process.env.REACT_APP_FEEDBACK_FORM_URL;
     const BACKGROUND_IMAGE_URL = process.env.REACT_APP_BACKGROUND_IMAGE_URL;
+    const apiUrl = process.env.REACT_APP_API_URL;
+
 
     // useState hook is used to create state variables for inputs
     const [email, setEmail] = useState('');
@@ -55,7 +57,7 @@ function SignupPage() {
         console.log('Signup Submitted', { firstName, lastName, email, password });
         // Add logic to handle login here 
         try {
-            const response = await fetch('http://localhost:8000/user/signup', {
+            const response = await fetch(`${apiUrl}/user/signup`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

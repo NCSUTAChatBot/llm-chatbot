@@ -9,6 +9,8 @@ import { useNavigate } from 'react-router-dom';
 function ForgotPassword() {
     const NAVBAR_HEADER = process.env.REACT_APP_NAVBAR_HEADER;
     const BACKGROUND_IMAGE_URL = process.env.REACT_APP_BACKGROUND_IMAGE_URL;
+    const apiUrl = process.env.REACT_APP_API_URL;
+
     
     const [email, setEmail] = useState('');
     const [message, setMessage] = useState('');
@@ -28,7 +30,7 @@ function ForgotPassword() {
             return;
         }
         try {
-                const response = await fetch('http://localhost:8000/user/forgot_password', {
+                const response = await fetch(`${apiUrl}/user/forgot_password`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({email}),
