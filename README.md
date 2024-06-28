@@ -85,87 +85,24 @@ npm install
 npm start
 ```
 
-## Version Update 2024/4/22
+## Version Updates
 
-*   Supports loading indicator when waiting for a response from openai gpt backend.
+| Date       | Author         | Changes                                                                                           |
+|------------|----------------|---------------------------------------------------------------------------------------------------|
+| 2024/4/22  | Haoze Du       | Supports loading indicator when waiting for a response from OpenAI GPT backend.                   |
+| 2024/5/16  | Sanjit Verma   | Revised REACT Frontend and code commenting. Backend API Integration.                               |
+| 2024/5/31  | Sanjit Verma   | Added Static chat history sidebar in chat page. Added env configs for frontend.                    |
+| 2024/6/01  | Sanjit Verma   | Restructured backend into saas-backend along with model, repo, service, and controller structure.  |
+|            |                | Added support API endpoint for login and create user.                                              |
+| 2024/6/05  | Dinesh Kannan  | Created Login and Signup pages and connected them to the database.                                 |
+| 2024/6/08  | Sanjit Verma   | UI changes for login and signup page. Chat history functionality added.                            |
+| 2024/6/16  | Sanjit Verma   | New Backend System for LLM. MongoDB Vector Store generate and load implemented.                    |
+| 2024/6/18  | Sanjit Verma   | Implemented backend/query system into API and integrated with existing frontend.                   |
+|            |                | UI improvements to the chat page. Added Font packs.                                                |
+| 2024/6/20  | Sanjit Verma   | Implemented chat streaming support in backend system. Adjusted frontend logic to incorporate chat streaming. |
+| 2024/6/21  | Dinesh Kannan  | Guest mode removed, app authentication protection. Input Disabling while chat streaming.           |
+| 2024/6/25  | Sanjit Verma   | IP hardcoding removed, added to env file.                                                          |
 
-## Version Update 2024/5/16
-
-*   @author sanjit verma
-
-*   Revised REACT Frontend and code commenting
-
-*   Backend API Integration
-
-## Version Update 2024/5/31
-
-*   @author sanjit verma
-
-*   Added Static chat history sidebar in chat page 
-
-*   Added env configs for frontend
-
-## Version Update 2024/6/01
-
-*   @author sanjit verma
-
-*   restructured backend into saas-backend along with model, repo, service and controller strcuture
-
-*   added support API endpoint for login and create user
-
-## Version Update 2024/6/05
-
-*  @author dinesh kannan
-
-*  Created Login and Signup pages and connected it to the database
-
-## Version Update 2024/6/08
-
-*  @author sanjit verma
-
-*   UI changes for login and signup page
-
-*   chat history functionality added
-
-## Version Update 2024/6/16
-
-*  @author sanjit verma
-
-*   New Backend System for LLM 
-
-*   MongoDB Vector Store generate and load implemented
-  
-## Version Update 2024/6/18
-
-*  @author sanjit verma
-
-*   Implemented backend/query system into API and integrated with exsisting frontend
-
-*   UI improvements to the chat page
-
-*   Added Font packs
-
-## Version Update 2024/6/20
-
-*  @author sanjit verma
-
-*    Implemented chat streaming support in backend system
-
-*    Adjusted frontend logic to incorporate chat streaming
-
-## Version Update 2024/6/21
-
-*  @author Dinesh Kannan
-
-*    Guest mode removed, app authentication protection 
-
-*    Input Disabling while chat streaming
-
-## Version Update 2024/6/25
-
-*  @author sanjit verma
-
-*    IP hardcoding removed, added to env file
 
 
 
