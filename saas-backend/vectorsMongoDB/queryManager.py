@@ -17,6 +17,7 @@ from langchain_mongodb import MongoDBAtlasVectorSearch
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
 from dotenv import load_dotenv
+from langfuse.callback import CallbackHandler
 
 load_dotenv()
 logging.basicConfig(level=logging.INFO)
@@ -29,8 +30,11 @@ db_name = os.getenv('MONGODB_DATABASE')
 collection_name = os.getenv('MONGODB_VECTORS')
 vector_search_idx = os.getenv('MONGODB_VECTOR_INDEX')
 
+
 # Connect to MongoDB
 client = MongoClient(MONGODB_URI)
+langfuse_handler = CallbackHandler()
+langfuse_handler.auth_check()
 
 if db_name is None or collection_name is None:
     raise ValueError("Database name or collection name is not set.")
@@ -99,7 +103,8 @@ def process_query(question):
         raise ValueError("The question must be a string.")
 
     try:
-        stream_response = rag_chain.invoke(question)
+        stream_response = rag_chain.invoke(question, config={"callbacks":[langfuse_handler]})
+
 
         for chunk in stream_response: #chunking allows user to see response as processed,  
             yield chunk
