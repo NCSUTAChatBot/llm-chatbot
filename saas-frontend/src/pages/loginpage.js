@@ -14,6 +14,8 @@ const LFOOTER = process.env.REACT_APP_LFOOTER;
 const RFOOTER = process.env.REACT_APP_RFOOTER;
 const FEEDBACK_URL = process.env.REACT_APP_FEEDBACK_FORM_URL;
 const BACKGROUND_IMAGE_URL = process.env.REACT_APP_BACKGROUND_IMAGE_URL;
+const apiUrl = process.env.REACT_APP_API_URL;
+
 
 function LoginPage(){
         
@@ -48,7 +50,7 @@ function LoginPage(){
         event.preventDefault();
         try{
             // logic to handle login
-            const response= await fetch('http://localhost:8000/user/login',{
+            const response= await fetch(`${apiUrl}/user/login`,{
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
