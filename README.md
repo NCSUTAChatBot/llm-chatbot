@@ -161,5 +161,12 @@ npm start
 
 *    Input Disabling while chat streaming
 
+## Version Update 2024/6/25
+
+*  @author sanjit verma
+
+*    IP hardcoding removed, added to env file
+
+
 
   
