@@ -52,10 +52,13 @@ python app.py
 ```
 cd saas-frontend
 ```
-2. Add the following .env File under the saas-frontend folder (optional: customize for your school)
+2. Add the following .env File under the saas-frontend folder (optional: customize for your school and IP adress)
 ```
 # .env file for NC State University
 # @author Sanjit Verma
+
+#VCL
+REACT_APP_API_URL=http://127.0.0.1:8000
 
 # NAVBAR
 REACT_APP_NAVBAR_HEADER="Virtual TA"
@@ -71,6 +74,7 @@ REACT_APP_FRONT_LOGO="/ncstate-brick-4x1-blk-max.png"
 # CHAT PAGE
 REACT_APP_CHAT_WELCOME="Hello, "
 REACT_APP_CHAT_WELCOME_TEXT="How can I help you today?"
+
 
 ```
 3.  Install the packages for the frontend.
