@@ -1,6 +1,6 @@
-# TAChatBot
+# ta-chatbot project 
 
-## For Collaborators
+## Contributing
 
 *   Feel free to create your version of this repo by creating a new branch with your name and what you plan to do, e.g. haoze/multi-files
 
@@ -18,7 +18,8 @@
 
 3.  Access the Application: Once both servers are running, open your web browser and visit <http://localhost:3000> to access the application.
 
-### Running the FrontEnd
+
+## Running the FrontEnd
 
 1.  Navigate to the folder saas-frontend
    
@@ -62,7 +63,7 @@ npm install
 npm start
 ```
 
-### Running the Backend
+## Running the Backend
 Contact Sanjit Verma (skverma@ncsu.edu) to be added to the MongoDB database for your username and password
 
 1.  Navigate to the folder saas-backend
@@ -93,7 +94,7 @@ LANGFUSE_HOST = "https://us.cloud.langfuse.com"
 python app.py
 ```
 
-### Setting up LangFuse
+## Setting up LangFuse
 We track our LLM performance using Langfuse. 
 
 What it is: Langfuse is a platform designed for logging, monitoring, and observability of large language models (LLMs). It is not a testing framework. Instead, Langfuse provides tools for tracking the performance, usage, and behavior of LLMs in real-time. Use it to optimize models perfomance, cost and debug issues.
