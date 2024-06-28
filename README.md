@@ -18,33 +18,6 @@
 
 3.  Access the Application: Once both servers are running, open your web browser and visit <http://localhost:3000> to access the application.
 
-
-### Running the Backend
-1.  Navigate to the folder saas-backend
-2.  Install the packages from `requirements.txt`.
-
-```python
-pip install -r requirements.txt
-```
-(Optional) The `requirments.txt` might be out of date. Install the package prompted from the terminal.
-
-3. Add the following .env File under the saas-backend folder (replace username and password with your unity ID, I have set this up please contact me if there is an connection error)
-```
-MONGODB_URI="mongodb+srv://skverma:skverma@chatbot.3zncvhn.mongodb.net/?retryWrites=true&w=majority&appName=chatbot"
-MONGODB_DATABASE=chatbot
-MONGODB_VECTORS= MONGODB_VECTORS
-MONGODB_VECTOR_INDEX= MONGODB_VECTOR_INDEX
-MONGODB_USERS= MONGODB_USERS
-OPENAI_API_KEY= <YOU API KEY HERE>
-
-```
-
-4.  Start the server.
-
-```python
-python app.py
-```
-
 ### Running the FrontEnd
 
 1.  Navigate to the folder saas-frontend
@@ -57,8 +30,8 @@ cd saas-frontend
 # .env file for NC State University
 # @author Sanjit Verma
 
-#VCL
-REACT_APP_API_URL=http://127.0.0.1:8000
+#VCL: default set to localhost
+REACT_APP_API_URL=http://127.0.0.1:8000 
 
 # NAVBAR
 REACT_APP_NAVBAR_HEADER="Virtual TA"
@@ -89,6 +62,45 @@ npm install
 npm start
 ```
 
+### Running the Backend
+Contact Sanjit Verma (skverma@ncsu.edu) to be added to the MongoDB database for your username and password
+
+1.  Navigate to the folder saas-backend
+2.  Install the packages from `requirements.txt`.
+
+```python
+pip install -r requirements.txt
+```
+(Optional) The `requirments.txt` might be out of date. Install the package prompted from the terminal.
+
+3. Add the following .env File under the saas-backend folder 
+```
+MONGODB_URI="mongodb+srv://<username>:<password>@chatbot.3zncvhn.mongodb.net/?retryWrites=true&w=majority&appName=chatbot"
+MONGODB_DATABASE=chatbot
+MONGODB_VECTORS= MONGODB_VECTORS
+MONGODB_VECTOR_INDEX= MONGODB_VECTOR_INDEX
+MONGODB_USERS= MONGODB_USERS
+OPENAI_API_KEY= <YOU API KEY HERE>
+LANGFUSE_PUBLIC_KEY = <YOU API KEY HERE>
+LANGFUSE_SECRET_KEY = <YOU API KEY HERE>
+LANGFUSE_HOST = "https://us.cloud.langfuse.com"
+
+```
+
+4.  Start the server.
+
+```python
+python app.py
+```
+
+### Setting up LangFuse
+We track our LLM performance using Langfuse. 
+
+What it is: Langfuse is a platform designed for logging, monitoring, and observability of large language models (LLMs). It is not a testing framework. Instead, Langfuse provides tools for tracking the performance, usage, and behavior of LLMs in real-time. Use it to optimize models perfomance, cost and debug issues.
+
+Please contact Nirmal Joji (nsjoji@ncsu.edu) to be added to the project on LangFuse and get the API Keys or if you need assistance with LangFuse
+
+
 ## Version Updates
 
 | Date       | Author         | Changes                                                                                           |
@@ -104,6 +116,7 @@ npm start
 | 2024/6/20  | Sanjit Verma   | Implemented chat streaming support in backend system. Adjusted frontend logic to incorporate chat streaming. |
 | 2024/6/21  | Dinesh Kannan  | Guest mode removed, app authentication protection. Input Disabling while chat streaming.           |
 | 2024/6/25  | Sanjit Verma   | IP hardcoding removed, added to env file.                                                          |
+| 2024/6/27  | Nirmal Joji   | Langfuse integration and project setup                                                          |
 
 
 
