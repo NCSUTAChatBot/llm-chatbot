@@ -106,7 +106,7 @@ Please contact Nirmal Joji (nsjoji@ncsu.edu) to be added to the project on LangF
 
 ## Version Updates
 
-| Date       | Author &nbsp;         | Changes                                                                                           |
+| Date       | Author &nbsp; &nbsp;          | Changes                                                                                           |
 |------------|----------------|---------------------------------------------------------------------------------------------------|
 | 2024/4/22  | Haoze Du       | Supports loading indicator when waiting for a response from OpenAI GPT backend.                   |
 | 2024/5/16  | Sanjit Verma   | Revised REACT Frontend and code commenting. Backend API Integration.                               |
