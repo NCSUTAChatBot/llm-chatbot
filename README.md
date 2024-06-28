@@ -1,5 +1,6 @@
 # ta-chatbot project 
-![Static Badge](https://img.shields.io/badge/slack-channel-red?link=https%3A%2F%2Fllmchatbotproject.slack.com%2F)
+![Static Badge](https://img.shields.io/badge/slack-channel-000435?link=https%3A%2F%2Fllmchatbotproject.slack.com%2F)
+
 
 ## Contributing
 
