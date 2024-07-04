@@ -101,10 +101,9 @@ function LoginPage(){
             <div className="loginModalContainer">
             <div className="loginModalHeader">Welcome Back</div>
             <form onSubmit={handleLogin}>
-                <div className="email-container">
+                <div className="signupInput">
                     <input
                     placeholder="Email"
-                    style={{color: 'black'}} 
                     type="email"
                     id="email"
                     className="login-inputContainer"
@@ -113,7 +112,7 @@ function LoginPage(){
                     required
                     />
                 </div>
-                <div>
+                <div className="signupInput">
                     <input
                     type="password"
                     id="password"

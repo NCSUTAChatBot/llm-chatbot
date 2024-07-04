@@ -19,6 +19,7 @@ import io
 from flask_cors import CORS
 import vectorsMongoDB.queryManager as queryManager
 import time
+from langfuse.decorators import observe, langfuse_context
 
 # a blueprint named 'chat'
 chat_bp = Blueprint('chat', __name__)
@@ -134,11 +135,11 @@ def ask():
                             bot_response_text = choice["text"]
                             yield f"{bot_response_text}"
                             full_response += bot_response_text  
-                            time.sleep(0.015) # generator needs a short delay to process each chunk in  otherwise generator will process too quickly
+                            time.sleep(0.01) # generator needs a short delay to process each chunk in  otherwise generator will process too quickly
                 else:
                     yield f"{chunk}"
                     full_response += chunk  
-                    time.sleep(0.015)
+                    time.sleep(0.01)
 
 
         except Exception as e:
@@ -150,11 +151,12 @@ def ask():
             "text": full_response,
             "timestamp": datetime.now().isoformat()
         }
+        
         user_collection.update_one(
             {"email": email},
             {"$push": {f"savedChats.{session_key}.messages": bot_response}}
         )
-
+    
     return Response(stream_with_context(generate_response()), content_type='text/plain')
 
 @chat_bp.route('/update_chat_title', methods=['POST'])

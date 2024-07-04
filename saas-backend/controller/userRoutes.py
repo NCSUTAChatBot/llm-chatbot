@@ -11,6 +11,7 @@ from service.user_service import UserService
 from repository.user_repository import UserRepository
 from pydantic import ValidationError
 from dotenv import load_dotenv
+from langfuse.decorators import observe, langfuse_context
 import os
 
 # Load environment variables
@@ -50,7 +51,9 @@ def create_user():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+
 @user_bp.route('/login', methods=['POST'])
+@observe()
 def login_user():
     """
     This method allows registed user to login into their profile
@@ -63,6 +66,7 @@ def login_user():
         valid, message , user = user_service.authenticate_user(email, password)
         if valid:
             session['user_email']= email
+            langfuse_context.update_current_trace(user_id=email)
             access_token = create_access_token(identity=email)
             user_info={'name': user['first_name'], 'last_name': user['last_name'], 'email': user['email']}
             return jsonify({"access_token":access_token, "message":message, "user_info": user_info} ), 200

@@ -395,57 +395,6 @@ const ChatPage = () => {
         return text.length > maxLength ? `${text.substring(0, maxLength)}` : text;
     };
 
-    // This function is used to render the message text with a typing animation
-    // const renderMessageText = (text, sender, isLatest) => {
-    //     if (typeof text === 'string' && sender === 'bot' && isLatest) {
-    //         const words = text.split(' ');
-    //         let cumulativeIndex = 0;
-    //         return (
-    //             <span className="sentence">
-    //                 {words.map((word, wordIndex) => {
-    //                     return (
-    //                         <span key={wordIndex} className="word">
-    //                             {Array.from(word).map((char, charIndex) => {
-    //                                 const style = {
-    //                                     animationDelay: `${cumulativeIndex * 0.025}s`,
-    //                                     animationName: 'typing'
-    //                                 };
-    //                                 cumulativeIndex++;
-    //                                 return (
-    //                                     <span key={charIndex} className="chat-char" style={style}>
-    //                                         {char}
-    //                                     </span>
-    //                                 );
-    //                             })}
-    //                             {wordIndex < words.length - 1 && <span className="space">{' '}</span>}
-    //                         </span>
-    //                     );
-    //                 })}
-    //             </span>
-    //         );
-    //     } else {
-    //         return text;
-    //     }
-    // };
-
-    // const displayText = (text, sender) => {
-    //     if (typeof text === 'string' && sender === 'bot') {
-    //         const words = text.split(' ');
-    //         return words.map((word, wordIndex) => (
-    //             <span key={wordIndex} className="word">
-    //                 {word.split('').map((char, charIndex) => (
-    //                     <span key={charIndex} className="chat-char-no-animation">
-    //                         {char}
-    //                     </span>
-    //                 ))}
-    //                 {wordIndex < words.length - 1 && '\u00A0'}
-    //             </span>
-    //         ));
-    //     } else {
-    //         return text;
-    //     }
-    // };
-
     // This function is used to render the chat title with a typing animation
     const renderChatTitle = (title) => {
         return title.split('').map((char, index) => (
@@ -486,7 +435,8 @@ const ChatPage = () => {
                                 <div className="popup-body">
                                     <p>Type you prompt and patiently wait for the model to generate the response. </p>
                                     <p>Please leave feedback on your responses and report any bugs using the Feedback button so we can improve the chatbot.</p>
-                                </div>
+                                    <p>DISCLAIMER: Chat messages are collected to enhance and improve our services.</p>
+                                    </div>
                             </div>
                         </div>
                     )}
@@ -627,7 +577,7 @@ const ChatPage = () => {
                     <div ref={messageEndRef} />
                 </div>
                 <div className="input-row">
-                    <input
+                    <textarea
                         type="text"
                         id="question"
                         placeholder="Type a prompt"
