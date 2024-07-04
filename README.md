@@ -120,6 +120,7 @@ Please contact Nirmal Joji (nsjoji@ncsu.edu) to be added to the project on LangF
 | 2024/6/21  | Dinesh Kannan  | Guest mode removed, app authentication protection. Input Disabling while chat streaming.           |
 | 2024/6/25  | Sanjit Verma   | IP hardcoding removed, added to env file.                                                          |
 | 2024/6/27  | Nirmal Joji   | Langfuse integration and project setup                                                          |
+| 2024/7/4  | Sanjit Verma  | Updated Signup page, Added LangFuse User logging                                                          |
 
 
 
