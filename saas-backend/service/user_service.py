@@ -38,7 +38,7 @@ class UserService:
             return False
         if not re.search(r"[A-Z]", password):
             return False
-        if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", password):
+        if not re.search(r"[!@#$%^&*(),.?\":{}|<>_]", password):
             return False
         return True
     

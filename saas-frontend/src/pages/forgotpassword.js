@@ -67,7 +67,6 @@ function ForgotPassword() {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="Enter your email"
-                        style={{color: 'black'}} 
                         id="email"
                         className="reset-inputContainer"
                         required

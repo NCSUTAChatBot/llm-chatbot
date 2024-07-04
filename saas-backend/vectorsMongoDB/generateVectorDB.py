@@ -1,7 +1,9 @@
 '''
 This file is responsible for generating the vector database from the text chunks. 
 
-Needs to be ran once to load the DB with embeddings and text chunks.
+Needs to be run once to load the DB with embeddings and text chunks.
+
+Run this script from the command line using python generateVectorDB.py
 
 ***IMPORTANT*** You can't query your index yet. You must create a vector search index in MongoDB's UI now. 
 See Create the Atlas Vector Search Index in https://www.mongodb.com/docs/atlas/atlas-vector-search/ai-integrations/langchain/"""
