@@ -204,9 +204,8 @@
   border-radius: 10px;
 }
 
-/* Styling the scrollbar track */
 .sidebar ul:hover::-webkit-scrollbar-track {
-  background: rgb(0, 0, 0); /* Background color of the track */
+  background: rgb(0, 0, 0); 
   border-radius: 10px; 
   width: 0px; 
 }
@@ -277,17 +276,76 @@
   background-color: transparent; 
 }
 
+.guest-login {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  margin-top: auto;
+}
+
+.login-message {
+  color: #888;
+  font-size: 14px;
+  text-align: left;
+  margin-bottom: 10px;
+  margin-top: 10px;
+  font: 'Mona';
+}
+
+.first-line {
+  color: #ffffff;
+  font: 'Mona';
+}
+
+.signup-button {
+  background-color: rgb(179, 33, 33);
+  color: white;
+  border: none;
+  border-radius: 7px;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 14px;
+  margin: 5px;
+  width: 100%;
+}
+.login-button{
+  background-color: #292727;
+  color: white;
+  border: none;
+  border-radius: 7px;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 14px;
+  margin: 5px;
+  width: 100%;
+}
+
+.signup-button:hover {
+  background-color: rgb(153, 30, 30);
+}
+
+.login-button:hover  {
+  background-color: #3f3d3d;
+}
+
+
 /* Styling for the title for the Chat page (SAAS Chatbot @2024 NCSU CSC Dept)*/
 .title {
   margin-top: 1px;
-  font-size: 14px;
+  font-size: 17px;
   font-family: 'Mona';
-  letter-spacing: 1px;
   font-weight: 500;
 }
 .title-chatpage {
   margin-top: .75px;
-  font-size: 15px;
+  font-size: 17px;
+  font-family: 'Mona';
+  font-weight: 500;
+}
+.title-chatpage-smallText {
+  margin-top: .75px;
+  font-size: 12px;
   font-family: 'Mona';
   font-weight: 500;
 }
@@ -990,6 +1048,14 @@ li.deleting {
   width: 100%;
 }
 
+.buttonsContainer2 {
+  display: flex;
+  justify-content: space-evenly;
+  align-self: center;
+  margin-top: 10px;
+  width: 100%;
+}
+
 .modalButtonContainer {
   display: flex;
   justify-content: space-evenly;
@@ -1001,6 +1067,16 @@ li.deleting {
 /* Styling for 'Forgot Password?' and 'New User' buttons */
 .forgotPasswordButton,
 .newUserButton {
+  background: none;
+  border: none;
+  color: #0066cc;
+  cursor: pointer;
+  font-family: 'Mona';
+  padding: 5px 10px;
+  text-decoration: underline;
+}
+
+.guestButton {
   background: none;
   border: none;
   color: #0066cc;
@@ -1035,6 +1111,11 @@ li.deleting {
   font-family: 'Mona';
   font-size: 13px;
   margin-top: 140px;
+}
+
+
+.signupButton:hover {
+  background-color: #292727;
 }
 
 .signupPageContainer {
