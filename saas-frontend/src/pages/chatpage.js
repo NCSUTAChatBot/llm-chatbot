@@ -11,6 +11,7 @@ const ChatPage = () => {
 
     // ENV VARIABLES
     const NAVBAR_HEADER = process.env.REACT_APP_NAVBAR_HEADER;
+    const REACT_APP_LFOOTER = process.env.REACT_APP_LFOOTER;
     const FEEDBACK_URL = process.env.REACT_APP_FEEDBACK_FORM_URL;
     const CHAT_WELCOME = process.env.REACT_APP_CHAT_WELCOME;
     const CHAT_WELCOME_TEXT = process.env.REACT_APP_CHAT_WELCOME_TEXT;
@@ -111,7 +112,7 @@ const ChatPage = () => {
     //when creating a new chat session using the new chat button
     const handleNewChat = async () => {
         try {
-            setCurrentSessionKey('');  
+            setCurrentSessionKey('');
             setMessages([]);
 
             const sessionResponse = await fetch(`${apiUrl}/chat/createSession`, {
@@ -119,7 +120,7 @@ const ChatPage = () => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email: userInfo.email })
             });
-    
+
             if (sessionResponse.ok) {
                 const sessionData = await sessionResponse.json();
                 setCurrentSessionKey(sessionData.sessionKey);  // Set the new session key
@@ -127,7 +128,7 @@ const ChatPage = () => {
                 throw new Error('Failed to create a new chat session.');
             }
         } catch (error) {
-            
+
         }
     };
 
@@ -193,20 +194,26 @@ const ChatPage = () => {
                 newTitle: newTitle
             })
         }).then(response => response.json())
-          .then(data => {
-              console.log("Title updated:", data);
-          })
-          .catch(error => {
-              console.error("Error updating title:", error);
-          });
+            .then(data => {
+                console.log("Title updated:", data);
+            })
+            .catch(error => {
+                console.error("Error updating title:", error);
+            });
     };
 
     // This function is called when the user submits a question. It handles logic for creating session and managing message history
     const handleSubmit = async (event) => {
         event.preventDefault();
-        if (!question.trim() || !userInfo.email) return;
+        if (!question.trim()) return;
+
+        if (!userInfo || !userInfo.email) {
+            handleGuestSubmit(event);
+            return;
+        }
+
         setIsLastMessageNew(true);
-    
+
         const email = userInfo.email;
         const userMessage = { text: question, sender: 'user' };
         setMessages(prevMessages => [...prevMessages, userMessage]);
@@ -221,7 +228,7 @@ const ChatPage = () => {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email: email, question: question, chatTitle: question })
                 });
-                 // If a session key exists, continue the existing session with a new message
+                // If a session key exists, continue the existing session with a new message
             } else {
                 payload = { email, sessionKey: currentSessionKey, question };
                 response = await fetch(`${apiUrl}/chat/ask`, {
@@ -235,7 +242,7 @@ const ChatPage = () => {
                 if (!currentSessionKey) {
                     const data = await response.json();
                     setCurrentSessionKey(data.sessionKey);
-    
+
                     //  re-fetch the ask endpoint with the new sessionKey for streaming
                     response = await fetch(`${apiUrl}/chat/ask`, {
                         method: 'POST',
@@ -255,14 +262,14 @@ const ChatPage = () => {
                     const reader = response.body.getReader();
                     const decoder = new TextDecoder();
                     let aggregatedText = ''; // Buffer for the streamed text
-    
+
                     while (true) {
                         const { done, value } = await reader.read();
                         if (done) break;
-    
+
                         const chunk = decoder.decode(value, { stream: true });
                         aggregatedText += chunk;
-                        
+
                         // Update messages without duplicating or adding unnecessary spaces
                         setMessages(messages => {
                             const lastMessage = messages[messages.length - 1];
@@ -274,17 +281,17 @@ const ChatPage = () => {
                             }
                         });
                     }
-                    
+
                     // Ensure the reader is closed
                     reader.releaseLock();
                 }
-    
-                 // Update the session title in local state if necessary, based on session history
+
+                // Update the session title in local state if necessary, based on session history
                 if (currentSessionKey) {
                     setSavedSessionKeys(prevKeys => {
                         const sessionIndex = prevKeys.findIndex(session => session.sessionKey === currentSessionKey);
                         if (sessionIndex === -1) {
-                             // If the session is not found in the local state add it with the new title
+                            // If the session is not found in the local state add it with the new title
                             updateChatTitle(email, currentSessionKey, question);
                             return [{ sessionKey: currentSessionKey, chatTitle: question }, ...prevKeys];
                         } else {
@@ -307,7 +314,79 @@ const ChatPage = () => {
             // Enable the submit button again
             setIsLastMessageNew(false);
         }
-    
+
+        messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    };
+
+    const handleGuestSubmit = async (event) => {
+        event.preventDefault();
+        if (!question.trim()) return;
+        setIsLastMessageNew(true);
+
+        const userMessage = { text: question, sender: 'user' };
+        setMessages(prevMessages => [...prevMessages, userMessage]);
+        setQuestion('');
+        try {
+            let response;
+            let payload;
+            if (!currentSessionKey) {
+                response = await fetch(`${apiUrl}/chat/askGuest`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ question: question })
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    setCurrentSessionKey(data.sessionKey);
+                    response = await fetch(`${apiUrl}/chat/askGuest`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ sessionKey: data.sessionKey, question: question })
+                    });
+                }
+            } else {
+                payload = { sessionKey: currentSessionKey, question };
+                response = await fetch(`${apiUrl}/chat/askGuest`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+            }
+            if (response.ok) {
+                if (response.body) {
+                    const reader = response.body.getReader();
+                    const decoder = new TextDecoder();
+                    let aggregatedText = '';
+
+                    while (true) {
+                        const { done, value } = await reader.read();
+                        if (done) break;
+
+                        const chunk = decoder.decode(value, { stream: true });
+                        aggregatedText += chunk;
+
+                        setMessages(messages => {
+                            const lastMessage = messages[messages.length - 1];
+                            if (lastMessage && lastMessage.sender === 'bot') {
+                                lastMessage.text += chunk;
+                                return [...messages.slice(0, -1), lastMessage];
+                            } else {
+                                return [...messages, { text: chunk, sender: 'bot' }];
+                            }
+                        });
+                    }
+                    reader.releaseLock();
+                }
+            } else {
+                throw new Error('Failed to submit message. Status: ' + response.status);
+            }
+        } catch (error) {
+            console.error('Error submitting question:', error);
+            setMessages(prevMessages => prevMessages.slice(0, -1));
+        } finally {
+            setIsLastMessageNew(false);
+        }
+
         messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
 
@@ -413,8 +492,6 @@ const ChatPage = () => {
         const storedUserInfo = localStorage.getItem('userInfo');
         if (storedUserInfo) {
             setUserInfo(JSON.parse(storedUserInfo));
-        }else{
-            navigate('/');
         }
     }, [navigate]);
 
@@ -423,7 +500,10 @@ const ChatPage = () => {
     return (
         <div className='chat-page'>
             <div className="top-barchat">
-                <div className="title-chatpage">{NAVBAR_HEADER} @2024 NCSU CSC Dept</div>
+                <div className="title-chatpage">
+                    {NAVBAR_HEADER}
+                    <span className="title-chatpage-smallText">  {REACT_APP_LFOOTER}</span>
+                </div>
                 <div className="buttons">
                     {showHelpPopup && (
                         <div className="overlay" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0, 0, 0, .8)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
@@ -436,7 +516,7 @@ const ChatPage = () => {
                                     <p>Type you prompt and patiently wait for the model to generate the response. </p>
                                     <p>Please leave feedback on your responses and report any bugs using the Feedback button so we can improve the chatbot.</p>
                                     <p>DISCLAIMER: Chat messages are collected to enhance and improve our services.</p>
-                                    </div>
+                                </div>
                             </div>
                         </div>
                     )}
@@ -462,13 +542,8 @@ const ChatPage = () => {
                             </div>
 
                         ) : (
-                            <div className="userInfo" onClick={toggleDropdown}>
+                            <div className="userInfo" >
                                 Welcome, Guest
-                                {showDropdown && (
-                                    <div className='user-dropdown'>
-                                        <button onClick={handleExit}>Logout</button>
-                                    </div>
-                                )}
                             </div>
                         )}
                     </div>
@@ -478,20 +553,22 @@ const ChatPage = () => {
             <aside className="sidebar">
                 <div className="sidebar-newchat">
                     <button className="start-chat" onClick={handleNewChat} >
-
                         New Chat
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" style={{ width: '22px', height: '22px' }}>
                             <path strokeLinecap="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
                         </svg>
                     </button>
-                    <button className="refresh-button" onClick={handleDownloadChat} title="Download Chat">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" style={{ width: '22px', height: '22px' }}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
-                        </svg>
-                    </button>
+                    {userInfo && (
+                        <button className="refresh-button" onClick={handleDownloadChat} title="Download Chat">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" style={{ width: '22px', height: '22px' }}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                            </svg>
+                        </button>
+                    )}
+
                 </div>
                 <ul>
-                    {savedSessionKeys.length === 0 ? (
+                    {savedSessionKeys.length === 0 && userInfo ? (
                         <li className="empty-message">
                             Saved Chats appear here
                             <br />
@@ -522,6 +599,15 @@ const ChatPage = () => {
                         ))
                     )}
                 </ul>
+                {(!userInfo || !userInfo.email) && (
+                    <div className="guest-login">
+                        <p className="login-message">
+                            <span className="first-line">Sign Up or Log in</span> <br />
+                            Save chats, download chats, leave feedback, and more.
+                        </p>                        <button className="signup-button" onClick={() => navigate('/signup')}>Sign up</button>
+                        <button className="login-button" onClick={() => navigate('/login')}>Log in</button>
+                    </div>
+                )}
             </aside>
             <main style={{ flex: 1, overflowY: 'hidden', padding: '10px', display: 'flex', flexDirection: 'column' }}>
                 <div className="chat-container">
@@ -534,7 +620,7 @@ const ChatPage = () => {
                             <p className="chat-welcome-text">{CHAT_WELCOME_TEXT}</p>
                             <div className="suggested-section">
                                 <p className="suggested-title">Suggested </p>
-                                
+
 
                                 <div className="suggested-container" ref={suggestedContainerRef}>
                                     <div className="suggested-box">
