@@ -87,6 +87,8 @@ OPENAI_API_KEY= <YOU API KEY HERE>
 LANGFUSE_PUBLIC_KEY = <YOU API KEY HERE>
 LANGFUSE_SECRET_KEY = <YOU API KEY HERE>
 LANGFUSE_HOST = "https://us.cloud.langfuse.com"
+MAIL_USERNAME = "ncsutachatbot@gmail.com"
+MAIL_PASSWORD = "uoop ghkv iaom cfna" 
 
 ```
 
@@ -120,7 +122,10 @@ Please contact Nirmal Joji (nsjoji@ncsu.edu) to be added to the project on LangF
 | 2024/6/21  | Dinesh Kannan  | Guest mode removed, app authentication protection. Input Disabling while chat streaming.           |
 | 2024/6/25  | Sanjit Verma   | IP hardcoding removed, added to env file.                                                          |
 | 2024/6/27  | Nirmal Joji   | Langfuse integration and project setup                                                          |
-| 2024/7/4  | Sanjit Verma  | Updated Signup page, Added LangFuse User logging                                                          |
+| 2024/7/4  | Sanjit Verma   | Updated Signup page, Added LangFuse User logging                                                           |
+| 2024/7/6  | Sanjit Verma   | Added Guest Mode for Users                                                       |
+| 2024/7/7  | Sanjit Verma   | Improved Reset password UI and setup mail account                                                    |
+
 
 
 

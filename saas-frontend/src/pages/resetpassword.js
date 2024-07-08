@@ -2,11 +2,17 @@
  * @file resetpassword.js is a file that contains the reset password page components
  * 
  * @author dineshkannan (dkannan)
+ * @author sanjit verma (skverma)
  */
+
 import React, { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+import '../globalStyles.css'; 
+
 const apiUrl = process.env.REACT_APP_API_URL;
+const NAVBAR_HEADER = process.env.REACT_APP_NAVBAR_HEADER;
+const BACKGROUND_IMAGE_URL = process.env.REACT_APP_BACKGROUND_IMAGE_URL;
 
 function ResetPassword() {
     const [searchParams] = useSearchParams();
@@ -18,9 +24,25 @@ function ResetPassword() {
     const [message, setMessage] = useState('');
     const [isResetSuccessful, setIsResetSuccessful] = useState(false);
 
-    const navigate= useNavigate();
+    // Password criteria states
+    const [hasUppercase, setHasUppercase] = useState(false);
+    const [hasNumber, setHasNumber] = useState(false);
+    const [hasSpecialChar, setHasSpecialChar] = useState(false);
+    const [isLongEnough, setIsLongEnough] = useState(false);
 
-    const handleResetPassword = async () => {
+    const navigate = useNavigate();
+
+    const handlePasswordChange = (event) => {
+        const value = event.target.value;
+        setNewPassword(value);
+        setHasUppercase(/[A-Z]/.test(value));
+        setHasNumber(/\d/.test(value));
+        setHasSpecialChar(/[!@#$%^&*(),.?":{}|<>_]/.test(value));
+        setIsLongEnough(value.length >= 8);
+    };
+
+    const handleResetPassword = async (event) => {
+        event.preventDefault();
         if (newPassword !== confirmPassword) {
             setMessage('Passwords do not match.');
             return;
@@ -48,38 +70,73 @@ function ResetPassword() {
             setIsResetSuccessful(false);
         }
     };
-    const handleLoginPage= () =>{
-        navigate('/login'); 
+
+    const handleLoginPage = () => {
+        navigate('/login');
     };
 
+    const isPasswordCriteriaMet = hasUppercase && hasNumber && hasSpecialChar && isLongEnough;
+
     return (
-        <div>
-            <div className="forgotPasswordModalContainer">
-            <h2 className="loginModalHeader"> Reset Your Password</h2>
-            <input
-                type="password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                placeholder="New password"
-                className="password-inputContainer"
-                required
-            />
-            <input
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="Confirm new password"
-                className="password-inputContainer"
-                required
-            />
-            <button onClick={handleResetPassword} className="resetButton" >Reset Password</button>
-            {message && <p  style={{ color: 'white', textAlign: 'center' }}>{message}</p>}
-            {isResetSuccessful && (
-                <div className='buttonsContainer'>
-                    <button type='button' className='forgotPasswordButton' onClick={handleLoginPage}>Back to login page</button>
+        <div className="loginPageContainer" style={{ backgroundImage: `url(${BACKGROUND_IMAGE_URL})` }}>
+            <div className="top-bar">
+                <h1 className="title">{NAVBAR_HEADER}</h1>
+                <div className="buttons">
+                    <button className="feedback-button" onClick={() => window.open(process.env.REACT_APP_FEEDBACK_FORM_URL)}>Leave Feedback</button>
                 </div>
-            )}
             </div>
+            <div className="signupModalContainer">
+                <div className="loginModalHeader">Reset your password</div>
+                <form onSubmit={handleResetPassword}>
+                    <div className="signupInput">
+                        <input
+                            type="password"
+                            value={newPassword}
+                            onChange={handlePasswordChange}
+                            placeholder="New password"
+                            className="login-inputContainer"
+                            required
+                        />
+                    </div>
+                    <div className="signupInput">
+                        <input
+                            type="password"
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            placeholder="Confirm new password"
+                            className="login-inputContainer"
+                            required
+                        />
+                    </div>
+                    <div className="passwordCriteria2">
+                        <label>
+                            <input type="checkbox" checked={hasUppercase} readOnly />
+                            Contains an uppercase letter
+                        </label>
+                        <label>
+                            <input type="checkbox" checked={hasNumber} readOnly />
+                            Contains a number
+                        </label>
+                        <label>
+                            <input type="checkbox" checked={hasSpecialChar} readOnly />
+                            Contains a special character
+                        </label>
+                        <label>
+                            <input type="checkbox" checked={isLongEnough} readOnly />
+                            At least 8 characters
+                        </label>
+                    </div>
+                    {message && <p className='resetError2'>{message}</p>}
+                    <button type="submit" className="resetPassButton" disabled={!isPasswordCriteriaMet}>Reset Password</button>
+                    {isResetSuccessful && (
+                        <div className='buttonsContainer'>
+                            <button type='button' className='forgotPasswordButton' onClick={handleLoginPage}>Back to login page</button>
+                        </div>
+                    )}
+                </form>
+            </div>
+            <p className="footerTextLeft">{process.env.REACT_APP_LFOOTER}</p>
+            <p className="footerTextRight">{process.env.REACT_APP_RFOOTER}</p>
         </div>
     );
 }
