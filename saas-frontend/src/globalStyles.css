@@ -142,7 +142,7 @@
   align-items: center;
   font-family: 'Mona';
   font-weight: 100;
-  padding: 17px 20px;
+  padding: 19px 20px;
 }
 
 .top-barchat {
@@ -1122,7 +1122,7 @@ li.deleting {
 .newUserButton {
   background: none;
   border: none;
-  color: #0066cc;
+  color: rgb(0, 102, 204);
   cursor: pointer;
   font-family: 'Mona';
   padding: 5px 10px;
@@ -1132,7 +1132,7 @@ li.deleting {
 .guestButton {
   background: none;
   border: none;
-  color: #0066cc;
+  color: rgb(0, 102, 204);
   cursor: pointer;
   font-family: 'Mona';
   padding: 5px 10px;
@@ -1141,7 +1141,7 @@ li.deleting {
 
 .forgotPasswordButton:hover,
 .newUserButton:hover {
-  color: #004499;
+  color: rgb(0, 68, 153);
   text-decoration: none;
 }
 
