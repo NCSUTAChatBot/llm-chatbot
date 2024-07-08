@@ -108,9 +108,21 @@ def forgot_password():
         if not user:
             return jsonify({"error":"No user found with that email address"}), 404
         reset_token=user_repository.password_reset_token_generator(email)
-        reset_link=f"http://localhost:3000/reset_password?token={reset_token}&email={email}"
-        message= Message('Reset Your Password', sender='your-email@example.com', recipients=[email])
-        message.body = f"Please click on the link to reset your password: {reset_link}"
+        reset_link=f"http://152.7.178.160:8000/reset_password?token={reset_token}&email={email}"
+        message= Message('TAChatbot: Reset Your Password', sender='your-email@example.com', recipients=[email])
+        message.body = f"""
+Dear TAChatbot User,
+
+Follow this link to reset your password for your account:
+
+{reset_link}
+
+If you didn’t make this request, you can safely ignore this email.
+
+Thanks,
+
+The TAChatbot Team
+"""
         mail.send(message)
         return jsonify({"message": "Please check your email for the password reset link"}), 200
     except Exception as e:

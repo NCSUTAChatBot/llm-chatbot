@@ -120,6 +120,18 @@
   
 }
 
+.top-bar-resetPassword {
+  grid: top-bar;
+  border-radius: 3px;
+  background-color: rgba(5, 5, 7, 0.8);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 17px 20px;
+  
+}
+
 .top-bar-landing {
   grid: top-bar;
   border-radius: 3px;
@@ -866,6 +878,32 @@ li.deleting {
 
 }
 
+.resetPassButton {
+  width: 70%;
+  padding: 10px;
+  color: rgb(255, 255, 255);
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 280px;
+  background-color: rgb(179, 33, 33);
+  border-radius: 15px;
+  border: none;
+  cursor: pointer;
+  display: block;
+  font-family: 'Mona';
+  font-size: 13px;
+  margin-bottom: 20px;
+
+}
+.resetPassButton:disabled{
+  background-color: #262626;
+  color: #ffffff;
+
+}
 
 .loginButton:hover {
   background-color: #292727;
@@ -912,6 +950,21 @@ li.deleting {
   justify-content: center;
   width: 100%;
   top: 61%;
+  left: 50%;
+  width: 80%;
+  transform: translate(-50%, -50%);
+
+}
+
+.resetError2 {
+  color: red;
+  font-size: 0.7em;
+  display: flex-box;
+  position: absolute;
+  text-align: center;
+  justify-content: center;
+  width: 100%;
+  top: 42%;
   left: 50%;
   width: 80%;
   transform: translate(-50%, -50%);
@@ -1240,6 +1293,19 @@ li.deleting {
   
 }
 
+.passwordCriteria2 {
+  margin-top: 180px;
+  margin-bottom: 10px;
+  font-size: 10px;
+  display: flex;
+  text-align: center;
+  flex-wrap: wrap;
+  color: white;
+  position: absolute;
+  accent-color: rgb(179, 33, 33);
+  
+}
+
 .passwordCriteria label {
   display: flex;
   align-items: center;
@@ -1251,6 +1317,16 @@ li.deleting {
   margin-right: 10px;
 }
 
+.passwordCriteria2 label {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+  width: 50%;
+}
+
+.passwordCriteria2 input[type="checkbox"] {
+  margin-right: 10px;
+}
 .resetButton:hover {
   background-color: #292727;
 }
@@ -1259,11 +1335,11 @@ li.deleting {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
-  background-color: rgba(255, 255, 255, 0.8);
+  background-color: rgba(40, 39, 43, 0.8);
   border: none;
   border-radius: 10px;
   box-sizing: border-box;
-  color: #2d333a;
+  color: rgb(159, 155, 155);
   font-family: inherit;
   font-size: 16px;
   margin-bottom: 20px;

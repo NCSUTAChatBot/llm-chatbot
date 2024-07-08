@@ -14,7 +14,10 @@ from flask_jwt_extended import JWTManager
 from flask_mail import Mail
 from controller.chatRoutes import chat_bp
 from controller.userRoutes import user_bp
+import os
 
+MAIL_USERNAME = os.getenv('MAIL_USERNAME')
+MAIL_PASSWORD = os.getenv('MAIL_PASSWORD')
 # Create a new Flask application instance.
 app = Flask(__name__)
 # Set the secret key for session management. Used for securely signing the session cookie.
@@ -30,8 +33,8 @@ app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
 # Add valid email and app password(which can be generated from google accounts for gmail)
 # TODO: Add Admin email and app password using environment variables 
-app.config['MAIL_USERNAME'] = 'your_email@gmail.com'
-app.config['MAIL_PASSWORD'] = 'your_app_password'  # Use the app password here
+app.config['MAIL_USERNAME'] = MAIL_USERNAME
+app.config['MAIL_PASSWORD'] = MAIL_PASSWORD 
 
 # Initialize session handling for the app.
 Session(app)
