@@ -1,7 +1,14 @@
+/**
+ * @file resetpassword.js is a file that contains the reset password page components
+ * 
+ * @author dineshkannan (dkannan)
+ * @author sanjit verma (skverma)
+ */
+
 import React, { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-import '../globalStyles.css';  // Ensure this is included to use global styles
+import '../globalStyles.css'; 
 
 const apiUrl = process.env.REACT_APP_API_URL;
 const NAVBAR_HEADER = process.env.REACT_APP_NAVBAR_HEADER;
