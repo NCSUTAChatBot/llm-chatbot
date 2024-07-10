@@ -201,6 +201,17 @@ const ChatPage = () => {
           });
     };
 
+    // Function to format response text into bullet points
+    const formatResponseText = (text) => {
+        const lines = text.split('\n');
+        return lines.map((line, index) => {
+            if (line.trim().startsWith("-")) {
+                return <li key={index}>{line}</li>;
+            }
+            return <span key={index}>{line}<br /></span>;
+        });
+    };
+
     // This function is called when the user submits a question. It handles logic for creating session and managing message history
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -619,7 +630,7 @@ const ChatPage = () => {
                             <div key={index} className={`message ${msg.sender}`}>
                                 <div className="sender">{msg.sender === 'user' ? 'You' : 'SAAS Chatbot'}</div>
                                 <div className="text">
-                                    {msg.text}
+                                    {formatResponseText(msg.text)}
                                 </div>
                             </div>
                         ))

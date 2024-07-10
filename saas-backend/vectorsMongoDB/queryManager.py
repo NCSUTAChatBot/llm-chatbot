@@ -3,7 +3,7 @@
 This file contains the code to perform vector search on a MongoDB collection using the OpenAI embeddings and the MongoDB Atlas Vector Search.
 The code uses the langchain_openai, langchain_mongodb, langchain_core libraries to perform the vector search and retrieve the most relevant documents.
 
-IMPORTANT: Be sure to generate the embeddings using tghe generateVectorDB.py script before and be sure to intialize the MongoDB Atlas Vector Search index before running this script.
+IMPORTANT: Be sure to generate the embeddings using the generateVectorDB.py script before and be sure to intialize the MongoDB Atlas Vector Search index before running this script.
 
 @author Sanjit Verma (skverma)
 
@@ -56,7 +56,7 @@ vector_search = MongoDBAtlasVectorSearch(
 # STEP 2
 retriever = vector_search.as_retriever(
     search_type="similarity",
-    search_kwargs={"k": 5, "score_threshold": 0.75}
+    search_kwargs={"k": 10, "score_threshold": 0.8}
 )
 
 # Define the template for the language model
@@ -64,14 +64,18 @@ template = """
 Use the following pieces of context to answer the question at the end.
 If asked a question not in the context, do not answer it and say I'm sorry, I do not know the answer to that question.
 If you don't know the answer or if it is not provided in the context, just say that you don't know, don't try to make up an answer.
-If the answer is in the context, dont say mentioned in the context.
+If the answer is in the context, don't say mentioned in the context.
 If the user asks you to generate code, say that you cannot generate code.
 If the user asks what you can help with, say you are a Teaching Assistant chatbot and can help with questions related to the course material.
 If the user greets you, say hello back.
 Please provide a detailed explanation and if applicable, give examples or historical context.
-If a homework or practice problem question is asked, don't give the answer or solve it directly, instead help the student reach the answer. 
+If a homework or practice problem question is asked, don't give the answer or solve it directly, instead help the student reach the answer.
+
 {context}
+
 Question: {question}
+
+Answer:
 """
 
 # Create a prompt template
@@ -82,6 +86,24 @@ llm = ChatOpenAI()
 # STEP 3
 def format_docs(docs):
    return "\n\n".join(doc.page_content for doc in docs) 
+
+def format_response(response):
+    """
+    This function formats the response by adding bullet points to list items.
+    """
+    lines = response.split('\n')
+    formatted_response = []
+    
+    for line in lines:
+        # Check if the line starts with a numbered list item
+        if line.strip().startswith(("1.", "2.", "3.", "4.", "5.", "6.", "7.", "8.")):
+            # Replace numbered list with bullet points
+            line = line.replace(".", ".", 1)
+            formatted_response.append(f"- {line.strip()}")
+        else:
+            formatted_response.append(line.strip())
+    
+    return "\n".join(formatted_response)
 
 # Define the retrieval and response chain
 rag_chain = (
@@ -107,6 +129,7 @@ def process_query(question):
 
 
         for chunk in stream_response: #chunking allows user to see response as processed,  
+            formatted_chunk = format_response(chunk)
             yield chunk
 
     except Exception as e:
