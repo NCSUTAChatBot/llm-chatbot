@@ -19,6 +19,7 @@ import io
 from flask_cors import CORS
 import vectorsMongoDB.queryManager as queryManager
 import time
+from langfuse.decorators import observe, langfuse_context
 
 # a blueprint named 'chat'
 chat_bp = Blueprint('chat', __name__)
@@ -134,11 +135,11 @@ def ask():
                             bot_response_text = choice["text"]
                             yield f"{bot_response_text}"
                             full_response += bot_response_text  
-                            time.sleep(0.015) # generator needs a short delay to process each chunk in  otherwise generator will process too quickly
+                            time.sleep(0.01) # generator needs a short delay to process each chunk in  otherwise generator will process too quickly
                 else:
                     yield f"{chunk}"
                     full_response += chunk  
-                    time.sleep(0.015)
+                    time.sleep(0.01)
 
 
         except Exception as e:
@@ -150,10 +151,62 @@ def ask():
             "text": full_response,
             "timestamp": datetime.now().isoformat()
         }
+        
         user_collection.update_one(
             {"email": email},
             {"$push": {f"savedChats.{session_key}.messages": bot_response}}
         )
+    
+    return Response(stream_with_context(generate_response()), content_type='text/plain')
+
+
+@chat_bp.route('/askGuest', methods=['POST', 'OPTIONS'])
+def ask_guest():
+    if request.method == 'OPTIONS':
+        return '', 200
+
+    input_data = request.json
+    if not input_data or 'question' not in input_data:
+        return jsonify({"error": "Required data is missing"}), 400
+
+    session_key = input_data.get('sessionKey')
+    question = input_data['question']
+
+    if not session_key:
+        # Generate a new session key
+        session_key = secrets.token_urlsafe(16)
+        return jsonify({"sessionKey": session_key})
+
+    user_message = {
+        "sender": "user",
+        "text": question,
+        "timestamp": datetime.now().isoformat()
+    }
+    # Normally save the user_message to a session in a database, but skipping this step
+
+    def generate_response():
+        full_response = "" 
+        try:
+            for chunk in queryManager.make_query(question):  # Replace with actual query manager
+                try:
+                    chunk_data = json.loads(chunk)
+                except json.JSONDecodeError:
+                    chunk_data = chunk 
+
+                if isinstance(chunk_data, dict) and "choices" in chunk_data:
+                    for choice in chunk_data["choices"]:
+                        if "text" in choice:
+                            bot_response_text = choice["text"]
+                            yield f"{bot_response_text}"
+                            full_response += bot_response_text  
+                            time.sleep(0.01) # generator needs a short delay to process each chunk in otherwise generator will process too quickly
+                else:
+                    yield f"{chunk}"
+                    full_response += chunk  
+                    time.sleep(0.01)
+        except Exception as e:
+            yield f"Error: {str(e)}"
+            return
 
     return Response(stream_with_context(generate_response()), content_type='text/plain')
 

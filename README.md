@@ -41,10 +41,10 @@ REACT_APP_NAVBAR_HEADER="Virtual TA"
 REACT_APP_FEEDBACK_FORM_URL="https://forms.gle/5swJdyyfSdQxGww69"
 
 # LANDING PAGE
-REACT_APP_MODALBODYTEXT="Please login or create an account. This Chatbot supports asking questions from the textbook: Engineering SAAS: An Agile Approach Using Cloud Computing"
+REACT_APP_MODALBODYTEXT="Please login or create an account. This Chatbot supports asking questions from the textbook: Fundamentals of Parallel Multicore Architecture by Yan Solihin."
 REACT_APP_BACKGROUND_IMAGE_URL="/_MAH0122.jpg"
-REACT_APP_LFOOTER="beta v1.0.0"
-REACT_APP_RFOOTER="@2024 NCSU CSC Dept"
+REACT_APP_LFOOTER="v1.0.0"
+REACT_APP_RFOOTER=""
 REACT_APP_FRONT_LOGO="/ncstate-brick-4x1-blk-max.png"
 
 # CHAT PAGE
@@ -87,6 +87,8 @@ OPENAI_API_KEY= <YOU API KEY HERE>
 LANGFUSE_PUBLIC_KEY = <YOU API KEY HERE>
 LANGFUSE_SECRET_KEY = <YOU API KEY HERE>
 LANGFUSE_HOST = "https://us.cloud.langfuse.com"
+MAIL_USERNAME = "ncsutachatbot@gmail.com"
+MAIL_PASSWORD = "uoop ghkv iaom cfna" 
 
 ```
 
@@ -120,6 +122,10 @@ Please contact Nirmal Joji (nsjoji@ncsu.edu) to be added to the project on LangF
 | 2024/6/21  | Dinesh Kannan  | Guest mode removed, app authentication protection. Input Disabling while chat streaming.           |
 | 2024/6/25  | Sanjit Verma   | IP hardcoding removed, added to env file.                                                          |
 | 2024/6/27  | Nirmal Joji   | Langfuse integration and project setup                                                          |
+| 2024/7/4  | Sanjit Verma   | Updated Signup page, Added LangFuse User logging                                                           |
+| 2024/7/6  | Sanjit Verma   | Added Guest Mode for Users                                                       |
+| 2024/7/7  | Sanjit Verma   | Improved Reset password UI and setup mail account                                                    |
+
 
 
 

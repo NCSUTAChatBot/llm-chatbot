@@ -11,6 +11,7 @@ from service.user_service import UserService
 from repository.user_repository import UserRepository
 from pydantic import ValidationError
 from dotenv import load_dotenv
+from langfuse.decorators import observe, langfuse_context
 import os
 
 # Load environment variables
@@ -50,7 +51,9 @@ def create_user():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+
 @user_bp.route('/login', methods=['POST'])
+@observe()
 def login_user():
     """
     This method allows registed user to login into their profile
@@ -63,6 +66,7 @@ def login_user():
         valid, message , user = user_service.authenticate_user(email, password)
         if valid:
             session['user_email']= email
+            langfuse_context.update_current_trace(user_id=email)
             access_token = create_access_token(identity=email)
             user_info={'name': user['first_name'], 'last_name': user['last_name'], 'email': user['email']}
             return jsonify({"access_token":access_token, "message":message, "user_info": user_info} ), 200
@@ -104,9 +108,21 @@ def forgot_password():
         if not user:
             return jsonify({"error":"No user found with that email address"}), 404
         reset_token=user_repository.password_reset_token_generator(email)
-        reset_link=f"http://localhost:3000/reset_password?token={reset_token}&email={email}"
-        message= Message('Reset Your Password', sender='your-email@example.com', recipients=[email])
-        message.body = f"Please click on the link to reset your password: {reset_link}"
+        reset_link=f"http://152.7.178.160/reset_password?token={reset_token}&email={email}"
+        message= Message('TAChatbot: Reset Your Password', sender='your-email@example.com', recipients=[email])
+        message.body = f"""
+Dear TAChatbot User,
+
+Follow this link to reset your password for your account:
+
+{reset_link}
+
+If you didn’t make this request, you can safely ignore this email.
+
+Thanks,
+
+The TAChatbot Team
+"""
         mail.send(message)
         return jsonify({"message": "Please check your email for the password reset link"}), 200
     except Exception as e:

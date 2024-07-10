@@ -84,6 +84,10 @@ function LoginPage(){
         navigate('/signup'); 
     };
 
+    const handleGuest= () =>{
+        navigate('/chat'); 
+    };
+
     // This function handles redirection to forgot password page
     const handleForgotPassword=()=>{
         navigate('/forgotpassword');
@@ -101,10 +105,9 @@ function LoginPage(){
             <div className="loginModalContainer">
             <div className="loginModalHeader">Welcome Back</div>
             <form onSubmit={handleLogin}>
-                <div className="email-container">
+                <div className="signupInput">
                     <input
                     placeholder="Email"
-                    style={{color: 'black'}} 
                     type="email"
                     id="email"
                     className="login-inputContainer"
@@ -113,7 +116,7 @@ function LoginPage(){
                     required
                     />
                 </div>
-                <div>
+                <div className="signupInput">
                     <input
                     type="password"
                     id="password"
@@ -128,8 +131,12 @@ function LoginPage(){
                 <button type="submit" className="loginButton" >Login</button>
                 <div className='buttonsContainer'>
                     <button type='button' className='forgotPasswordButton' onClick={handleForgotPassword}>Forgot Password?</button>
-                    <button type='button' className='newUserButton' onClick={handleNewUser}>Don't have an account?</button>
+                    <button type='button' className='newUserButton' onClick={handleNewUser}>Need to Sign Up?</button>
                 </div>
+                <div className='buttonsContainer2'>
+                    <button type='button' className='guestButton' onClick={handleGuest}>Continue as a Guest</button>
+                </div>
+                
             </form>
         </div>
         <p className="footerTextLeft">
