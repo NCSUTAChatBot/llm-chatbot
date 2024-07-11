@@ -2,6 +2,7 @@
 This file is used to load documents from the file system into the Vector generation script
 
 @Author: Sanjit Verma
+@Author: Dinesh Kannan (dkannan)
 '''
 import os
 import pdfplumber

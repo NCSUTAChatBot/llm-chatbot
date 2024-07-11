@@ -41,7 +41,7 @@ const ChatPage = () => {
     const [isLastMessageNew, setIsLastMessageNew] = useState(false);
     const suggestedContainerRef = useRef(null);
 
-    // This function is called when the user clicks on the downloiad as pdf button
+    // This function is called when the user clicks on the download as pdf button
     const handleDownloadChat = async () => {
         if (!currentSessionKey) {
             console.error("No chat session selected to download.");

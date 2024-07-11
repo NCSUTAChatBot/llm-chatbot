@@ -6,6 +6,7 @@ The code uses the langchain_openai, langchain_mongodb, langchain_core libraries 
 IMPORTANT: Be sure to generate the embeddings using the generateVectorDB.py script before and be sure to intialize the MongoDB Atlas Vector Search index before running this script.
 
 @author Sanjit Verma (skverma)
+@modified by Dinesh Kannan (dkannan)
 
 '''
 import os
