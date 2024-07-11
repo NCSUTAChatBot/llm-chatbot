@@ -18,6 +18,7 @@ from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
 from dotenv import load_dotenv
 from langfuse.callback import CallbackHandler
+from tqdm import tqdm
 
 load_dotenv()
 logging.basicConfig(level=logging.INFO)
@@ -87,7 +88,7 @@ llm = ChatOpenAI()
 def format_docs(docs):
    return "\n\n".join(doc.page_content for doc in docs) 
 
-def format_response(response):
+def format_response(response, context):
     """
     This function formats the response by adding bullet points to list items.
     """
@@ -103,6 +104,12 @@ def format_response(response):
         else:
             formatted_response.append(line.strip())
     
+     # Check if there is code in the context
+    if "```" in context:
+        code_snippet = context.split("```")[1]
+        formatted_response.append("\n\nHere is the relevant code snippet:\n")
+        formatted_response.append(f"```{code_snippet}```")
+
     return "\n".join(formatted_response)
 
 # Define the retrieval and response chain
@@ -125,11 +132,15 @@ def process_query(question):
         raise ValueError("The question must be a string.")
 
     try:
+        # Retrieve the relevant documents
+        context_docs = retriever.get_relevant_documents(question)
+        context = format_docs(context_docs)
+
         stream_response = rag_chain.invoke(question, config={"callbacks":[langfuse_handler]})
 
 
         for chunk in stream_response: #chunking allows user to see response as processed,  
-            formatted_chunk = format_response(chunk)
+            formatted_chunk = format_response(chunk, context)
             yield chunk
 
     except Exception as e:
