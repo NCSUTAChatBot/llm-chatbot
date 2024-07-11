@@ -104,11 +104,12 @@ def format_response(response, context):
         else:
             formatted_response.append(line.strip())
     
-     # Check if there is code in the context
     if "```" in context:
-        code_snippet = context.split("```")[1]
-        formatted_response.append("\n\nHere is the relevant code snippet:\n")
-        formatted_response.append(f"```{code_snippet}```")
+        code_snippets = context.split("```")
+        for i in range(1, len(code_snippets), 2):
+            formatted_response.append("\n\nHere is the relevant code snippet:\n")
+            formatted_response.append(f"```{code_snippets[i]}```")
+
 
     return "\n".join(formatted_response)
 

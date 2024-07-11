@@ -4,7 +4,6 @@ This file is used to load documents from the file system into the Vector generat
 @Author: Sanjit Verma
 '''
 import os
-import fitz
 import pdfplumber
 from langchain.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -67,6 +66,7 @@ def load_pdfs(directory):
     documents = []
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=1048, chunk_overlap=100)
     
+    # List all PDF files in the directory, filter out non-PDF files
     pdf_files = [f for f in os.listdir(directory) if f.endswith('.pdf')]
     
     #loop over all the PDF files in the directory, tqdm is a progress bar
