@@ -37,6 +37,7 @@ const ChatPage = () => {
     const [deletingSessionKey, setDeletingSessionKey] = useState(null);
     // This hook is used to set  the state of the dropdown
     const [showDropdown, setShowDropdown] = useState(false);
+    const [showDropdown2, setShowDropdown2] = useState(false);
     // This hook is used to store the animated titles state
     const [isLastMessageNew, setIsLastMessageNew] = useState(false);
     const suggestedContainerRef = useRef(null);
@@ -487,6 +488,41 @@ const ChatPage = () => {
         ));
     };
 
+    // Function to scroll to the top of the chat container
+    const scrollToTop = () => {
+        const chatContainer = document.querySelector('.chat-container');
+        if (chatContainer) {
+            chatContainer.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+    };
+
+    // This useEffect hook adds a scroll event listener to the chat container
+    useEffect(() => {
+        const handleScroll = () => {
+            const scrollToTopButton = document.querySelector('.scroll-to-top');
+            const chatContainer = document.querySelector('.chat-container');
+            if (chatContainer.scrollTop > 500) { // Show button when scrolled down more than 500px
+                scrollToTopButton.style.display = 'block';
+            } else {
+                scrollToTopButton.style.display = 'none';
+            }
+        };
+
+        const chatContainer = document.querySelector('.chat-container');
+        if (chatContainer) {
+            chatContainer.addEventListener('scroll', handleScroll);
+        }
+
+        return () => {
+            if (chatContainer) {
+                chatContainer.removeEventListener('scroll', handleScroll);
+            }
+        };
+    }, []);
+
     // This hook is used to load and set user information from localStorage
     useEffect(() => {
         const storedUserInfo = localStorage.getItem('userInfo');
@@ -497,6 +533,8 @@ const ChatPage = () => {
 
 
     const toggleDropdown = () => setShowDropdown(!showDropdown);
+    const toggleDropdown2 = () => setShowDropdown2(!showDropdown2);
+
     return (
         <div className='chat-page'>
             <div className="top-barchat">
@@ -660,6 +698,30 @@ const ChatPage = () => {
                             </div>
                         ))
                     )}
+                    <button className="scroll-to-top" onClick={scrollToTop}>
+                        <svg width="22px" height="22px" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: '22px', height: '22px', stroke: '#ffffff', strokeWidth: '4' }}>
+                            <path d="M12 33L24 21L36 33" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M12 13H36" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </button>
+                    <div className="more-info">
+                        {showDropdown2 && (
+                            <div className="more-info-dropdown">
+                                {userInfo ? (
+                                    <button className="moreinfo-dropdown-button">{userInfo.email}</button>
+                                ) : null}
+                                <button className="moreinfo-dropdown-button">Help & FAQ</button>
+                                <button className="moreinfo-dropdown-button">Release Notes</button>
+                            </div>
+                        )}
+                        <div className="more-info-icon" onClick={toggleDropdown2}>
+                            <svg width="24" height="24" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M24 44C29.5228 44 34.5228 41.7614 38.1421 38.1421C41.7614 34.5228 44 29.5228 44 24C44 18.4772 41.7614 13.4772 38.1421 9.85786C34.5228 6.23858 29.5228 4 24 4C18.4772 4 13.4772 6.23858 9.85786 9.85786C6.23858 13.4772 4 18.4772 4 24C4 29.5228 6.23858 34.5228 9.85786 38.1421C13.4772 41.7614 18.4772 44 24 44Z" fill="none" stroke="#ffffff" stroke-width="2" stroke-linejoin="round" />
+                                <path d="M24 28.6248V24.6248C27.3137 24.6248 30 21.9385 30 18.6248C30 15.3111 27.3137 12.6248 24 12.6248C20.6863 12.6248 18 15.3111 18 18.6248" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M24 37.6248C25.3807 37.6248 26.5 36.5055 26.5 35.1248C26.5 33.7441 25.3807 32.6248 24 32.6248C22.6193 32.6248 21.5 33.7441 21.5 35.1248C21.5 36.5055 22.6193 37.6248 24 37.6248Z" fill="#ffffff" />
+                            </svg>
+                        </div>
+                    </div>
                     <div ref={messageEndRef} />
                 </div>
                 <div className="input-row">
