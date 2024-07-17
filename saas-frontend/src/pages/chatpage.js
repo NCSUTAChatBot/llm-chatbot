@@ -41,7 +41,7 @@ const ChatPage = () => {
     const [isLastMessageNew, setIsLastMessageNew] = useState(false);
     const suggestedContainerRef = useRef(null);
 
-    // This function is called when the user clicks on the downloiad as pdf button
+    // This function is called when the user clicks on the download as pdf button
     const handleDownloadChat = async () => {
         if (!currentSessionKey) {
             console.error("No chat session selected to download.");
@@ -200,6 +200,17 @@ const ChatPage = () => {
             .catch(error => {
                 console.error("Error updating title:", error);
             });
+    };
+
+    // Function to format response text into bullet points
+    const formatResponseText = (text) => {
+        const lines = text.split('\n');
+        return lines.map((line, index) => {
+            if (line.trim().startsWith("-")) {
+                return <li key={index}>{line}</li>;
+            }
+            return <span key={index}>{line}<br /></span>;
+        });
     };
 
     // This function is called when the user submits a question. It handles logic for creating session and managing message history
@@ -655,7 +666,7 @@ const ChatPage = () => {
                             <div key={index} className={`message ${msg.sender}`}>
                                 <div className="sender">{msg.sender === 'user' ? 'You' : 'SAAS Chatbot'}</div>
                                 <div className="text">
-                                    {msg.text}
+                                    {formatResponseText(msg.text)}
                                 </div>
                             </div>
                         ))
