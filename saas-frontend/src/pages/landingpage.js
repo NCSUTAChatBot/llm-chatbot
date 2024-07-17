@@ -7,56 +7,37 @@
 import { useNavigate } from 'react-router-dom';
 import '../globalStyles.css';
 function LandingPage() {
-    
+
     // ENV VARIABLES
-    const NAVBAR_HEADER = process.env.REACT_APP_NAVBAR_HEADER;
-    const LFOOTER = process.env.REACT_APP_LFOOTER;
-    const RFOOTER = process.env.REACT_APP_RFOOTER;
+    
     const MODALBODYTEXT = process.env.REACT_APP_MODALBODYTEXT;
-    const FEEDBACK_URL = process.env.REACT_APP_FEEDBACK_FORM_URL;
     const BACKGROUND_IMAGE_URL = process.env.REACT_APP_BACKGROUND_IMAGE_URL;
     const LOGO_MODAL = process.env.REACT_APP_FRONT_LOGO;
-
-    // This hook is used to navigate between different pages
+    
     const navigate = useNavigate();
-    // This function is called when the user clicks on the Chat Now button
-
-    const handleLoginClick = () => {
-        navigate('/login');
-    };
-    const handleSignupClick= () => {
-        navigate('/signup')
-    };
-    const handleFeedback = () => {
-        window.open(FEEDBACK_URL);
+    
+    const handleModelNavigation = () => {
+        navigate('/models');
     };
 
     return (
-        <div className="landingPageContainer" style={{ backgroundImage: `url(${BACKGROUND_IMAGE_URL})`}}>
+        <div className="landingPageContainer" style={{ backgroundImage: `url(${BACKGROUND_IMAGE_URL})` }}>
             <div className="top-bar-landing">
-                <h1 className="title">{NAVBAR_HEADER} </h1>
+                <h1 className="title">LLM Entry Portal </h1>
                 <div className="buttons">
-                    <button className="feedback-button-landing" onClick={handleFeedback}>Leave Feedback</button>
-                    <button type="submit" className="login-button-landing" onClick={handleLoginClick}>
-                    Login
-                </button>
-                <button type="submit" className="chatButton" onClick={handleSignupClick}>
-                    Sign Up
-                </button> 
+                    <button type="submit" className="model-button-landing" onClick={handleModelNavigation}>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6" style={{ width: '20px', height: '20px', paddingRight: '5px', color: 'red' }}>
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m21 7.5-2.25-1.313M21 7.5v2.25m0-2.25-2.25 1.313M3 7.5l2.25-1.313M3 7.5l2.25 1.313M3 7.5v2.25m9 3 2.25-1.313M12 12.75l-2.25-1.313M12 12.75V15m0 6.75 2.25-1.313M12 21.75V19.5m0 2.25-2.25-1.313m0-16.875L12 2.25l2.25 1.313M21 14.25v2.25l-2.25 1.313m-13.5 0L3 16.5v-2.25" />
+                        </svg> Models
+                    </button>
                 </div>
             </div>
             <div className="modalContainer">
-            <img src={`${process.env.PUBLIC_URL + LOGO_MODAL}`} alt="NC STATE UNIVERSITY" style={{ width: '300px', height: '500px', margin: '30px' }} />
+                <img src={`${process.env.PUBLIC_URL + LOGO_MODAL}`} alt="NC STATE UNIVERSITY" style={{ width: '360px', height: '57px', margin: '30px' }} />
                 <p className="modalBodyText">{MODALBODYTEXT}</p>
-                <div className="modalButtonContainer">    
+                <div className="modalButtonContainer">
                 </div>
             </div>
-            <p className="footerTextLeft">
-                {LFOOTER}
-            </p>
-            <p className="footerTextRight">
-                {RFOOTER}
-            </p>
         </div>
     );
 };

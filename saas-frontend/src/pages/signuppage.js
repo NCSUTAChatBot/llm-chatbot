@@ -28,6 +28,10 @@ function SignupPage() {
         window.open(FEEDBACK_URL);
     };
 
+    const navigateHome = () => {
+        window.location.href = '/'; 
+    }
+
     const handleLoginClick = () => {
         navigate('/login');
     };
@@ -97,6 +101,7 @@ function SignupPage() {
             <div className="top-bar">
                 <h1 className="title">{NAVBAR_HEADER}</h1>
                 <div className="buttons">
+                <button className="login-button-landing" onClick={navigateHome}>Home</button>
                     <button className="feedback-button" onClick={handleFeedback}>Leave Feedback</button>
                 </div>
             </div>

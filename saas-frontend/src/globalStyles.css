@@ -38,8 +38,8 @@
   border-radius: 30px;
   align-items: center;
   border: #7a7a7a 1px solid;
-  width: 450px;
-  height: 400px;
+  width: 500px;
+  height: 550px;
   max-width: 80%;
   box-sizing: border-box;
   z-index: 2;
@@ -52,6 +52,112 @@
   top: 25%;
   left: 50%;
   transform: translate(-50%, -50%);
+}
+
+.modalContainerModels {
+  background-color: rgba(5, 5, 7, 0.8);
+  padding: 30px;
+  border-radius: 30px;
+  align-items: center;
+  border: #7a7a7a 1px solid;
+  width: 1200px;
+  height: 750px;
+  max-width: 90%;
+  box-sizing: border-box;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-weight: 300;
+  margin-top: 170px;
+  position: absolute;
+  top: 35%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  overflow: hidden;
+}
+
+.subModelContainer {
+  background-color: rgba(23, 23, 24, 0.8);
+  padding: 20px;
+  border-radius: 10px;
+  align-items: center;
+  border: #7a7a7a 1px solid;
+  width: 1000px;
+  height: 250px;
+  max-width: 90%;
+  box-sizing: border-box;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  font-weight: 300;
+  margin-bottom: 30px;
+}
+
+.modelTitle {
+  font-size: 24px;
+  font-weight: 300;
+  color: #ffffff;
+  margin-bottom: 10px;
+  font-family: "Mona";
+}
+
+.modelHeader {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.modelVersion {
+  font-size: 16px;
+  color: rgb(179, 33, 33);
+  font-family: "Mona";
+  margin-top: 0px;
+}
+
+.modelDescription {
+  font-size: 16px;
+  color: #b1afaf;
+  font-family: "Mona";
+  margin-top: 0px;
+}
+
+.modelActionButton {
+  background-color: rgb(179, 33, 33);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 8px 15px;
+  cursor: pointer;
+  font-size: 14px;
+  font-family: 'Mona';
+}
+
+.modelActionButton:hover {
+  background-color: rgb(153, 30, 30);
+}
+
+.modelActionButton:disabled{
+  background-color: #262626;
+  color: #ffffff;
+
+}
+
+.modelStatus {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  color: #444;
+  color: #ffffff;
+  font-family: "Mona";
+}
+
+.buttonContainer {
+  display: flex;
+  gap: 15px; /* Add some space between the buttons */
 }
 
 /* Styling for the welcome container text for the Landing page */
@@ -83,7 +189,7 @@
 /* Styling for the left footer for the Landing page */
 .footerTextLeft {
   position: absolute;
-  Top: 50px;
+  Bottom: 5px;
   Right: 10px;
   color: white;
   font-size: 18px;
@@ -91,6 +197,7 @@
   font-weight: 400;
   font-family: 'Courier New', Monaco, monospace;
 }
+
 
 /* Styling for the right footer for the Landing page */
 .footerTextRight {
@@ -347,7 +454,7 @@
   margin-top: 1px;
   font-size: 17px;
   font-family: 'Mona';
-  font-weight: 500;
+  font-weight: 300;
 }
 .title-chatpage {
   margin-top: .75px;
@@ -455,7 +562,7 @@
   display: flex;
   align-content: 'center';
   justify-content: 'center';
-  margin-right: 20px;
+  margin-right: 0px;
   margin-top: 0px;
 }
 .feedback-button-landing {
@@ -469,8 +576,8 @@
   display: flex;
   align-content: 'center';
   justify-content: 'center';
-  margin-right: 20px;
-  margin-top: 6px;
+  margin-right: 10px;
+  margin-top: -1px;
 }
 .login-button-landing {
   background: none;
@@ -483,8 +590,31 @@
   display: flex;
   align-content: 'center';
   justify-content: 'center';
-  margin-top: 6px;
-  margin-right: 20px;
+  margin-top: 0px;
+  margin-right: 10px;
+}
+
+.model-button-landing {
+  background: none;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0;
+  font-family: 'Mona';
+  display: flex;
+  align-content: 'center';
+  justify-content: 'center';
+  margin-top: 2px;
+  margin-right: 10px;
+}
+
+.login-button-landing:hover {
+  color: #bbbbbb;
+}
+
+.model-button-landing:hover {
+  color: #bbbbbb;
 }
 
 /* Styling for the start chat button for the Chat page */
