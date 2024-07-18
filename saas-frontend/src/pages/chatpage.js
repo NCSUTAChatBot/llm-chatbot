@@ -201,6 +201,17 @@ const ChatPage = () => {
                 console.error("Error updating title:", error);
             });
     };
+    // This function is called when the user clicks on the copy button for copy the answer text to clipboard
+    const copyToClipboard = (text, buttonElement) => {
+        navigator.clipboard.writeText(text).then(() => {
+            buttonElement.textContent = 'Copied';
+            setTimeout(() => {
+                buttonElement.textContent = 'Copy';
+            }, 2000);
+        }).catch((err) => {
+            console.error('Failed to copy text: ', err);
+        });
+    };
 
     // This function is called when the user submits a question. It handles logic for creating session and managing message history
     const handleSubmit = async (event) => {
@@ -657,6 +668,22 @@ const ChatPage = () => {
                                 <div className="text">
                                     {msg.text}
                                 </div>
+                                {msg.sender !== 'user' && (
+                                    <>
+                                        <button
+                                            className="copy-button"
+                                            onClick={(e) => copyToClipboard(msg.text, e.target)}
+                                        >
+                                            <span className="copy-button-text">Copy</span>
+                                        </button>
+                                        <button
+                                                className="copy-button"
+                                                onClick={() => console.log('Another button clicked')}
+                                        >
+                                            <span className="copy-button-text">Another Button</span>
+                                        </button>
+                                    </>
+                                )}
                             </div>
                         ))
                     )}

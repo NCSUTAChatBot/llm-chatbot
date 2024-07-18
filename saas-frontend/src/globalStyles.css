@@ -804,6 +804,26 @@ li.deleting {
   white-space: pre-wrap;
 }
 
+/* Styling for the copy button for the Chat page */
+.copy-button {
+    background-color: #414344;
+    border: none;
+    border-radius: 5px;
+    padding: 7px;
+    margin-top: 10px;
+    margin-right: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.copy-button:hover {
+    background-color: #9DA2A3;
+}
+
+.copy-button .copy-button-text {
+    color: white;
+}
+
 /******************** STYLING FOR THE CHAT PAGE ANIMATIONS *********************/
 /* Styling for the chat typing animation for the Chat page */
 .word {
