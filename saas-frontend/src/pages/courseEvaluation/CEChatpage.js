@@ -547,31 +547,12 @@ const ChatPage = () => {
     return (
         <div className='chat-page'>
             <div className="top-barchat">
-                <div className="title-chatpage">
+                <div className="title-chatpageCE">
                     {NAVBAR_HEADER}
                     <span className="title-chatpage-smallText">  {REACT_APP_LFOOTER}</span>
                 </div>
                 <div className="buttons">
-                    {showHelpPopup && (
-                        <div className="overlay" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0, 0, 0, .8)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                            <div className="name-chat-popup">
-                                <div className="popup-header">
-                                    <span className="popup-title">Need Assistance?</span>
-                                    <button onClick={() => setShowHelpPopup(false)} className="popup-cancel-button">X</button>
-                                </div>
-                                <div className="popup-body">
-                                    <p>Type you prompt and patiently wait for the model to generate the response. </p>
-                                    <p>Please leave feedback on your responses and report any bugs using the Feedback button so we can improve the chatbot.</p>
-                                    <p>DISCLAIMER: Chat messages are collected to enhance and improve our services.</p>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-                    <button className="help-button" onClick={handleToggleHelpPopup} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '5px 10px' }}>
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5" style={{ width: '22px', height: '22px' }}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
-                        </svg>
-                    </button>
+                    
                     < div className="userInfo">
                         {userInfo ? (
                             <div className="userInfo" onClick={toggleDropdown}>
@@ -589,8 +570,17 @@ const ChatPage = () => {
                             </div>
 
                         ) : (
-                            <div className="userInfo" >
+                            <div className="userInfoCE" onClick={toggleDropdown}>
                                 Welcome
+                                {showDropdown && (
+                                    <div className='user-dropdownCE'>
+                                        <button type="submit" className="user-dropdown-button" onClick={handleLogout}>Home</button>
+                                        <button className="user-dropdown-button" onClick={handleFeedback}>Leave Feedback</button>
+                                    </div>
+                                )}
+                                <svg style={{ paddingLeft: "5" }} xmlns="http://www.w3.org/2000/svg" fill="none" width="16" height="16" viewBox="0 0 24 24" strokeWidth="3" stroke="white" className="size-6">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                                </svg>
                             </div>
                         )}
                     </div>
@@ -648,11 +638,10 @@ const ChatPage = () => {
                 </ul>
                 {(!userInfo || !userInfo.email) && (
                     <div className="guest-login">
-                        <p className="login-message">
-                            <span className="first-line">Sign Up or Log in</span> <br />
-                            Save chats, download chats, leave feedback, and more.
-                        </p>                        <button className="signup-button" onClick={() => navigate('/signup')}>Sign up</button>
-                        <button className="login-button" onClick={() => navigate('/virtualTA/login')}>Log in</button>
+                        <p className="login-messageCE">
+                            <span className="first-lineCE">Uploaded Course Evaluations Appear here</span> <br />
+                            .csv and .xlsx files are supported
+                        </p>                        
                     </div>
                 )}
             </aside>
@@ -662,7 +651,6 @@ const ChatPage = () => {
                         <div className='chatModal' >
                             <p className="chat-welcome">
                                 {CHAT_WELCOME}
-                                {userInfo ? `${userInfo.name} ${userInfo.last_name}` : 'Guest'}
                             </p>
                             <p className="chat-welcome-text">{CHAT_WELCOME_TEXT}</p>
                             <div className="suggested-section">
@@ -671,28 +659,28 @@ const ChatPage = () => {
 
                                 <div className="suggested-container" ref={suggestedContainerRef}>
                                     <div className="suggested-box">
-                                        <p>Explain Homework 1 Problem 1A </p>
-                                        <small className='suggested-box-small'>I need help with problem 1</small>
+                                        <p>What did my students think about the difficulty of the exams?</p>
+                                        <small className='suggested-box-small'>I want to know what students thought about my exams</small>
                                     </div>
                                     <div className="suggested-box">
-                                        <p>When is my professor's office hours?</p>
-                                        <small className='suggested-box-small'>I need to discuss my last exam</small>
+                                        <p>Were the instructions for assignments and exams clear to students?</p>
+                                        <small className='suggested-box-small'>I need to know if I should improve my assignment instructions</small>
                                     </div>
                                     <div className="suggested-box">
-                                        <p>Can you explain Chapter 2.2 of the Engineering SAAS textbook?</p>
-                                        <small className='suggested-box-small'> I need a refresher of the content </small>
+                                        <p>What feedback did students give about my lectures?</p>
+                                        <small className='suggested-box-small'> I want to know if my teaching style works </small>
                                     </div>
                                     <div className="suggested-box">
-                                        <p>When is our midterm 1 exam?</p>
-                                        <small className='suggested-box-small'> I'm not sure when our next midterm is</small>
+                                        <p>How engaged did students feel during the lectures and activities?</p>
+                                        <small className='suggested-box-small'> I need to know if my activities and lectures were useful</small>
                                     </div>
                                     <div className="suggested-box">
-                                        <p>What percentage of our class grade is projects?</p>
-                                        <small className='suggested-box-small'>I want to know the project weight for our class</small>
+                                        <p>What do you recommend I can do to increase classroom engagement?</p>
+                                        <small className='suggested-box-small'>I am having trouble keeping the class engaged</small>
                                     </div>
                                     <div className="suggested-box">
-                                        <p>How can I contact my TA, Sanjit, for help?</p>
-                                        <small className='suggested-box-small'>I need help debugging a issue in my code</small>
+                                        <p>What aspects of the course did students think could be better?</p>
+                                        <small className='suggested-box-small'>I want to find areas to improve my class</small>
                                     </div>
                                 </div>
                             </div>

@@ -29,9 +29,6 @@ function AppAppBar() {
       <div className="buttons">
         <button className="feedback-button" onClick={handleFeedback}>Leave Feedback</button>
         <button type="submit" className="feedback-button" onClick={handleChat}>
-          Sign Up
-        </button>
-        <button type="submit" className="feedback-button" onClick={handleChat}>
           Log In
         </button>
       </div>

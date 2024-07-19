@@ -394,7 +394,17 @@
   font: 'Mona';
 }
 
-.first-line {
+.login-messageCE {
+  color: #888;
+  font-size: 14px;
+  text-align: left;
+  margin-bottom: 20px;
+  margin-top: 10px;
+  font: 'Mona';
+}
+
+
+.first-lineCE {
   color: #ffffff;
   font: 'Mona';
 }
@@ -444,6 +454,15 @@
   font-family: 'Mona';
   font-weight: 500;
 }
+
+.title-chatpageCE {
+  margin-top: 6px;
+  font-size: 17px;
+  font-family: 'Mona';
+  font-weight: 500;
+}
+
+
 .title-chatpage-smallText {
   margin-top: .75px;
   font-size: 12px;
@@ -494,6 +513,17 @@
   font-family: 'Mona';
 }
 
+
+.userInfoCE {
+  position: relative;
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  margin-left: 8px;
+  margin-top: 6px;
+  font-family: 'Mona';
+}
+
 /* Styling for the exit button for the Chat page */
 .user-dropdown {
   position: absolute;
@@ -505,6 +535,21 @@
   margin-top: 12px;
   font-size: 16px;
   top: 100%;
+  font-family: 'Mona';
+  transition: opacity 0.5s, visibility 0.1000s;
+}
+
+.user-dropdownCE {
+  position: absolute;
+  background-color: rgb(49, 46, 46);
+  min-width: 120px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+  border-radius: 10px;
+  margin-top: 12px;
+  font-size: 16px;
+  top: 100%;
+  right: 2%;
   font-family: 'Mona';
   transition: opacity 0.5s, visibility 0.1000s;
 }

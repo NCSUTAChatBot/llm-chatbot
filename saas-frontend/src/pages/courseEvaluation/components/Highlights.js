@@ -63,7 +63,7 @@ export default function Highlights() {
   </div>
   <div className="landingbox-box">
     <p>What aspects of the course did students think could be better?</p>
-    <small className="landingbox-box-small">IO want to find areas to improve my class</small>
+    <small className="landingbox-box-small">I want to find areas to improve my class</small>
   </div>
 </div>
 
