@@ -5,7 +5,7 @@
  */
 
 import { useNavigate } from 'react-router-dom';
-import '../globalStyles.css';
+import '../../globalStyles.css';
 function LandingPage() {
     
     // ENV VARIABLES
@@ -22,10 +22,10 @@ function LandingPage() {
     // This function is called when the user clicks on the Chat Now button
 
     const handleLoginClick = () => {
-        navigate('/login');
+        navigate('/virtualTA/login');
     };
     const handleSignupClick= () => {
-        navigate('/signup')
+        navigate('/virtualTA/signup')
     };
     const handleFeedback = () => {
         window.open(FEEDBACK_URL);
@@ -36,17 +36,17 @@ function LandingPage() {
             <div className="top-bar-landing">
                 <h1 className="title">{NAVBAR_HEADER} </h1>
                 <div className="buttons">
-                    <button className="feedback-button-landing" onClick={handleFeedback}>Leave Feedback</button>
-                    <button type="submit" className="login-button-landing" onClick={handleLoginClick}>
+                    <button className="feedback-button" onClick={handleFeedback}>Leave Feedback</button>
+                    <button type="submit" className="feedback-button" onClick={handleLoginClick}>
                     Login
                 </button>
-                <button type="submit" className="chatButton" onClick={handleSignupClick}>
+                <button type="submit" className="feedback-button" onClick={handleSignupClick}>
                     Sign Up
                 </button> 
                 </div>
             </div>
             <div className="modalContainer">
-            <img src={`${process.env.PUBLIC_URL + LOGO_MODAL}`} alt="NC STATE UNIVERSITY" style={{ width: '300px', height: '500px', margin: '30px' }} />
+            <img src={`${process.env.PUBLIC_URL + LOGO_MODAL}`} alt="NC STATE UNIVERSITY" style={{ width: '360px', height: '60px', margin: '30px' }} />
                 <p className="modalBodyText">{MODALBODYTEXT}</p>
                 <div className="modalButtonContainer">    
                 </div>

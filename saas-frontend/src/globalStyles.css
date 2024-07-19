@@ -38,8 +38,9 @@
   border-radius: 30px;
   align-items: center;
   border: #7a7a7a 1px solid;
-  width: 450px;
-  height: 400px;
+  width: 550px;
+  height: 500px;
+  align-items: center;
   max-width: 80%;
   box-sizing: border-box;
   z-index: 2;
@@ -412,7 +413,7 @@
   min-width: 120px;
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
   z-index: 10;
-  border-radius: 4px;
+  border-radius: 10px;
   margin-top: 12px;
   font-size: 16px;
   top: 100%;
@@ -455,7 +456,7 @@
   display: flex;
   align-content: 'center';
   justify-content: 'center';
-  margin-right: 20px;
+  margin-right: 35px;
   margin-top: 0px;
 }
 .feedback-button-landing {
@@ -534,7 +535,7 @@
   position: fixed;
   bottom: 60px;
   right: 40px;
-  background-color: grey;
+  background-color: transparent;
   border: none;
   padding: 10px;
   border-radius: 50%;
@@ -543,23 +544,22 @@
 }
 
 .scroll-to-top:hover {
-  background-color: DimGray;
+  background-color: transparent;
 }
 
 /* Styling for the more-info footer for the Chat page */
 .more-info {
   position: fixed;
-  bottom: 0px;
-  right: 0px;
   cursor: pointer;
   z-index: 1000;
   display: flex;
+  bottom: 7px;
+  right: 7px;
   align-items: flex-end;
 }
 
 .more-info-dropdown {
-  border-radius: 4px;
-  bottom: 10px;
+  border-radius: 10px;
   background-color: rgb(49, 46, 46);
 }
 
@@ -1043,10 +1043,10 @@ li.deleting {
   background-color: rgba(5, 5, 7, 0.8);
   padding: 30px;
   border-radius: 30px;
-  align-items: center;
   border: #7a7a7a 1px solid;
-  width: 450px;
-  height: 400px;
+  width: 550px;
+  height: 500px;
+  justify-content: center;
   max-width: 80%;
   box-sizing: border-box;
   z-index: 2;
@@ -1244,8 +1244,9 @@ li.deleting {
   border-radius: 30px;
   align-items: center;
   border: #7a7a7a 1px solid;
-  width: 450px;
+  width: 550px;
   height: 600px;
+ 
   max-width: 100%;
   box-sizing: border-box;
   z-index: 2;
@@ -1287,8 +1288,9 @@ li.deleting {
   border-radius: 30px;
   align-items: center;
   border: #7a7a7a 1px solid;
-  width: 450px;
-  height: 400px;
+  width: 550px;
+  height: 500px;
+  justify-content: center ;
   max-width: 80%;
   box-sizing: border-box;
   z-index: 2;

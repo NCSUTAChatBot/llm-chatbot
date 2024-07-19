@@ -6,7 +6,7 @@
 
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import '../globalStyles.css';
+import '../../globalStyles.css';
 
 // ENV VARIABLES
 const NAVBAR_HEADER = process.env.REACT_APP_NAVBAR_HEADER;
@@ -68,7 +68,7 @@ function LoginPage(){
                 // Set the received access token in the application's state for immediate use
                 setAuthToken(data.access_token);
                  // Redirect the user to the '/chat' page
-                navigate('/chat')
+                navigate('/virtualTA/chat')
             }
             else{
                 throw new Error(data.error || 'Unknown Error');
@@ -81,17 +81,22 @@ function LoginPage(){
 
     // This function handles redirection to signup page
     const handleNewUser= () =>{
-        navigate('/signup'); 
+        navigate('/virtualTA/signup'); 
     };
 
     const handleGuest= () =>{
-        navigate('/chat'); 
+        navigate('/virtualTA/chat'); 
     };
 
     // This function handles redirection to forgot password page
     const handleForgotPassword=()=>{
-        navigate('/forgotpassword');
+        navigate('/virtualTA/forgotpassword');
     }
+
+    const handleHome=()=>{
+        navigate('/virtualTA');
+    }
+
     
     //HTML code for webpage
     return(
@@ -99,6 +104,7 @@ function LoginPage(){
             <div className="top-bar">
                 <h1 className="title">{NAVBAR_HEADER} </h1>
                 <div className="buttons">
+                <button className="feedback-button" onClick={handleHome}>Home</button>
                     <button className="feedback-button" onClick={handleFeedback}>Leave Feedback</button>
                 </div>
             </div>

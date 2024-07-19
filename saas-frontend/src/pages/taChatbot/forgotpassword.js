@@ -5,6 +5,7 @@
  */
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import '../../globalStyles.css';
 
 function ForgotPassword() {
     const NAVBAR_HEADER = process.env.REACT_APP_NAVBAR_HEADER;
@@ -50,7 +51,7 @@ function ForgotPassword() {
     };
 
     const handleLoginPage= () =>{
-        navigate('/login'); 
+        navigate('/virtualTA/login'); 
     };
 
     return (

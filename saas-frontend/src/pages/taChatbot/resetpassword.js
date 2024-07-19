@@ -8,7 +8,7 @@
 import React, { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-import '../globalStyles.css'; 
+import '../../globalStyles.css';
 
 const apiUrl = process.env.REACT_APP_API_URL;
 const NAVBAR_HEADER = process.env.REACT_APP_NAVBAR_HEADER;
@@ -72,7 +72,7 @@ function ResetPassword() {
     };
 
     const handleLoginPage = () => {
-        navigate('/login');
+        navigate('/virtualTA/login');
     };
 
     const isPasswordCriteriaMet = hasUppercase && hasNumber && hasSpecialChar && isLongEnough;

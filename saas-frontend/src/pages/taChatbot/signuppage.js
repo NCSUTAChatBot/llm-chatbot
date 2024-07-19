@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import React from "react";
-import '../globalStyles.css';
+import '../../globalStyles.css';
 
 function SignupPage() {
     const NAVBAR_HEADER = process.env.REACT_APP_NAVBAR_HEADER;
@@ -29,7 +29,11 @@ function SignupPage() {
     };
 
     const handleLoginClick = () => {
-        navigate('/login');
+        navigate('/virtualTA/login');
+    };
+
+    const handleHomeClick = () => {
+        navigate('/virtualTA');
     };
 
     const navigate = useNavigate();
@@ -82,7 +86,7 @@ function SignupPage() {
                 setLastName('');
                 setEmail('');
                 setPassword('');
-                navigate('/login');
+                navigate('/virtualTA/login');
             } else {
                 throw new Error(data.error || 'Failed to register');
             }
@@ -97,6 +101,7 @@ function SignupPage() {
             <div className="top-bar">
                 <h1 className="title">{NAVBAR_HEADER}</h1>
                 <div className="buttons">
+                <button className="feedback-button" onClick={handleHomeClick}>Home</button>
                     <button className="feedback-button" onClick={handleFeedback}>Leave Feedback</button>
                 </div>
             </div>

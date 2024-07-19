@@ -82,7 +82,9 @@ Answer:
 
 # Create a prompt template
 custom_rag_prompt = PromptTemplate.from_template(template)
-llm = ChatOpenAI()
+llm = ChatOpenAI(
+    model="gpt-4o-mini",
+)
 
 # Function to format documents
 # STEP 3
