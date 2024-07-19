@@ -6,6 +6,9 @@ import LoginPage from './pages/taChatbot/loginpage.js';
 import SignupPage from './pages/taChatbot/signuppage.js';
 import ForgotPassword from './pages/taChatbot/forgotpassword.js';
 import ResetPassword from './pages/taChatbot/resetpassword.js';
+
+import CELandingPage from './pages/courseEvaluation/LandingPage.js';
+import CEChatPage from './pages/courseEvaluation/CEChatpage.js';
 import './fonts/Arimo-Variable.ttf';
 import './fonts/Mona-Sans.woff2';
 function App() {
@@ -17,6 +20,9 @@ function App() {
       <Route path="/virtualTA/signup" element={<SignupPage />} />
       <Route path="/virtualTA/forgotpassword" element={<ForgotPassword/>} />
       <Route path='/virtualTA/reset_password' element={<ResetPassword/>} />
+
+      <Route path="/courseEvaluation" element={<CELandingPage/>} />
+      <Route path="/courseEvaluation/chat" element={<CEChatPage/>} />
     </Routes>
   );
 }

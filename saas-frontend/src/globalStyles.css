@@ -146,6 +146,19 @@
   padding: 19px 20px;
 }
 
+.top-bar-landingCE {
+  grid: top-bar;
+  border-radius: 3px;
+  background-color: rgba(15, 14, 14, 0.9);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'Mona';
+  font-weight: 100;
+  padding: 19px 20px;
+}
+
 .top-barchat {
   grid: top-bar;
   border-radius: 3px;
@@ -1220,6 +1233,57 @@ li.deleting {
   margin-top: 140px;
 }
 
+.chatButton {
+  width: 30%;
+  padding: 10px;
+  color: rgb(255, 255, 255);
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: rgb(179, 33, 33);
+ 
+  border: none;
+  cursor: pointer;
+  display: block;
+  font-family: 'Mona';
+  font-size: 13px;
+}
+
+.landingbox-title {
+  font-size: 14px;
+  font-weight: 400;
+  color: #a0a0a0;
+  margin-bottom: 10px;
+}
+
+.landingbox-container {
+  display: grid;
+  gap: 60px;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: auto auto;
+  justify-items: center;
+}
+
+.landingbox-box {
+  background-color: #262626;
+  padding: 20px;
+  border-radius: 20px;
+  color: #fff;
+  width: 280px; 
+  height: 100px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.landingbox-box-small {
+  font-size: 12px;
+  color: #a0a0a0;
+}
 
 .signupButton:hover {
   background-color: #292727;
