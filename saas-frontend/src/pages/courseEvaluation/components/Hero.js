@@ -1,3 +1,7 @@
+/**
+ * @file Hero.js modified component file for the course evaluation hero section
+ * @author Sanjit Verma
+ */
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
@@ -5,7 +9,6 @@ import InputLabel from '@mui/material/InputLabel';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-
 import { visuallyHidden } from '@mui/utils';
 import { styled } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
@@ -121,7 +124,7 @@ export default function Hero() {
                 </button> 
                 
           </Stack>
-          <Typography variant="caption" sx={{ textAlign: 'center' }}>
+          <Typography variant="caption" sx={{ textAlign: 'center', fontFamily: 'Mona' }}>
             By clicking &quot;Chat now&quot; you agree to our Terms & Conditions
             
             .

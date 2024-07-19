@@ -1,6 +1,8 @@
+/**
+ * @file SitemarkIcon.js modified component file for the course evaluation footer sitemark icon
+ * @author Sanjit Verma
+ */
 import * as React from 'react';
-import SvgIcon from '@mui/material/SvgIcon';
-
 export default function SitemarkIcon() {
   return (
     <div>

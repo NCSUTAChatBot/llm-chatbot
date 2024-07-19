@@ -1,3 +1,7 @@
+/**
+ * @file logoCollection.js modified component file for the course evaluation logo collection section
+ * @author Sanjit Verma
+ */
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';

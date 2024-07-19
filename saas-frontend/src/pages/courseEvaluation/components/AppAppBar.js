@@ -7,7 +7,7 @@ import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import '../../../globalStyles.css';
 
-function AppAppBar({ mode, toggleColorMode }) {
+function AppAppBar() {
 
   // ENV VARIABLES
   const NAVBAR_HEADER = process.env.REACT_APP_CENAVBAR_HEADER;
@@ -29,7 +29,10 @@ function AppAppBar({ mode, toggleColorMode }) {
       <div className="buttons">
         <button className="feedback-button" onClick={handleFeedback}>Leave Feedback</button>
         <button type="submit" className="feedback-button" onClick={handleChat}>
-          Chat Now
+          Sign Up
+        </button>
+        <button type="submit" className="feedback-button" onClick={handleChat}>
+          Log In
         </button>
       </div>
     </div>
