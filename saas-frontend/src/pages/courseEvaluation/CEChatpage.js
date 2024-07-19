@@ -145,7 +145,7 @@ const ChatPage = () => {
                 setMessages([]);
                 localStorage.removeItem('accessToken');
                 localStorage.removeItem('userInfo');
-                navigate('/virtualTA');
+                navigate('/courseEvaluation');
             } else {
                 throw new Error('Failed to clear chat history on the backend.');
             }
@@ -591,15 +591,15 @@ const ChatPage = () => {
                 <div className="sidebar-newchat">
                     <button className="start-chat" onClick={handleNewChat} >
                         New Chat
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" style={{ width: '22px', height: '22px' }}>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" style={{ width: '22px', height: '22px'}}>
                             <path strokeLinecap="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
                         </svg>
                     </button>
-                    {userInfo && (
-                        <button className="refresh-button" onClick={handleDownloadChat} title="Download Chat">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" style={{ width: '22px', height: '22px' }}>
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
-                            </svg>
+                    {(
+                        <button className="refresh-button" onClick={handleDownloadChat} title="Upload Eval">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6" style={{ width: '26px', height: '26px', color: 'rgb(179, 33, 33)', marginTop: '11px'}}>
+  <path fill-rule="evenodd" d="M2.25 4.5A.75.75 0 0 1 3 3.75h14.25a.75.75 0 0 1 0 1.5H3a.75.75 0 0 1-.75-.75Zm14.47 3.97a.75.75 0 0 1 1.06 0l3.75 3.75a.75.75 0 1 1-1.06 1.06L18 10.81V21a.75.75 0 0 1-1.5 0V10.81l-2.47 2.47a.75.75 0 1 1-1.06-1.06l3.75-3.75ZM2.25 9A.75.75 0 0 1 3 8.25h9.75a.75.75 0 0 1 0 1.5H3A.75.75 0 0 1 2.25 9Zm0 4.5a.75.75 0 0 1 .75-.75h5.25a.75.75 0 0 1 0 1.5H3a.75.75 0 0 1-.75-.75Z" clip-rule="evenodd"  />
+</svg>
                         </button>
                     )}
 
@@ -722,6 +722,30 @@ const ChatPage = () => {
                     <div ref={messageEndRef} />
                 </div>
                 <div className="input-row">
+                    <div><button
+  className="refresh-button"
+  onClick={handleDownloadChat}
+  title="Upload Eval"
+>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    className="size-6"
+    style={{
+      width: '26px',
+      height: '26px',
+      color: 'rgb(179, 33, 33)',
+      marginTop: '10px',
+    }}
+  >
+    <path
+      fillRule="evenodd"
+      d="M2.25 4.5A.75.75 0 0 1 3 3.75h14.25a.75.75 0 0 1 0 1.5H3a.75.75 0 0 1-.75-.75Zm14.47 3.97a.75.75 0 0 1 1.06 0l3.75 3.75a.75.75 0 1 1-1.06 1.06L18 10.81V21a.75.75 0 0 1-1.5 0V10.81l-2.47 2.47a.75.75 0 1 1-1.06-1.06l3.75-3.75ZM2.25 9A.75.75 0 0 1 3 8.25h9.75a.75.75 0 0 1 0 1.5H3A.75.75 0 0 1 2.25 9Zm0 4.5a.75.75 0 0 1 .75-.75h5.25a.75.75 0 0 1 0 1.5H3a.75.75 0 0 1-.75-.75Z"
+      clipRule="evenodd"
+    />
+  </svg>
+</button></div>    
                     <textarea
                         type="text"
                         id="question"
@@ -735,7 +759,9 @@ const ChatPage = () => {
                                 handleSubmit(e);
                             }
                         }}
+                        
                     />
+                   
                     <button type="submit" className="submit-chat" onClick={handleSubmit} disabled={isLastMessageNew}>
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" width="20" height="20">
                             <path strokeLinecap="round" strokeLinejoin="round" d="m9 9 6-6m0 0 6 6m-6-6v12a6 6 0 0 1-12 0v-3" />
