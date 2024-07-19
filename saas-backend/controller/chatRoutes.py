@@ -47,7 +47,7 @@ chatReset = False
 def new_chat():
     """
     This method creates a new chat session for a user.
-    Genreates a secure random session key and initializes the chat session in the user's savedChats.
+    Generates a secure random session key and initializes the chat session in the user's savedChats.
     """
     input_data = request.get_json()
     if input_data is None or 'email' not in input_data:
