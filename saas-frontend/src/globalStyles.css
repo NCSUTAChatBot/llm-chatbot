@@ -652,6 +652,17 @@
   display: flex;
   align-items: center;
 }
+
+.upload-button{
+  background: none;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 0px;
+  display: flex;
+  align-items: center;
+}
 /* Styling for the chatting container for the Chat page */
 .chat-container {
   grid-area: main;
@@ -724,6 +735,68 @@
   margin-top: 15px;
   justify-content: center; 
   align-items: center;
+}
+
+.uploaded-files {
+  margin-top: 10px;
+  margin-right: 5px;
+  margin-left: 5px;
+}
+
+.file-item {
+  margin-bottom: 10px;
+  padding: 8px;
+  background-color: #262626;
+  border-radius: 5px;
+  position: relative;
+}
+
+.file-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start; 
+  
+}
+
+.file-name {
+  font-weight: bold;
+  color: white;
+  font-weight: 600;
+}
+
+.file-type {
+  font-style: italic;
+  color: white;
+  position: absolute;
+  right: 10px;
+  top: 8px;
+}
+
+
+.progress-bar {
+  width: 100%;
+  background-color: #e0e0e0;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.progress {
+  height: 5px;
+  background-color: red;
+  transition: width 0.4s ease;
+}
+
+.delete-file-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #ff0000;
+  padding: 0;
+  margin-left: 10px;
+}
+
+.delete-file-button:hover {
+  color: #cc0000;
 }
 
 .warning-message {
