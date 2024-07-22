@@ -83,7 +83,7 @@ const faqData = [
   {
     question: 'Who can I contact to provide feedback on the chatbot or troubleshoot issues?',
     answer:
-      'You can submit feedback or report issues by clicking the Leave feedback button. Alternatively, you can contact our team for urgent matters at skverma@ncsu.edu or dhao5@ncsu.edu. We\'re here to assist you promptly.',
+      'You can submit feedback or report issues by clicking the Leave feedback button. Alternatively, you can contact our team for urgent matters at skverma@ncsu.edu (Sanjit Verma) or dhao5@ncsu.edu (Haoze Du). We\'re here to assist you promptly.',
   },
   {
     question: 'What should I do if the chatbot is not responding?',

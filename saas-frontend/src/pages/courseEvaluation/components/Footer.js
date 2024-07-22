@@ -12,12 +12,13 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import FacebookIcon from '@mui/icons-material/GitHub';
 import SitemarkIcon from './SitemarkIcon';
+import { colors } from '@mui/material';
 
 function Copyright() {
   return (
-    <Typography variant="body2" sx={{ color: 'text.secondary', mt: 1 }}>
+    <Typography variant="body2" sx={{ color: 'white', mt: 1 }}>
       {'Copyright © '}
-      <Link href="https://www.csc.ncsu.edu/">NCSU CSC Dept </Link>
+      <Link href="https://www.csc.ncsu.edu/" style={{color: 'white'}}>NC State University </Link>
       {new Date().getFullYear()}
     </Typography>
   );
@@ -128,10 +129,9 @@ export default function Footer() {
           sx={{ justifyContent: 'left', color: 'text.secondary' }}
         >
           <IconButton
-            color="inherit"
             href="https://github.com/NCSUTAChatBot/llm-chatbot"
             aria-label="GitHub"
-            sx={{ alignSelf: 'center' }}
+            sx={{ alignSelf: 'center', color: 'white' }}
           >
             <FacebookIcon />
           </IconButton>

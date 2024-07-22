@@ -4,7 +4,7 @@
  * @author Sanjit Verma (skverma)
  */
 import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import '../../globalStyles.css';
 
 const ChatPage = () => {
@@ -33,6 +33,12 @@ const ChatPage = () => {
     const [sessionId, setSessionId] = useState('');
     const [response, setResponse] = useState('');
 
+
+    const [currentSessionId, setCurrentSessionId] = useState('');
+    const location = useLocation();
+    const isEvaluationsUploaded = uploadingFiles.length > 0;
+    
+
     const handleFeedback = () => {
         window.open(FEEDBACK_URL);
     };
@@ -45,100 +51,157 @@ const ChatPage = () => {
         }
     };
 
+    const initiateSession = async () => {
+        if (!currentSessionId) { 
+            const response = await fetch(`${apiUrl}/courseEvaluation/start_session`, {
+                method: 'GET'
+            });
+            const data = await response.json();
+            if (data.session_id) {
+                setCurrentSessionId(data.session_id);
+                navigate(`/courseEvaluation/chat?sessionId=${data.session_id}`);
+            } else {
+                console.error('No session ID received from the backend');
+            }
+        }
+    };
+    
+
+    useEffect(() => {
+        initiateSession();
+    }, [location.search]);
+
+
     const handleFileUpload = async (file) => {
         setIsUploading(true);
         const formData = new FormData();
         formData.append('file', file);
+        formData.append('session_id', currentSessionId);
+
+        console.log('File to upload:', file);
+        console.log('Session ID:', currentSessionId);
+
         const newFile = {
             name: file.name,
             type: file.type.includes('spreadsheet') ? 'xlsx' : 'csv',
             progress: 0
         };
         setUploadingFiles(prevFiles => [...prevFiles, newFile]);
+
         try {
+            console.log('Uploading file:', file.name);
+
             const response = await fetch(`${apiUrl}/courseEvaluation/upload`, {
                 method: 'POST',
                 body: formData,
             });
+
+            console.log('Response status:', response.status);
+            const contentType = response.headers.get('content-type');
+            console.log('Response content type:', contentType);
+
             if (response.ok) {
                 const data = await response.json();
+                console.log('Upload success:', data);
                 setUploadingFiles(prevFiles =>
                     prevFiles.map(f => f.name === newFile.name ? { ...f, progress: 100 } : f)
                 );
-                setFile(null);  // Clear the file after upload
+                setFile(null); 
             } else {
-                throw new Error('Failed to upload file');
+                if (contentType && contentType.includes('application/json')) {
+                    const errorData = await response.json();
+                    console.error('Error response JSON:', errorData);
+                    
+                } else {
+                    const errorText = await response.text();
+                    console.error('Error response text:', errorText);
+                    
+                }
             }
         } catch (error) {
             console.error('Error uploading file:', error);
-            alert('Error uploading file');
         } finally {
             setIsUploading(false);
         }
     };
-
+    
+    
     const handleDeleteFile = (fileName) => {
         setUploadingFiles(prevFiles => prevFiles.filter(file => file.name !== fileName));
     };
 
     
-    // This function is called when the user clicks on the Start New Chat button. It handles chat sessions and message history 
-    //when creating a new chat session using the new chat button
     const handleNewChat = async () => {
         try {
             setCurrentSessionKey('');
             setMessages([]);
-
-            const sessionResponse = await fetch(`${apiUrl}/chat/createSession`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: userInfo.email })
-            });
-
-            if (sessionResponse.ok) {
-                const sessionData = await sessionResponse.json();
-                setCurrentSessionKey(sessionData.sessionKey);  // Set the new session key
-            } else {
-                throw new Error('Failed to create a new chat session.');
-            }
+            setUploadingFiles([]);  
+            initiateSession()
         } catch (error) {
-
+            console.error('Error creating new chat session:', error);
         }
     };
+    
 
     // This function is called when the user clicks on the Logout button
     const handleLogout = async () => {
         navigate('/courseEvaluation');
     };
 
-    // Function to format response text into bullet points
-    const formatResponseText = (text) => {
-        const lines = text.split('\n');
-        return lines.map((line, index) => {
-            if (line.trim().startsWith("-")) {
-                return <li key={index}>{line}</li>;
-            }
-            return <span key={index}>{line}<br /></span>;
-        });
-    };
-
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+    
         try {
             const askResponse = await fetch(`${apiUrl}/courseEvaluation/ask`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ session_id: sessionId, question: question})
+                body: JSON.stringify({ session_id: currentSessionId, question: question })
             });
+            console.log('Question:', question);
+            console.log('session_id:', currentSessionId);
+    
+            if (askResponse.ok) {
+                // Add the user's question to the chat
+                setMessages(prevMessages => [
+                    ...prevMessages,
+                    { sender: 'user', text: question }
+                ]);
+                setQuestion('');
+                if (askResponse.body) {
+                    const reader = askResponse.body.getReader();
+                    const decoder = new TextDecoder();
+                    let aggregatedText = ''; 
+    
+                    while (true) {
+                        const { done, value } = await reader.read();
+                        if (done) break;
+    
+                        const chunk = decoder.decode(value, { stream: true });
+                        aggregatedText += chunk;
+    
+                        setMessages(messages => {
+                            const lastMessage = messages[messages.length - 1];
+                            if (lastMessage && lastMessage.sender === 'bot') {
+                                lastMessage.text += chunk;
+                                return [...messages.slice(0, -1), lastMessage];
+                            } else {
+                                return [...messages, { text: chunk, sender: 'bot' }];
+                            }
+                        });
+                    }
 
-            const result = await askResponse.json();
-            setResponse(result);
+                    reader.releaseLock();
+                }
+            } else {
+                const errorData = await askResponse.json();
+                console.error('Error response JSON:', errorData);
+            }
         } catch (error) {
-            console.error('Error:', error);
-            alert(question);
+            console.error('Error asking question:', error);
         }
     };
+    
+    
     
     useEffect(() => {
         if (messageEndRef.current) {
@@ -146,8 +209,6 @@ const ChatPage = () => {
         }
     }, [messages]);
 
-
-    //use this to scroll vertically on suggested row
     useEffect(() => {
         const container = suggestedContainerRef.current;
 
@@ -169,7 +230,6 @@ const ChatPage = () => {
         };
     }, [suggestedContainerRef]);
 
-    // This hook is used to clear the chat history on page refresh
     useEffect(() => {
         const container = suggestedContainerRef.current;
 
@@ -192,7 +252,6 @@ const ChatPage = () => {
         };
     }, [suggestedContainerRef.current]);
 
-    // Function to scroll to the top of the chat container
     const scrollToTop = () => {
         const chatContainer = document.querySelector('.chat-container');
         if (chatContainer) {
@@ -203,7 +262,6 @@ const ChatPage = () => {
         }
     };
 
-    // This useEffect hook adds a scroll event listener to the chat container
     useEffect(() => {
         const handleScroll = () => {
             const scrollToTopButton = document.querySelector('.scroll-to-top');
@@ -375,7 +433,7 @@ const ChatPage = () => {
                             <div key={index} className={`message ${msg.sender}`}>
                                 <div className="sender">{msg.sender === 'user' ? 'You' : 'SAAS Chatbot'}</div>
                                 <div className="text">
-                                    {formatResponseText(msg.text)}
+                                    {(msg.text)}
                                 </div>
                             </div>
                         ))
@@ -408,30 +466,45 @@ const ChatPage = () => {
                 </div>
                 <div className="input-row">
                     <div>
-                        <input type="file" id="file-upload" style={{ display: 'none' }} onChange={handleFileChange} accept=".csv, .xlsx"  // Accept only CSV and Excel files
+                        <input
+                            type="file"
+                            id="file-upload"
+                            style={{ display: 'none' }}
+                            onChange={handleFileChange}
+                            accept=".csv, .xlsx"
                         />
                         <button className="upload-button" title="Upload Eval" onClick={() => document.getElementById('file-upload').click()}>
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6" style={{ width: '26px', height: '26px', color: 'rgb(179, 33, 33)', marginTop: '10px', }}
                             >
                                 <path fillRule="evenodd" d="M2.25 4.5A.75.75 0 0 1 3 3.75h14.25a.75.75 0 0 1 0 1.5H3a.75.75 0 0 1-.75-.75Zm14.47 3.97a.75.75 0 0 1 1.06 0l3.75 3.75a.75.75 0 1 1-1.06 1.06L18 10.81V21a.75.75 0 0 1-1.5 0V10.81l-2.47 2.47a.75.75 0 1 1-1.06-1.06l3.75-3.75ZM2.25 9A.75.75 0 0 1 3 8.25h9.75a.75.75 0 0 1 0 1.5H3A.75.75 0 0 1 2.25 9Zm0 4.5a.75.75 0 0 1 .75-.75h5.25a.75.75 0 0 1 0 1.5H3a.75.75 0 0 1-.75-.75Z" clipRule="evenodd" />
                             </svg>
-                        </button></div>
-                    <textarea type="text" id="question" placeholder="Type a prompt" className="input-field" value={question}
+                        </button>
+                    </div>
+                    <textarea
+                        type="text"
+                        id="question"
+                        placeholder={isEvaluationsUploaded ? "Type a prompt" : "Please upload a course evaluation"}
+                        className="input-field"
+                        value={question}
                         onChange={(e) => setQuestion(e.target.value)}
                         onKeyDown={(e) => {
-                            if (e.key === 'Enter' && !isLastMessageNew) {
+                            if (e.key === 'Enter' && !isLastMessageNew && isEvaluationsUploaded && question.trim()) {
                                 e.preventDefault();
                                 handleSubmit(e);
                             }
                         }}
-
+                        disabled={!isEvaluationsUploaded}
                     />
-                    <button type="submit" className="submit-chat" onClick={handleSubmit} disabled={isLastMessageNew}>
+                    <button
+                        type="submit"
+                        className="submit-chat"
+                        onClick={handleSubmit}
+                        disabled={!isEvaluationsUploaded || isLastMessageNew|| question.trim() === ''}
+                    >
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" width="20" height="20">
                             <path strokeLinecap="round" strokeLinejoin="round" d="m9 9 6-6m0 0 6 6m-6-6v12a6 6 0 0 1-12 0v-3" />
                         </svg>
                     </button>
-
                 </div>
                 <div className="warning-message">
                     Chatbot can make mistakes. Please verify sensitive information.

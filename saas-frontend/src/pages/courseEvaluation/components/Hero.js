@@ -109,9 +109,9 @@ export default function Hero() {
               size="small"
               variant="outlined"
               aria-label="Enter a prompt"
-              placeholder="Enter a prompt"
+              placeholder= "Get started with a prompt"
               fontFamily="Mona"
-              ba
+              disabled= "true"
               slotProps={{
                 htmlInput: {
                   autoComplete: 'off',
