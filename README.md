@@ -137,7 +137,7 @@ Please contact Nirmal Joji (nsjoji@ncsu.edu) to be added to the project on LangF
 | 2024/7/6  | Sanjit Verma   | Added Guest Mode for Users                                                       |
 | 2024/7/7  | Sanjit Verma   | Improved Reset password UI and setup mail account                                                    |
 | 2024/7/18  | Sanjit Verma   | Fixed chat routing for Virtual TA and Course Evaluations, added CE landing page                                          |
-
+| 2024/7/22  | Sanjit Verma   | Implemented basic backend RAG Chain for Course Eval stream, created chatpage for stream                                        |
 
 
 
