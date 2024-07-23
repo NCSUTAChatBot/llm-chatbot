@@ -14,6 +14,7 @@ from flask_jwt_extended import JWTManager
 from flask_mail import Mail
 from controller.chatRoutes import chat_bp
 from controller.userRoutes import user_bp
+from controller.courseEvaluationRoutes import eval_bp
 import os
 
 MAIL_USERNAME = os.getenv('MAIL_USERNAME')
@@ -48,6 +49,7 @@ JWTManager(app)
 mail= Mail(app)
 
 app.register_blueprint(chat_bp, url_prefix='/chat')
+app.register_blueprint(eval_bp, url_prefix='/courseEvaluation')
 app.register_blueprint(user_bp, url_prefix='/user')
 
 # Specify the entry point of the Flask application, which is only executed when the script is run directly.
