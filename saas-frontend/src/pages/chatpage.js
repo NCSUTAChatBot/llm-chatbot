@@ -201,12 +201,13 @@ const ChatPage = () => {
                 console.error("Error updating title:", error);
             });
     };
-    // This function is called when the user clicks on the copy button for copy the answer text to clipboard
+
+    // This function is called when the user clicks on the copy button for copying the answer text to the clipboard
     const copyToClipboard = (text, buttonElement) => {
         navigator.clipboard.writeText(text).then(() => {
-            buttonElement.textContent = 'Copied';
+            buttonElement.innerHTML = '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9 16.2l-4.2-4.2L3 13.8 9 20l12-12-1.8-1.8L9 16.2z"/></svg>';
             setTimeout(() => {
-                buttonElement.textContent = 'Copy';
+                buttonElement.innerHTML = '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>';
             }, 2000);
         }).catch((err) => {
             console.error('Failed to copy text: ', err);
@@ -671,16 +672,37 @@ const ChatPage = () => {
                                 {msg.sender !== 'user' && (
                                     <>
                                         <button
-                                            className="copy-button"
+                                            className="content-button"
                                             onClick={(e) => copyToClipboard(msg.text, e.target)}
                                         >
-                                            <span className="copy-button-text">Copy</span>
+                                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                <path
+                                                    d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                                            </svg>
                                         </button>
                                         <button
-                                                className="copy-button"
-                                                onClick={() => console.log('Another button clicked')}
+                                            className="content-button"
+                                            onClick={() => console.log('Regenerated')}
                                         >
-                                            <span className="copy-button-text">Another Button</span>
+                                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>
+                                            </svg>
+                                        </button>
+                                        <button
+                                            className="content-button"
+                                            onClick={() => console.log('Liked')}
+                                        >
+                                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M14 9V5a3 3 0 0 0-3-3L7 8v12h11.28a2 2 0 0 0 1.94-1.52l1.38-6.92A2 2 0 0 0 19.72 9H14z"/>
+                                            </svg>
+                                        </button>
+                                        <button
+                                            className="content-button"
+                                            onClick={() => console.log('Disliked')}
+                                        >
+                                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M10 15V19a3 3 0 0 0 3 3l4-6V5H5.72a2 2 0 0 0-1.94 1.52L2.4 13.44A2 2 0 0 0 4.28 15H10"/>
+                                            </svg>
                                         </button>
                                     </>
                                 )}
