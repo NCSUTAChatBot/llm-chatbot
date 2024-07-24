@@ -804,24 +804,30 @@ li.deleting {
   white-space: pre-wrap;
 }
 
-/* Styling for the copy button for the Chat page */
-.copy-button {
-    background-color: #414344;
+/* Styling for the copy button and other buttons */
+.content-button {
+    background-color: transparent;
     border: none;
     border-radius: 5px;
-    padding: 7px;
-    margin-top: 10px;
+    padding: 5px;
+    margin-top: 5px;
     margin-right: 10px;
     cursor: pointer;
     transition: background-color 0.3s;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
 }
 
-.copy-button:hover {
-    background-color: #9DA2A3;
+.content-button:hover {
+    background-color: #414344;
 }
 
-.copy-button .copy-button-text {
-    color: white;
+.content-button svg {
+    fill: white;
+    width: 17px;
+    height: 17px;
 }
 
 /******************** STYLING FOR THE CHAT PAGE ANIMATIONS *********************/
