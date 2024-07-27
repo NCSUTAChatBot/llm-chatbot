@@ -48,7 +48,7 @@ current_script_dir = os.path.dirname(os.path.abspath(__file__))
 base_dir = os.path.dirname(current_script_dir) # navigate to the parent directory
 pdf_directory = os.path.join(base_dir, 'pdfData') # navigate to the pdfData directory
 
-# s[uppress INFO logs from httpx, suppress not critical pdf reader formatting warnings
+# suppress INFO logs from httpx, suppress not critical pdf reader formatting warnings
 logging.getLogger('httpx').setLevel(logging.WARNING)
 logging.getLogger('pypdf._reader').setLevel(logging.ERROR)
 

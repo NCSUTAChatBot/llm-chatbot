@@ -343,6 +343,10 @@ def generate_pdf(email, chat_sessions):
         text_object.setWordSpace(0.5)
         text_object.setLeading(14)
 
+        y = height - 120
+        line_height = 14
+        max_lines_per_page = int((height - 120) / line_height)
+
         # Iterate through each message
         for message in session['messages']:
             timestamp = message.get('timestamp', 'Unknown Time')
@@ -356,8 +360,19 @@ def generate_pdf(email, chat_sessions):
                 if space_index == -1 or len(full_text) < 100:  # No space or short text
                     space_index = len(full_text)
                 # Add line and update text
-                text_object.textLine(full_text[:space_index])
+                line_text = full_text[:space_index]
+                text_object.textLine(line_text)
                 full_text = full_text[space_index:].strip()
+                y -= line_height
+
+                if y <= 40:  # If the current page is full, create a new page
+                    p.drawText(text_object)
+                    p.showPage()
+                    text_object = p.beginText(40, int(height) - 40)
+                    text_object.setFont("Helvetica", 12)
+                    text_object.setWordSpace(0.5)
+                    text_object.setLeading(14)
+                    y = height - 40
 
 
         p.drawText(text_object)

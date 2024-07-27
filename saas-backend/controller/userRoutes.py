@@ -108,10 +108,10 @@ def forgot_password():
         if not user:
             return jsonify({"error":"No user found with that email address"}), 404
         reset_token=user_repository.password_reset_token_generator(email)
-        reset_link=f"http://152.7.178.160/reset_password?token={reset_token}&email={email}"
-        message= Message('TAChatbot: Reset Your Password', sender='your-email@example.com', recipients=[email])
+        reset_link=f"http://localhost:3000/virtualTA/reset_password?token={reset_token}&email={email}"
+        message= Message('Virtual TA: Reset Your Password', sender='your-email@example.com', recipients=[email])
         message.body = f"""
-Dear TAChatbot User,
+Dear Virtual TA User,
 
 Follow this link to reset your password for your account:
 
@@ -121,7 +121,7 @@ If you didn’t make this request, you can safely ignore this email.
 
 Thanks,
 
-The TAChatbot Team
+The Virtual TA Team
 """
         mail.send(message)
         return jsonify({"message": "Please check your email for the password reset link"}), 200

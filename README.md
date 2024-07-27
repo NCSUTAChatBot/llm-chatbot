@@ -1,4 +1,4 @@
-# ta-chatbot  
+# llm-chatbot  
 ![Static Badge](https://img.shields.io/badge/slack-channel-000435?link=https%3A%2F%2Fllmchatbotproject.slack.com%2F)
 
 
@@ -19,6 +19,8 @@
 2.  Launch the Frontend: Open a new terminal window, go to the saas-frontend directory, and start the frontend application.
 
 3.  Access the Application: Once both servers are running, open your web browser and visit <http://localhost:3000> to access the application.
+
+4.  Access different chatbot streams: Navigate to [http://localhost:3000/virtualTA](http://localhost:3000/virtualTA) for the TA Chatbot and [http://localhost:3000/courseEvaluation](http://localhost:3000/courseEvaluation) for the Course Evaluation Chatbot
 
 
 ## Running the FrontEnd
@@ -41,15 +43,23 @@ REACT_APP_NAVBAR_HEADER="Virtual TA"
 REACT_APP_FEEDBACK_FORM_URL="https://forms.gle/5swJdyyfSdQxGww69"
 
 # LANDING PAGE
-REACT_APP_MODALBODYTEXT="Please login or create an account. This Chatbot supports asking questions from the textbook: Fundamentals of Parallel Multicore Architecture by Yan Solihin."
+REACT_APP_MODALBODYTEXT="Virtual TA answers your basic questions, giving you more support for your learning journey."
 REACT_APP_BACKGROUND_IMAGE_URL="/_MAH0122.jpg"
-REACT_APP_LFOOTER="v1.0.0"
+REACT_APP_LFOOTER=""
 REACT_APP_RFOOTER=""
 REACT_APP_FRONT_LOGO="/ncstate-brick-4x1-blk-max.png"
 
 # CHAT PAGE
 REACT_APP_CHAT_WELCOME="Hello, "
 REACT_APP_CHAT_WELCOME_TEXT="How can I help you today?"
+
+
+# NAVBAR CE
+REACT_APP_CENAVBAR_HEADER="Course Evaluation LLM"
+
+# CHAT PAGE CE
+REACT_APP_CECHAT_WELCOME="Hello, "
+REACT_APP_CECHAT_WELCOME_TEXT="Please upload your course evaluation."
 
 
 ```
@@ -64,6 +74,7 @@ npm install
 ```node
 npm start
 ```
+
 
 ## Running the Backend
 Contact Sanjit Verma (skverma@ncsu.edu) to be added to the MongoDB database for your username and password
@@ -125,7 +136,9 @@ Please contact Nirmal Joji (nsjoji@ncsu.edu) to be added to the project on LangF
 | 2024/7/4  | Sanjit Verma   | Updated Signup page, Added LangFuse User logging                                                           |
 | 2024/7/6  | Sanjit Verma   | Added Guest Mode for Users                                                       |
 | 2024/7/7  | Sanjit Verma   | Improved Reset password UI and setup mail account                                                    |
-
+| 2024/7/18  | Sanjit Verma   | Fixed chat routing for Virtual TA and Course Evaluations, added CE landing page                                          |
+| 2024/7/22  | Sanjit Verma   | Implemented basic backend RAG Chain for Course Eval stream, created chatpage for stream                                        |
+| 2024/7/27  | Sanjit Verma   | TaChatbot UI refactoring to use MUI                                        |
 
 
 

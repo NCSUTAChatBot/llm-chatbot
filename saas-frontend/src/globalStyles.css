@@ -38,8 +38,9 @@
   border-radius: 30px;
   align-items: center;
   border: #7a7a7a 1px solid;
-  width: 450px;
-  height: 400px;
+  width: 550px;
+  height: 500px;
+  align-items: center;
   max-width: 80%;
   box-sizing: border-box;
   z-index: 2;
@@ -142,7 +143,95 @@
   align-items: center;
   font-family: 'Mona';
   font-weight: 100;
-  padding: 17px 20px;
+  padding: 19px 20px;
+}
+
+.faq-container {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: rgba(15, 14, 14, 0.9);
+  color: white;
+}
+
+.accordion {
+  border: 1px solid #444;
+  border-radius: 15px;
+}
+
+.accordion-item {
+  border-bottom: 1px solid #444;
+  overflow: hidden;
+  border-radius: 10px;
+}
+
+.accordion-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-family: Mona;
+  max-height: 40px;
+  z-index: 1;
+  position: relative; 
+}
+.accordion-header::before {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 0;
+  width: calc(100% - 15px);
+  height: calc(100% - 15px); 
+  background-color: rgba(179, 33, 33, 0.9);
+  border-radius: 10px;
+  transform: scale(0);
+  transform-origin: center;
+  z-index: -1; 
+  margin: 5px;
+}
+
+.accordion-header:hover::before {
+  transform: scale(1);
+}
+
+.icon {
+  transition: transform 0.3s ease;
+}
+
+.icon.active {
+  transform: rotateY(180deg);
+}
+
+.accordion-content {
+  max-height: 0;
+  overflow: hidden;
+}
+
+.accordion-content.open {
+  max-height: 200px;
+  padding: 15px;
+}
+
+.h3{
+  font-family: 'Mona';
+  font-size: 16px;
+  font-weight: 400;
+}
+
+
+.top-bar-landingCE {
+  grid: top-bar;
+  border-radius: 3px;
+  background-color: rgba(15, 14, 14, 0.9);
+  color: white;
+  height: 5vh;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'Mona';
+  font-weight: 100;
+  padding: 19px 20px;
 }
 
 .top-barchat {
@@ -305,7 +394,17 @@
   font: 'Mona';
 }
 
-.first-line {
+.login-messageCE {
+  color: #888;
+  font-size: 14px;
+  text-align: left;
+  margin-bottom: 20px;
+  margin-top: 10px;
+  font: 'Mona';
+}
+
+
+.first-lineCE {
   color: #ffffff;
   font: 'Mona';
 }
@@ -355,6 +454,15 @@
   font-family: 'Mona';
   font-weight: 500;
 }
+
+.title-chatpageCE {
+  margin-top: 6px;
+  font-size: 17px;
+  font-family: 'Mona';
+  font-weight: 500;
+}
+
+
 .title-chatpage-smallText {
   margin-top: .75px;
   font-size: 12px;
@@ -405,6 +513,17 @@
   font-family: 'Mona';
 }
 
+
+.userInfoCE {
+  position: relative;
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  margin-left: 8px;
+  margin-top: 6px;
+  font-family: 'Mona';
+}
+
 /* Styling for the exit button for the Chat page */
 .user-dropdown {
   position: absolute;
@@ -412,10 +531,25 @@
   min-width: 120px;
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
   z-index: 10;
-  border-radius: 4px;
+  border-radius: 10px;
   margin-top: 12px;
   font-size: 16px;
   top: 100%;
+  font-family: 'Mona';
+  transition: opacity 0.5s, visibility 0.1000s;
+}
+
+.user-dropdownCE {
+  position: absolute;
+  background-color: rgb(49, 46, 46);
+  min-width: 120px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+  border-radius: 10px;
+  margin-top: 12px;
+  font-size: 16px;
+  top: 100%;
+  right: 2%;
   font-family: 'Mona';
   transition: opacity 0.5s, visibility 0.1000s;
 }
@@ -455,7 +589,7 @@
   display: flex;
   align-content: 'center';
   justify-content: 'center';
-  margin-right: 20px;
+  margin-right: 35px;
   margin-top: 0px;
 }
 .feedback-button-landing {
@@ -518,6 +652,17 @@
   display: flex;
   align-items: center;
 }
+
+.upload-button{
+  background: none;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 0px;
+  display: flex;
+  align-items: center;
+}
 /* Styling for the chatting container for the Chat page */
 .chat-container {
   grid-area: main;
@@ -529,6 +674,59 @@
   overflow-y: auto;
 }
 
+/* Styling for the scroll-to-top button for the Chat page */
+.scroll-to-top {
+  position: fixed;
+  bottom: 60px;
+  right: 40px;
+  background-color: transparent;
+  border: none;
+  padding: 10px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: none; 
+}
+
+.scroll-to-top:hover {
+  background-color: transparent;
+}
+
+/* Styling for the more-info footer for the Chat page */
+.more-info {
+  position: fixed;
+  cursor: pointer;
+  z-index: 1000;
+  display: flex;
+  bottom: 7px;
+  right: 7px;
+  align-items: flex-end;
+}
+
+.more-info-dropdown {
+  border-radius: 10px;
+  background-color: rgb(49, 46, 46);
+}
+
+.moreinfo-dropdown-button {
+  color: rgb(250, 250, 250);
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: center;
+  font-family: 'Mona';
+}
+
+.more-info-icon {
+  margin-left: auto;
+}
+
+.more-info-icon:hover {
+  opacity: 0.8;
+}
+
 /* Styling for the chat input row containing the input field and submit prompt button*/
 .input-row {
   padding: 0px 0;
@@ -537,6 +735,69 @@
   margin-top: 15px;
   justify-content: center; 
   align-items: center;
+}
+
+.uploaded-files {
+  margin-top: 10px;
+  margin-right: 5px;
+  margin-left: 5px;
+}
+
+.file-item {
+  margin-bottom: 10px;
+  padding: 8px;
+  background-color: #262626;
+  border-radius: 5px;
+  position: relative;
+}
+
+.file-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start; 
+  
+}
+
+.file-name {
+  font-weight: bold;
+  color: white;
+  font-weight: 600;
+  font-family: 'Mona';
+}
+
+.file-type {
+  font-style: italic;
+  color: white;
+  position: absolute;
+  right: 10px;
+  top: 8px;
+}
+
+
+.progress-bar {
+  width: 100%;
+  background-color: #e0e0e0;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.progress {
+  height: 5px;
+  background-color: red;
+  transition: width 0.4s ease;
+}
+
+.delete-file-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #ff0000;
+  padding: 0;
+  margin-left: 10px;
+}
+
+.delete-file-button:hover {
+  color: #cc0000;
 }
 
 .warning-message {
@@ -671,7 +932,6 @@
   border: none;
   resize: none; 
 }
-
 
 
 
@@ -986,13 +1246,13 @@ li.deleting {
 }
 
 .loginModalContainer {
-  background-color: rgba(5, 5, 7, 0.8);
+  background-color: transparent;
   padding: 30px;
   border-radius: 30px;
-  align-items: center;
-  border: #7a7a7a 1px solid;
-  width: 450px;
-  height: 400px;
+  border: none;
+  width: 850px;
+  height: 500px;
+  justify-content: center;
   max-width: 80%;
   box-sizing: border-box;
   z-index: 2;
@@ -1011,7 +1271,7 @@ li.deleting {
   padding-top: 0px;
   padding-bottom: 40px;
   box-shadow: none;
-  color: rgba(255, 255, 255, 0.7);
+  color: #E4E6EB;
   background-color: none;
   font-size: 28px;
   font-family: 'Mona';
@@ -1122,7 +1382,7 @@ li.deleting {
 .newUserButton {
   background: none;
   border: none;
-  color: #0066cc;
+  color: rgb(0, 102, 204);
   cursor: pointer;
   font-family: 'Mona';
   padding: 5px 10px;
@@ -1132,7 +1392,7 @@ li.deleting {
 .guestButton {
   background: none;
   border: none;
-  color: #0066cc;
+  color: rgb(0, 102, 204);
   cursor: pointer;
   font-family: 'Mona';
   padding: 5px 10px;
@@ -1141,7 +1401,7 @@ li.deleting {
 
 .forgotPasswordButton:hover,
 .newUserButton:hover {
-  color: #004499;
+  color: rgb(0, 68, 153);
   text-decoration: none;
 }
 
@@ -1166,6 +1426,78 @@ li.deleting {
   margin-top: 140px;
 }
 
+.chatButton {
+  width: 30%;
+  padding: 10px;
+  color: rgb(255, 255, 255);
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: rgb(179, 33, 33);
+ 
+  border: none;
+  cursor: pointer;
+  display: block;
+  font-family: 'Mona';
+  font-size: 13px;
+}
+
+.landingChatButton {
+  width: 30%;
+  padding: 10px;
+  color: rgb(0, 0, 0);
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: #E4E6EB;
+  border: none;
+  cursor: pointer;
+  display: block;
+  font-family: 'Mona';
+  font-size: 13px;
+}
+.landingChatButton:hover {
+  background-color: #D3D3D3;
+}
+
+.landingbox-title {
+  font-size: 14px;
+  font-weight: 400;
+  color: #a0a0a0;
+  margin-bottom: 10px;
+}
+
+.landingbox-container {
+  display: grid;
+  gap: 60px;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: auto auto;
+  justify-items: center;
+}
+
+.landingbox-box {
+  background-color: #262626;
+  padding: 20px;
+  border-radius: 20px;
+  color: #fff;
+  width: 280px; 
+  height: 100px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.landingbox-box-small {
+  font-size: 12px;
+  color: #a0a0a0;
+}
 
 .signupButton:hover {
   background-color: #292727;
@@ -1189,8 +1521,8 @@ li.deleting {
   padding: 30px;
   border-radius: 30px;
   align-items: center;
-  border: #7a7a7a 1px solid;
-  width: 450px;
+  border: none;
+  width: 550px;
   height: 600px;
   max-width: 100%;
   box-sizing: border-box;
@@ -1204,7 +1536,7 @@ li.deleting {
   top: 25%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background-color: rgba(5, 5, 7, 0.8);
+  background-color: none;
 
 }
 
@@ -1228,13 +1560,14 @@ li.deleting {
 /******************** STYLING FOR THE SIGNUP PAGE *********************/
 
 .forgotPasswordModalContainer {
-  background-color: rgba(5, 5, 7, 0.8);
+  background-color: transparent;
   padding: 30px;
   border-radius: 30px;
   align-items: center;
-  border: #7a7a7a 1px solid;
-  width: 450px;
-  height: 400px;
+  border: none;
+  width: 550px;
+  height: 500px;
+  justify-content: center ;
   max-width: 80%;
   box-sizing: border-box;
   z-index: 2;
