@@ -7,7 +7,7 @@
 import { useNavigate } from 'react-router-dom';
 import '../../globalStyles.css';
 function LandingPage() {
-    
+
     // ENV VARIABLES
     const NAVBAR_HEADER = process.env.REACT_APP_NAVBAR_HEADER;
     const LFOOTER = process.env.REACT_APP_LFOOTER;
@@ -24,7 +24,7 @@ function LandingPage() {
     const handleLoginClick = () => {
         navigate('/virtualTA/login');
     };
-    const handleSignupClick= () => {
+    const handleSignupClick = () => {
         navigate('/virtualTA/signup')
     };
     const handleFeedback = () => {
@@ -32,23 +32,23 @@ function LandingPage() {
     };
 
     return (
-        <div className="landingPageContainer" style={{ backgroundImage: `url(${BACKGROUND_IMAGE_URL})`}}>
+        <div className="landingPageContainer" style={{ backgroundImage: `url(${BACKGROUND_IMAGE_URL})` }}>
             <div className="top-bar-landing">
                 <h1 className="title">{NAVBAR_HEADER} </h1>
                 <div className="buttons">
                     <button className="feedback-button" onClick={handleFeedback}>Leave Feedback</button>
                     <button type="submit" className="feedback-button" onClick={handleLoginClick}>
-                    Login
-                </button>
-                <button type="submit" className="feedback-button" onClick={handleSignupClick}>
-                    Sign Up
-                </button> 
+                        Login
+                    </button>
+                    <button type="submit" className="feedback-button" onClick={handleSignupClick}>
+                        Sign Up
+                    </button>
                 </div>
             </div>
             <div className="modalContainer">
-            <img src={`${process.env.PUBLIC_URL + LOGO_MODAL}`} alt="NC STATE UNIVERSITY" style={{ width: '360px', height: '60px', margin: '30px' }} />
+                <img src={`${process.env.PUBLIC_URL + LOGO_MODAL}`} alt="NC STATE UNIVERSITY" style={{ width: '360px', height: '60px', margin: '30px' }} />
                 <p className="modalBodyText">{MODALBODYTEXT}</p>
-                <div className="modalButtonContainer">    
+                <div className="modalButtonContainer">
                 </div>
             </div>
             <p className="footerTextLeft">

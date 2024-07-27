@@ -1,8 +1,8 @@
 /**
- * @file Hero.js modified component file for the course evaluation hero section
- * @author Sanjit Verma
+ * This component is responsible for rendering the hero section of the landing page.
+ * 
+ * @author Sanjit Verma 
  */
-import * as React from 'react';
 import { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
@@ -30,8 +30,8 @@ const StyledBox = styled('div')(({ theme }) => ({
     height: 700,
   },
   ...theme.applyStyles('dark', {
-    boxShadow: '0 0 24px 12px hsla(0, 0%, 75%, 0.8)',
-    backgroundImage: `url(${'/_BK-1679.jpg'})`,
+    boxShadow: '0 0 22px 5px hsla(0, 0%, 75%, 0.8)',
+    backgroundImage: `url(${'/_MAH0056.jpg'})`,
     outlineColor: 'hsla(210, 100%, 80%, 0.1)',
   }),
 }));
@@ -47,8 +47,8 @@ const randomTexts = [
 export default function Hero() {
   const navigate = useNavigate();
   const handleChat = () => {
-    navigate('/courseEvaluation/chat');
-  } 
+    navigate('/virtualTA/chat');
+  };
 
   const [placeholderText, setPlaceholderText] = useState(randomTexts[0]);
   const [index, setIndex] = useState(0);
@@ -58,7 +58,7 @@ export default function Hero() {
     const typingInterval = setInterval(() => {
       setPlaceholderText(randomTexts[index].slice(0, charIndex + 1));
       setCharIndex((prev) => prev + 1);
-  
+
       if (charIndex === randomTexts[index].length) {
         clearInterval(typingInterval);
         setTimeout(() => {
@@ -67,13 +67,12 @@ export default function Hero() {
         }, 3000);
       }
     }, 100);
-  
+
     return () => clearInterval(typingInterval);
   }, [charIndex, index]);
 
   return (
-    <Box
-    >
+    <Box>
       <Container
         sx={{
           display: 'flex',
@@ -94,34 +93,36 @@ export default function Hero() {
               display: 'flex',
               flexDirection: { xs: 'column', sm: 'row' },
               alignItems: 'center',
-              fontSize: 'clamp(3rem, 10vw, 3.5rem)',
+              fontSize: 'clamp(3rem, 10vw, 3.2rem)',
               fontFamily: 'Mona',
-              fontWeight: '400',
+              fontWeight: '300',
+              color: '#E4E6EB',
             }}
           >
-            Course&nbsp;Evaluations&nbsp;
+            &nbsp;Teaching Assistant&nbsp;Support&nbsp;
             <Typography
               component="span"
               variant="h1"
               sx={(theme) => ({
                 fontSize: 'inherit',
                 fontFamily: 'Mona',
-                color: 'rgb(179, 33, 33)',
-                fontWeight: '500',
+                color: '#FFFFFF',
+                fontWeight: '400',
               })}
             >
-              Redefined
+              24/7
             </Typography>
           </Typography>
           <Typography
             sx={{
               textAlign: 'center',
-              color: '',
+              color: '#E4E6EB',
               fontFamily: 'Mona',
-              width: {sm: '100%', md: '80%' },
+              width: { sm: '100%', md: '80%' },
+              fontWeight: '300',
             }}
           >
-            Explore our revolutionary course evaluation platform that is designed to make the process of evaluating courses and instructors more efficient and effective.
+            Explore our innovative TA Chatbot, redefining teaching support and streamlining your academic journey with unparalleled efficiency and effectiveness.
           </Typography>
           <Stack
             direction={{ xs: 'column', sm: 'row' }}
@@ -130,7 +131,7 @@ export default function Hero() {
             sx={{ pt: 2, width: { xs: '100%', sm: 'auto' } }}
           >
             <InputLabel htmlFor="email-hero" sx={visuallyHidden}>
-              Promt
+              Prompt
             </InputLabel>
             <TextField
               id="email-hero"
@@ -138,29 +139,27 @@ export default function Hero() {
               size="small"
               variant="outlined"
               aria-label="Enter a prompt"
-              placeholder= {placeholderText}
+              placeholder={placeholderText}
               fontFamily="Mona"
-              disabled= "true"
+              disabled="true"
               slotProps={{
                 htmlInput: {
                   autoComplete: 'off',
                   'aria-label': 'Enter a prompt',
                 },
-              }}sx={{ width: '350px' }}
+              }}
+              sx={{ width: '350px' }}
             />
-             <button type="submit" className="chatButton" onClick={handleChat} style={{ width: '100px' }} >
-                    Chat Now
-                </button> 
-                
+            <button type="submit" className="landingChatButton" onClick={handleChat} style={{ width: '100px', height: '35px', marginTop: '3px'}}>
+              Chat Now
+            </button>
           </Stack>
-          <Typography variant="caption" sx={{ textAlign: 'center', fontFamily: 'Mona' }}>
-            By clicking &quot;Chat now&quot; you agree to our Terms & Conditions
-            
-            .
+          <Typography variant="caption" sx={{ fontWeight: '300', textAlign: 'center', fontFamily: 'Mona', color: '#E4E6EB' }}>
+            By using our services, you agree to our Terms & Conditions.
           </Typography>
         </Stack>
         <StyledBox id="image" />
       </Container>
-    </Box>     
+    </Box>
   );
 }

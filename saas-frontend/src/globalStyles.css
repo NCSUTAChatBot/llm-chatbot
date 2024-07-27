@@ -1246,11 +1246,11 @@ li.deleting {
 }
 
 .loginModalContainer {
-  background-color: rgba(5, 5, 7, 0.8);
+  background-color: transparent;
   padding: 30px;
   border-radius: 30px;
-  border: #7a7a7a 1px solid;
-  width: 550px;
+  border: none;
+  width: 850px;
   height: 500px;
   justify-content: center;
   max-width: 80%;
@@ -1271,7 +1271,7 @@ li.deleting {
   padding-top: 0px;
   padding-bottom: 40px;
   box-shadow: none;
-  color: rgba(255, 255, 255, 0.7);
+  color: #E4E6EB;
   background-color: none;
   font-size: 28px;
   font-family: 'Mona';
@@ -1445,6 +1445,27 @@ li.deleting {
   font-size: 13px;
 }
 
+.landingChatButton {
+  width: 30%;
+  padding: 10px;
+  color: rgb(0, 0, 0);
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: #E4E6EB;
+  border: none;
+  cursor: pointer;
+  display: block;
+  font-family: 'Mona';
+  font-size: 13px;
+}
+.landingChatButton:hover {
+  background-color: #D3D3D3;
+}
+
 .landingbox-title {
   font-size: 14px;
   font-weight: 400;
@@ -1500,10 +1521,9 @@ li.deleting {
   padding: 30px;
   border-radius: 30px;
   align-items: center;
-  border: #7a7a7a 1px solid;
+  border: none;
   width: 550px;
   height: 600px;
- 
   max-width: 100%;
   box-sizing: border-box;
   z-index: 2;
@@ -1516,7 +1536,7 @@ li.deleting {
   top: 25%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background-color: rgba(5, 5, 7, 0.8);
+  background-color: none;
 
 }
 
@@ -1540,11 +1560,11 @@ li.deleting {
 /******************** STYLING FOR THE SIGNUP PAGE *********************/
 
 .forgotPasswordModalContainer {
-  background-color: rgba(5, 5, 7, 0.8);
+  background-color: transparent;
   padding: 30px;
   border-radius: 30px;
   align-items: center;
-  border: #7a7a7a 1px solid;
+  border: none;
   width: 550px;
   height: 500px;
   justify-content: center ;

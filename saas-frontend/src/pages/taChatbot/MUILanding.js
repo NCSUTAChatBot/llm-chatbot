@@ -1,7 +1,6 @@
 /**
- * @file LandingPage.js is the landing page for the course evaluation stream
- * 
- * @author Sanjit Verma
+ * @file MUILanding.js is the landing page for the TA Chatbot stream
+ * @author Sanjit Verma (skverma)
  */
 import * as React from 'react';
 
@@ -17,27 +16,25 @@ import FAQ from './components/FAQ';
 import Footer from './components/Footer';
 import getLPTheme from './getLPTheme';
 
-
-
 export default function LandingPage() {
   const [mode] = React.useState('dark');
   const LPtheme = createTheme(getLPTheme(mode));
-  
+
   return (
-    <ThemeProvider theme={ LPtheme}>
-      <div style={{backgroundColor: '#DAD6D6'}}>
-      <AppAppBar  />
-      <Hero />
-      <Box sx={{ bgcolor: 'background.default' }}>
-        <LogoCollection />
-        <Divider />
-        <Highlights />
-        <Divider />
-        <FAQ />
-        <Divider />
-        <Footer />
-      </Box>
-      </div> 
+    <ThemeProvider theme={LPtheme}>
+      <div style={{ backgroundColor: 'rgb(20, 21, 21)' }}>
+        <AppAppBar />
+        <Hero />
+        <Box sx={{ bgcolor: 'background.default' }}>
+          <LogoCollection />
+          <Divider />
+          <Highlights />
+          <Divider />
+          <FAQ />
+          <Divider />
+          <Footer />
+        </Box>
+      </div>
     </ThemeProvider>
 
   );

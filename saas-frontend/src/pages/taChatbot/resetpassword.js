@@ -9,7 +9,8 @@ import React, { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import '../../globalStyles.css';
-
+import AppAppBar from './components/AppAppBar';
+import SimpleFooter from './components/SimpleFooter';
 const apiUrl = process.env.REACT_APP_API_URL;
 const NAVBAR_HEADER = process.env.REACT_APP_NAVBAR_HEADER;
 const BACKGROUND_IMAGE_URL = process.env.REACT_APP_BACKGROUND_IMAGE_URL;
@@ -78,13 +79,8 @@ function ResetPassword() {
     const isPasswordCriteriaMet = hasUppercase && hasNumber && hasSpecialChar && isLongEnough;
 
     return (
-        <div className="loginPageContainer" style={{ backgroundImage: `url(${BACKGROUND_IMAGE_URL})` }}>
-            <div className="top-bar">
-                <h1 className="title">{NAVBAR_HEADER}</h1>
-                <div className="buttons">
-                    <button className="feedback-button" onClick={() => window.open(process.env.REACT_APP_FEEDBACK_FORM_URL)}>Leave Feedback</button>
-                </div>
-            </div>
+        <div className="loginPageContainer" style={{ backgroundColor: 'rgb(20, 21, 21)'}}>
+            <AppAppBar/>
             <div className="signupModalContainer">
                 <div className="loginModalHeader">Reset your password</div>
                 <form onSubmit={handleResetPassword}>
@@ -135,8 +131,7 @@ function ResetPassword() {
                     )}
                 </form>
             </div>
-            <p className="footerTextLeft">{process.env.REACT_APP_LFOOTER}</p>
-            <p className="footerTextRight">{process.env.REACT_APP_RFOOTER}</p>
+            <SimpleFooter/>
         </div>
     );
 }
