@@ -1,10 +1,3 @@
-/**
- * @file loginPage.js is a file that contains the login page components
- * 
- * @author dineshkannan (dkannan)
- * @author Sanjit Verma (skverma)
- */
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../../globalStyles.css';
@@ -18,16 +11,12 @@ const FEEDBACK_URL = process.env.REACT_APP_FEEDBACK_FORM_URL;
 const BACKGROUND_IMAGE_URL = process.env.REACT_APP_BACKGROUND_IMAGE_URL;
 const apiUrl = process.env.REACT_APP_API_URL;
 
-
 function LoginPage() {
-
-    // useState hook is used to create state variables for email and password
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    // This hook is used to store Error messages
     const [error, setError] = useState('');
-    // This hook is used to store Token of users Logged in
     const [authToken, setAuthToken] = useState(localStorage.getItem('accessToken'));
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleFeedback = () => {
         window.open(FEEDBACK_URL);
@@ -35,23 +24,20 @@ function LoginPage() {
 
     const navigate = useNavigate();
 
-    // This function handles input changes in email field
     const handleEmailChanges = (event) => {
-        if (error) setError('');  // Clear errors when user starts to type
+        if (error) setError('');
         setEmail(event.target.value);
     };
 
-    // This function handles input changes in password field
     const handlePasswordChanges = (event) => {
-        if (error) setError('');  // Clear errors when user starts to type
+        if (error) setError('');
         setPassword(event.target.value);
     };
 
-    // This function handles Login 
     const handleLogin = async (event) => {
         event.preventDefault();
+        setIsLoading(true);  // Set loading state to true
         try {
-            // logic to handle login
             const response = await fetch(`${apiUrl}/user/login`, {
                 method: 'POST',
                 headers: {
@@ -61,46 +47,38 @@ function LoginPage() {
             });
 
             const data = await response.json();
-            // If the authentication is successful
             if (response.status === 200) {
-                // Storing the accessToken received from the server in localStorage
                 localStorage.setItem('accessToken', data.access_token);
-                //  Convert the user info object to a string and storing it in localStorage
                 localStorage.setItem('userInfo', JSON.stringify(data.user_info));
-                // Set the received access token in the application's state for immediate use
                 setAuthToken(data.access_token);
-                // Redirect the user to the '/chat' page
-                navigate('/virtualTA/chat')
-            }
-            else {
+                window.location.href = '/virtualTA/chat';
+            } else {
                 throw new Error(data.error || 'Unknown Error');
             }
         } catch (error) {
-            console.error('Login failed', error.message)
+            console.error('Login failed', error.message);
             setError(error.message);
+        } finally {
+            setIsLoading(false);  // Set loading state to false
         }
-    }
+    };
 
-    // This function handles redirection to signup page
     const handleNewUser = () => {
-        navigate('/virtualTA/signup');
+        window.location.href = '/virtualTA/signup';
     };
 
     const handleGuest = () => {
-        navigate('/virtualTA/chat');
+        window.location.href = '/virtualTA/chat';
     };
 
-    // This function handles redirection to forgot password page
     const handleForgotPassword = () => {
-        navigate('/virtualTA/forgotpassword');
-    }
+        window.location.href = '/virtualTA/forgotpassword';
+    };
 
     const handleHome = () => {
-        navigate('/virtualTA');
-    }
+        window.location.href = '/virtualTA';
+    };
 
-
-    //HTML code for webpage
     return (
         <div className="loginPageContainer" style={{ backgroundColor: 'rgb(20, 21, 21)' }}>
             <AppAppBar />
@@ -130,7 +108,11 @@ function LoginPage() {
                         />
                     </div>
                     {error && <p className='loginError'>{error}</p>}
-                    <button type="submit" className="loginButton" >Login</button>
+                    {isLoading ? (
+                        <div className="loadingIndicator">Loading...</div>  // Loading indicator
+                    ) : (
+                        <button type="submit" className="loginButton">Login</button>
+                    )}
                     <div className='buttonsContainer'>
                         <button type='button' className='forgotPasswordButton' onClick={handleForgotPassword}>Forgot Password?</button>
                         <button type='button' className='newUserButton' onClick={handleNewUser}>Need to Sign Up?</button>
@@ -138,12 +120,11 @@ function LoginPage() {
                     <div className='buttonsContainer2'>
                         <button type='button' className='guestButton' onClick={handleGuest}>Continue as a Guest</button>
                     </div>
-
                 </form>
             </div>
             <SimpleFooter />
         </div>
-    )
+    );
 }
 
 export default LoginPage;

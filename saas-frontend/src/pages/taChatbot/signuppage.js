@@ -32,16 +32,8 @@ function SignupPage() {
     const [hasSpecialChar, setHasSpecialChar] = useState(false);
     const [isLongEnough, setIsLongEnough] = useState(false);
 
-    const handleFeedback = () => {
-        window.open(FEEDBACK_URL);
-    };
-
     const handleLoginClick = () => {
         navigate('/virtualTA/login');
-    };
-
-    const handleHomeClick = () => {
-        navigate('/virtualTA');
     };
 
     const navigate = useNavigate();
@@ -94,7 +86,7 @@ function SignupPage() {
                 setLastName('');
                 setEmail('');
                 setPassword('');
-                navigate('/virtualTA/login');
+                window.location.href = '/virtualTA/login';
             } else {
                 throw new Error(data.error || 'Failed to register');
             }

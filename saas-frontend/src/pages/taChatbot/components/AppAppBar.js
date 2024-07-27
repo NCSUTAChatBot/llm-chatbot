@@ -14,26 +14,21 @@ function AppAppBar() {
   const FEEDBACK_URL = process.env.REACT_APP_FEEDBACK_FORM_URL;
   const navigate = useNavigate();
 
-  const handleChat = () => {
-    navigate('/courseEvaluation/chat');
-  }
-
   const handleFeedback = () => {
     window.open(FEEDBACK_URL);
   };
 
   const handleLoginClick = () => {
-    navigate('/virtualTA/login');
+    window.location.href = '/virtualTA/login';
   };
 
   const handleHomeClick = () => {
-    navigate('/virtualTA');
+    window.location.href = '/virtualTA';
   };
 
   const handleSignupClick = () => {
-    navigate('/virtualTA/signup')
+    window.location.href = '/virtualTA/signup'; 
   };
-  
 
   return (
     <div className="top-bar-landingCE">
