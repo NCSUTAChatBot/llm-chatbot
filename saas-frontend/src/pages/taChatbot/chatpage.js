@@ -5,7 +5,7 @@
  */
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import '../../globalStyles.css';
+import { useColorScheme } from '../hooks/useColorScheme';
 
 const ChatPage = () => {
 
@@ -38,12 +38,14 @@ const ChatPage = () => {
     const [deletingSessionKey, setDeletingSessionKey] = useState(null);
     // This hook is used to set  the state of the dropdown
     const [showDropdown, setShowDropdown] = useState(false);
-    const [showDropdown2, setShowDropdown2] = useState(false);
     // This hook is used to store the animated titles state
     const [isLastMessageNew, setIsLastMessageNew] = useState(false);
     const suggestedContainerRef = useRef(null);
 
-    // This function is called when the user clicks on the download as pdf button
+    // useColorScheme
+    const { isDark, setIsDark } = useColorScheme();
+    
+    // This function is called when the user clicks on the downloiad as pdf button
     const handleDownloadChat = async () => {
         if (!currentSessionKey) {
             console.error("No chat session selected to download.");
@@ -104,7 +106,7 @@ const ChatPage = () => {
     const handleFeedback = () => {
         window.open(FEEDBACK_URL);
     };
-
+   
     // This function is called when the user clicks on the Help button
     const handleToggleHelpPopup = () => {
         setShowHelpPopup(prev => !prev);
@@ -145,7 +147,7 @@ const ChatPage = () => {
                 setMessages([]);
                 localStorage.removeItem('accessToken');
                 localStorage.removeItem('userInfo');
-                navigate('/virtualTA');
+                navigate('/');
             } else {
                 throw new Error('Failed to clear chat history on the backend.');
             }
@@ -153,6 +155,9 @@ const ChatPage = () => {
             console.error('Error clearing chat history:', error);
         }
     };
+    const handleExit = async () => {
+        navigate('/');
+    }
 
     // This function is called when the user clicks on the delete button for a chat session
     const handleDeleteChat = async (sessionKey) => {
@@ -199,17 +204,6 @@ const ChatPage = () => {
             .catch(error => {
                 console.error("Error updating title:", error);
             });
-    };
-
-    // Function to format response text into bullet points
-    const formatResponseText = (text) => {
-        const lines = text.split('\n');
-        return lines.map((line, index) => {
-            if (line.trim().startsWith("-")) {
-                return <li key={index}>{line}</li>;
-            }
-            return <span key={index}>{line}<br /></span>;
-        });
     };
 
     // This function is called when the user submits a question. It handles logic for creating session and managing message history
@@ -497,41 +491,6 @@ const ChatPage = () => {
         ));
     };
 
-    // Function to scroll to the top of the chat container
-    const scrollToTop = () => {
-        const chatContainer = document.querySelector('.chat-container');
-        if (chatContainer) {
-            chatContainer.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        }
-    };
-
-    // This useEffect hook adds a scroll event listener to the chat container
-    useEffect(() => {
-        const handleScroll = () => {
-            const scrollToTopButton = document.querySelector('.scroll-to-top');
-            const chatContainer = document.querySelector('.chat-container');
-            if (chatContainer.scrollTop > 500) { // Show button when scrolled down more than 500px
-                scrollToTopButton.style.display = 'block';
-            } else {
-                scrollToTopButton.style.display = 'none';
-            }
-        };
-
-        const chatContainer = document.querySelector('.chat-container');
-        if (chatContainer) {
-            chatContainer.addEventListener('scroll', handleScroll);
-        }
-
-        return () => {
-            if (chatContainer) {
-                chatContainer.removeEventListener('scroll', handleScroll);
-            }
-        };
-    }, []);
-
     // This hook is used to load and set user information from localStorage
     useEffect(() => {
         const storedUserInfo = localStorage.getItem('userInfo');
@@ -542,8 +501,6 @@ const ChatPage = () => {
 
 
     const toggleDropdown = () => setShowDropdown(!showDropdown);
-    const toggleDropdown2 = () => setShowDropdown2(!showDropdown2);
-
     return (
         <div className='chat-page'>
             <div className="top-barchat">
@@ -552,6 +509,18 @@ const ChatPage = () => {
                     <span className="title-chatpage-smallText">  {REACT_APP_LFOOTER}</span>
                 </div>
                 <div className="buttons">
+                    {/* Theme toggle button */}
+                    <button className="theme-toggle-button" onClick={() => setIsDark(!isDark)} style={{ marginRight: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '5px 10px' }}>
+                    {isDark ? (
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" style={{ width: '22px', height: '22px' }}>
+                            <circle cx="10" cy="10" r="9" fill="white"/>
+                        </svg>
+                    ) : (
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" style={{ width: '22px', height: '22px' }}>
+                            <circle cx="10" cy="10" r="9" />
+                        </svg>
+                    )}
+                    </button>    
                     {showHelpPopup && (
                         <div className="overlay" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0, 0, 0, .8)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                             <div className="name-chat-popup">
@@ -652,7 +621,7 @@ const ChatPage = () => {
                             <span className="first-line">Sign Up or Log in</span> <br />
                             Save chats, download chats, leave feedback, and more.
                         </p>                        <button className="signup-button" onClick={() => navigate('/signup')}>Sign up</button>
-                        <button className="login-button" onClick={() => navigate('/virtualTA/login')}>Log in</button>
+                        <button className="login-button" onClick={() => navigate('/login')}>Log in</button>
                     </div>
                 )}
             </aside>
@@ -702,35 +671,11 @@ const ChatPage = () => {
                             <div key={index} className={`message ${msg.sender}`}>
                                 <div className="sender">{msg.sender === 'user' ? 'You' : 'SAAS Chatbot'}</div>
                                 <div className="text">
-                                    {formatResponseText(msg.text)}
+                                    {msg.text}
                                 </div>
                             </div>
                         ))
                     )}
-                    <button className="scroll-to-top" onClick={scrollToTop}>
-                        <svg width="22px" height="22px" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: '22px', height: '22px', stroke: '#ffffff', strokeWidth: '4' }}>
-                            <path d="M12 33L24 21L36 33" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
-                            <path d="M12 13H36" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
-                        </svg>
-                    </button>
-                    <div className="more-info">
-                        {showDropdown2 && (
-                            <div className="more-info-dropdown">
-                                {userInfo ? (
-                                    <button className="moreinfo-dropdown-button">{userInfo.email}</button>
-                                ) : null}
-                                <button className="moreinfo-dropdown-button">Help & FAQ</button>
-                                <button className="moreinfo-dropdown-button">Release Notes</button>
-                            </div>
-                        )}
-                        <div className="more-info-icon" onClick={toggleDropdown2}>
-                            <svg width="20" height="20" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M24 44C29.5228 44 34.5228 41.7614 38.1421 38.1421C41.7614 34.5228 44 29.5228 44 24C44 18.4772 41.7614 13.4772 38.1421 9.85786C34.5228 6.23858 29.5228 4 24 4C18.4772 4 13.4772 6.23858 9.85786 9.85786C6.23858 13.4772 4 18.4772 4 24C4 29.5228 6.23858 34.5228 9.85786 38.1421C13.4772 41.7614 18.4772 44 24 44Z" fill="none" stroke="#ffffff" stroke-width="2" stroke-linejoin="round" />
-                                <path d="M24 28.6248V24.6248C27.3137 24.6248 30 21.9385 30 18.6248C30 15.3111 27.3137 12.6248 24 12.6248C20.6863 12.6248 18 15.3111 18 18.6248" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
-                                <path fill-rule="evenodd" clip-rule="evenodd" d="M24 37.6248C25.3807 37.6248 26.5 36.5055 26.5 35.1248C26.5 33.7441 25.3807 32.6248 24 32.6248C22.6193 32.6248 21.5 33.7441 21.5 35.1248C21.5 36.5055 22.6193 37.6248 24 37.6248Z" fill="#ffffff" />
-                            </svg>
-                        </div>
-                    </div>
                     <div ref={messageEndRef} />
                 </div>
                 <div className="input-row">
