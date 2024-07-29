@@ -1,5 +1,12 @@
+/**
+ * @file loginpage.js is a file that contains login page components
+ * 
+ * @author Sanjit Verma
+ */
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import '../../globalStyles.css';
 import AppAppBar from './components/AppAppBar';
 import SimpleFooter from './components/SimpleFooter';
@@ -109,7 +116,9 @@ function LoginPage() {
                     </div>
                     {error && <p className='loginError'>{error}</p>}
                     {isLoading ? (
-                        <div className="loadingIndicator">Loading...</div>  // Loading indicator
+                        <button className="loginButton" disabled>
+                            <FontAwesomeIcon icon={faSpinner} spin />
+                        </button>
                     ) : (
                         <button type="submit" className="loginButton">Login</button>
                     )}
