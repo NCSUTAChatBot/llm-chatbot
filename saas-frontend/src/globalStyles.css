@@ -449,7 +449,7 @@
   font-weight: 500;
 }
 .title-chatpage {
-  margin-top: .75px;
+  margin-top: 5px;
   font-size: 17px;
   font-family: 'Mona';
   font-weight: 500;
@@ -511,6 +511,7 @@
   font-size: 16px;
   margin-left: 10px;
   font-family: 'Mona';
+  margin-top: 3px;
 }
 
 
@@ -1179,7 +1180,7 @@ li.deleting {
   justify-content: center;
   margin-top: 5px;
   width: 100%;
-  top: 77%;
+  top: 89%;
   left: 50%;
   width: 80%;
   transform: translate(-50%, -50%);
@@ -1357,7 +1358,7 @@ li.deleting {
   display: flex;
   justify-content: space-evenly;
   align-self: center;
-  margin-top: 15px;
+  margin-top: 20px;
   width: 100%;
 }
 

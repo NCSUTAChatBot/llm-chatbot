@@ -6,6 +6,8 @@
 
 import { useState } from "react";
 import { useNavigate } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import React from "react";
 import '../../globalStyles.css';
 import AppAppBar from './components/AppAppBar';
@@ -19,14 +21,13 @@ function SignupPage() {
     const BACKGROUND_IMAGE_URL = process.env.REACT_APP_BACKGROUND_IMAGE_URL;
     const apiUrl = process.env.REACT_APP_API_URL;
 
-    // useState hook is used to create state variables for inputs
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [message, setMessage] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
 
-    // Password criteria states
     const [hasUppercase, setHasUppercase] = useState(false);
     const [hasNumber, setHasNumber] = useState(false);
     const [hasSpecialChar, setHasSpecialChar] = useState(false);
@@ -38,7 +39,6 @@ function SignupPage() {
 
     const navigate = useNavigate();
 
-    // Handlers for each input
     const handleFirstNameChange = (event) => {
         setFirstName(event.target.value);
     };
@@ -60,11 +60,9 @@ function SignupPage() {
         setIsLongEnough(value.length >= 8);
     };
 
-    // This function handles form submission 
     const handleSignup = async (event) => {
         event.preventDefault();
-        console.log('Signup Submitted', { firstName, lastName, email, password });
-        // Add logic to handle signup here 
+        setIsLoading(true);
         try {
             const response = await fetch(`${apiUrl}/user/signup`, {
                 method: 'POST',
@@ -80,19 +78,21 @@ function SignupPage() {
             });
             const data = await response.json();
             if (response.status === 201) {
-                setMessage('User registered successfully.');
-                // To clear the form after successful registration
                 setFirstName('');
                 setLastName('');
                 setEmail('');
                 setPassword('');
-                window.location.href = '/virtualTA/login';
+                setTimeout(() => {
+                    window.location.href = '/virtualTA/login';
+                }, 1000);
             } else {
                 throw new Error(data.error || 'Failed to register');
             }
         } catch (error) {
-            console.error('Signup failed', error.message)
+            console.error('Signup failed', error.message);
             setMessage('Error: ' + error.message);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -165,7 +165,9 @@ function SignupPage() {
                         </label>
                     </div>
                     {message && <p className='signUpError'>{message}</p>}
-                    <button type="submit" className="signupButton">Sign Up</button>
+                    <button type="submit" className="signupButton" disabled={isLoading}>
+                        {isLoading ? <FontAwesomeIcon icon={faSpinner} spin /> : 'Sign Up'}
+                    </button>
                     <div className='buttonsContainer'>
                         <button type='button' className='newUserButton' onClick={handleLoginClick}>Have an account?</button>
                     </div>

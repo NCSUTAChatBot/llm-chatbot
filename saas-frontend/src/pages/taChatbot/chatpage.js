@@ -26,8 +26,6 @@ const ChatPage = () => {
     const [messages, setMessages] = useState([]);
     // This hook is used to store the reference to the last message
     const messageEndRef = useRef(null);
-    // This hook is used to store the state of the help popup
-    const [showHelpPopup, setShowHelpPopup] = useState(false);
     // This hook is used to store the information of the user currently logged in
     const [userInfo, setUserInfo] = React.useState(null);
     // This hook is used to store the chat session key
@@ -105,10 +103,6 @@ const ChatPage = () => {
         window.open(FEEDBACK_URL);
     };
 
-    // This function is called when the user clicks on the Help button
-    const handleToggleHelpPopup = () => {
-        setShowHelpPopup(prev => !prev);
-    };
 
     // This function is called when the user clicks on the Start New Chat button. It handles chat sessions and message history 
     //when creating a new chat session using the new chat button
@@ -145,7 +139,7 @@ const ChatPage = () => {
                 setMessages([]);
                 localStorage.removeItem('accessToken');
                 localStorage.removeItem('userInfo');
-                navigate('/virtualTA');
+                window.location.href = '/virtualTA';
             } else {
                 throw new Error('Failed to clear chat history on the backend.');
             }
@@ -552,47 +546,26 @@ const ChatPage = () => {
                     <span className="title-chatpage-smallText">  {REACT_APP_LFOOTER}</span>
                 </div>
                 <div className="buttons">
-                    {showHelpPopup && (
-                        <div className="overlay" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0, 0, 0, .8)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                            <div className="name-chat-popup">
-                                <div className="popup-header">
-                                    <span className="popup-title">Need Assistance?</span>
-                                    <button onClick={() => setShowHelpPopup(false)} className="popup-cancel-button">X</button>
+
+                    <div className="userInfo">
+                        <div className="userInfo" onClick={toggleDropdown}>
+                            Welcome, {userInfo ? userInfo.name : "Guest"}
+                            {showDropdown && (
+                                <div className='user-dropdown'>
+                                    {userInfo ? (
+                                        <>
+                                            <button type="submit" className="user-dropdown-button" onClick={handleLogout}>Logout</button>
+                                            <button className="user-dropdown-button" onClick={handleFeedback}>Leave Feedback</button>
+                                        </>
+                                    ) : (
+                                        <button type="submit" className="user-dropdown-button" onClick={() => navigate('/virtualTA')}>Home</button>
+                                    )}
                                 </div>
-                                <div className="popup-body">
-                                    <p>Type you prompt and patiently wait for the model to generate the response. </p>
-                                    <p>Please leave feedback on your responses and report any bugs using the Feedback button so we can improve the chatbot.</p>
-                                    <p>DISCLAIMER: Chat messages are collected to enhance and improve our services.</p>
-                                </div>
-                            </div>
+                            )}
+                            <svg style={{ paddingLeft: "5" }} xmlns="http://www.w3.org/2000/svg" fill="none" width="16" height="16" viewBox="0 0 24 24" strokeWidth="3" stroke="white" className="size-6">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                            </svg>
                         </div>
-                    )}
-                    <button className="help-button" onClick={handleToggleHelpPopup} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '5px 10px' }}>
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5" style={{ width: '22px', height: '22px' }}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
-                        </svg>
-                    </button>
-                    < div className="userInfo">
-                        {userInfo ? (
-                            <div className="userInfo" onClick={toggleDropdown}>
-                                Welcome, {userInfo ? userInfo.name : "Guest"}
-                                {showDropdown && (
-                                    <div className='user-dropdown'>
-                                        <button type="submit" className="user-dropdown-button" onClick={handleLogout}>Logout</button>
-                                        <button className="user-dropdown-button" onClick={handleFeedback}>Leave Feedback</button>
-                                    </div>
-                                )}
-                                <svg style={{ paddingLeft: "5" }} xmlns="http://www.w3.org/2000/svg" fill="none" width="16" height="16" viewBox="0 0 24 24" strokeWidth="3" stroke="white" className="size-6">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-                                </svg>
-
-                            </div>
-
-                        ) : (
-                            <div className="userInfo" >
-                                Welcome, Guest
-                            </div>
-                        )}
                     </div>
 
                 </div>
@@ -649,7 +622,7 @@ const ChatPage = () => {
                 {(!userInfo || !userInfo.email) && (
                     <div className="guest-login">
                         <p className="login-message">
-                            <span className="first-line">Sign Up or Log in</span> <br />
+                            <span className="first-lineCE">Sign Up or Log in</span> <br />
                             Save chats, download chats, leave feedback, and more.
                         </p>                        <button className="signup-button" onClick={() => navigate('/signup')}>Sign up</button>
                         <button className="login-button" onClick={() => navigate('/virtualTA/login')}>Log in</button>
@@ -700,7 +673,7 @@ const ChatPage = () => {
                     ) : (
                         messages.map((msg, index) => (
                             <div key={index} className={`message ${msg.sender}`}>
-                                <div className="sender">{msg.sender === 'user' ? 'You' : 'SAAS Chatbot'}</div>
+                                <div className="sender">{msg.sender === 'user' ? 'You' : 'Virtual TA'}</div>
                                 <div className="text">
                                     {formatResponseText(msg.text)}
                                 </div>
