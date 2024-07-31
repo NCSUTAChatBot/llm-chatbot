@@ -13,23 +13,22 @@ from tqdm import tqdm
 
 def extract_text_and_table_from_page(page):
     # Extract tables and their bounding boxes
-    tables, table_bboxes = extract_tables_from_page(page)
+    tables, table_boxes = extract_tables_from_page(page)
 
     # Extract text from blocks not overlapping with table bounding boxes
     text_blocks = []
     blocks = page.get_text("dict")["blocks"]
     for b in blocks:
-        bbox = fitz.Rect(b['bbox'])
-        if not any(bbox.intersects(tb) for tb in table_bboxes) and 'text' in b:
+        box = fitz.Rect(b['bbox'])
+        if not any(box.intersects(tb) for tb in table_boxes) and 'text' in b:
             text_blocks.append(b["text"])
     
     text = "\n".join(text_blocks)  # Combine text blocks into a single string
 
     table_texts = []
     for table in tables:
-        if table:
-            table_text = table.to_string(index=False, header=False)
-            table_texts.append(table_text)
+        table_text = table.to_string(index=False, header=False)
+        table_texts.append(table_text)
 
     return text + "\n\n" + "\n\n".join(table_texts)
 
@@ -38,7 +37,7 @@ def extract_tables_from_page(page):
     Extract tables from a PDF page using PyMuPDF.
     """
     tables = []
-    table_bboxes = []
+    table_boxes = []
     blocks = page.get_text("dict")["blocks"]
     for b in blocks:
         if "lines" in b:
@@ -49,8 +48,8 @@ def extract_tables_from_page(page):
             if table:
                 df = pd.DataFrame(table)
                 tables.append(df)
-                table_bboxes.append(fitz.Rect(b['bbox']))
-    return tables, table_bboxes
+                table_boxes.append(fitz.Rect(b['bbox']))
+    return tables, table_boxes
 
 def load_pdfs(directory):
     """
@@ -62,11 +61,6 @@ def load_pdfs(directory):
 
     """
     documents = []
-
-    #chunk size refers to how many characters each document or text chunk will contain
-    #chunk overlap refers to how many characters will be shared between each document or text chunk 
-    #this is important because it will allow context retention if phrase or info is split akwardly between chunks
-
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=1048, chunk_overlap=100)
     unique_contents = set()  # To track unique document content
 
