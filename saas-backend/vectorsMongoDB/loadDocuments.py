@@ -11,30 +11,15 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.schema import Document
 from tqdm import tqdm
 
-def extract_text_and_table_from_page(page):
-    # Extract tables and their bounding boxes
-    tables, table_boxes = extract_tables_from_page(page)
-
-    # Extract text from blocks not overlapping with table bounding boxes
-    text_blocks = []
-    blocks = page.get_text("dict")["blocks"]
-    for b in blocks:
-        box = fitz.Rect(b['bbox'])
-        if not any(box.intersects(tb) for tb in table_boxes) and 'text' in b:
-            text_blocks.append(b["text"])
-    
-    text = "\n".join(text_blocks)  # Combine text blocks into a single string
-
-    table_texts = []
-    for table in tables:
-        table_text = table.to_string(index=False, header=False)
-        table_texts.append(table_text)
-
-    return text + "\n\n" + "\n\n".join(table_texts)
-
 def extract_tables_from_page(page):
     """
     Extract tables from a PDF page using PyMuPDF.
+    Args:
+    - page: A PDF page object.
+    
+    Returns:
+    - tables: List of DataFrames representing the tables.
+    - table_boxes: List of bounding boxes of the tables.
     """
     tables = []
     table_boxes = []
@@ -43,7 +28,7 @@ def extract_tables_from_page(page):
         if "lines" in b:
             table = []
             for l in b["lines"]:
-                span_texts = [span["text"] for span in l["spans"]]
+                span_texts = [span["text"] for span in l["spans"] if span["text"].strip()]
                 table.append(span_texts)
             if table:
                 df = pd.DataFrame(table)
@@ -51,14 +36,52 @@ def extract_tables_from_page(page):
                 table_boxes.append(fitz.Rect(b['bbox']))
     return tables, table_boxes
 
+def extract_text_and_table_from_page(page):
+    """
+    Extract text and tables from a PDF page.
+    Args:
+    - page: A PDF page object.
+    
+    Returns:
+    - A combined string of text and table data.
+    """
+    # Extract tables and their bounding boxes
+    tables, table_boxes = extract_tables_from_page(page)
+
+    # Extract text from blocks not overlapping with table bounding boxes
+    text_blocks = []
+    code_blocks = []
+    blocks = page.get_text("dict")["blocks"]
+    for b in blocks:
+        box = fitz.Rect(b['bbox'])
+        if not any(box.intersects(tb) for tb in table_boxes) and 'text' in b:
+            block_text = b["text"].strip()
+            if block_text:
+                # Check if the block is a code block by detecting typical code indentation/pattern
+                if any(line.strip().startswith(tuple("0123456789")) for line in block_text.splitlines()):
+                    code_blocks.append(block_text)
+                else:
+                    text_blocks.append(block_text)
+    
+    text = "\n".join(text_blocks).replace("None", "").strip()  # Combine text blocks into a single string
+
+    table_texts = []
+    for table in tables:
+        table_text = table.to_string(index=False, header=False)
+        table_texts.append(table_text)
+
+    # Combine text, code blocks, and table texts
+    result = text + "\n\n" + "\n\n".join(code_blocks) + "\n\n" + "\n\n".join(table_texts)
+    return result.strip()
+
 def load_pdfs(directory):
     """
-    Load all PDFs from a directory, split them into chunks, and return the chunks.
+    Load all PDFs from a directory, extract content, and return document chunks.
     Args:
     - directory: Path to the directory containing PDF files.
+    
     Returns:
     - List of document chunks.
-
     """
     documents = []
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=1048, chunk_overlap=100)
@@ -66,16 +89,17 @@ def load_pdfs(directory):
 
     # List all PDF files in the directory, filter out non-PDF files
     pdf_files = [f for f in os.listdir(directory) if f.endswith('.pdf')]
-    
-    #loop over all the PDF files in the directory, tqdm is a progress bar
+
+    # Loop over all the PDF files in the directory
     for filename in tqdm(pdf_files, desc="Processing PDFs", unit="file"):
         pdf_path = os.path.join(directory, filename)
-        
+
         try:
-            pdf_document= fitz.open(pdf_path)
-            for page_num in range(len(pdf_document)):
-                page=pdf_document.load_page(page_num)
+            pdf_document = fitz.open(pdf_path)
+            for page_num in range(295,296):  # Process all pages
+                page = pdf_document.load_page(page_num)
                 text = extract_text_and_table_from_page(page)
+                print(text)
                 if text.strip() and text not in unique_contents:  # Only proceed if there is text content
                     unique_contents.add(text)
                     doc = Document(page_content=text, metadata={"page_number": page_num, "source": filename})
@@ -87,5 +111,11 @@ def load_pdfs(directory):
             tqdm.write(f"Loaded and processed {len(docs)} chunks from {filename}.")
         except Exception as e:
             tqdm.write(f"Failed to process {filename}: {e}")
-            
+
     return documents
+
+current_script_dir = os.path.dirname(os.path.abspath(__file__))
+base_dir = os.path.dirname(current_script_dir) # navigate to the parent directory
+pdf_directory = os.path.join(base_dir, 'pdfData') # navigate to the pdfData directory
+
+docs = load_pdfs(pdf_directory)
