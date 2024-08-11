@@ -148,29 +148,32 @@ const ChatPage = () => {
         navigate('/courseEvaluation');
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        if (!question.trim()) return;
+    
+        // Set the last message as new
+        setIsLastMessageNew(true);
+    
+        // Add the user's question to the chat
+        const userMessage = { text: question, sender: 'user' };
+        setMessages(prevMessages => [...prevMessages, userMessage]);
+        setQuestion('');
     
         try {
-            const askResponse = await fetch(`${apiUrl}/courseEvaluation/ask`, {
+            // Send the question to the backend
+            const response = await fetch(`${apiUrl}/courseEvaluation/ask`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ session_id: currentSessionId, question: question })
+                body: JSON.stringify({ question })
             });
-            console.log('Question:', question);
-            console.log('session_id:', currentSessionId);
     
-            if (askResponse.ok) {
-                // Add the user's question to the chat
-                setMessages(prevMessages => [
-                    ...prevMessages,
-                    { sender: 'user', text: question }
-                ]);
-                setQuestion('');
-                if (askResponse.body) {
-                    const reader = askResponse.body.getReader();
+            if (response.ok) {
+                // If the response body is present, handle streaming responses for displaying chat messages
+                if (response.body) {
+                    const reader = response.body.getReader();
                     const decoder = new TextDecoder();
-                    let aggregatedText = ''; 
+                    let aggregatedText = ''; // Buffer for the streamed text
     
                     while (true) {
                         const { done, value } = await reader.read();
@@ -179,6 +182,7 @@ const ChatPage = () => {
                         const chunk = decoder.decode(value, { stream: true });
                         aggregatedText += chunk;
     
+                        // Update messages without duplicating or adding unnecessary spaces
                         setMessages(messages => {
                             const lastMessage = messages[messages.length - 1];
                             if (lastMessage && lastMessage.sender === 'bot') {
@@ -189,19 +193,21 @@ const ChatPage = () => {
                             }
                         });
                     }
-
+    
+                    // Ensure the reader is closed
                     reader.releaseLock();
                 }
             } else {
-                const errorData = await askResponse.json();
+                const errorData = await response.json();
                 console.error('Error response JSON:', errorData);
             }
         } catch (error) {
             console.error('Error asking question:', error);
         }
+        finally {
+            setIsLastMessageNew(false);
+        }
     };
-    
-    
     
     useEffect(() => {
         if (messageEndRef.current) {
