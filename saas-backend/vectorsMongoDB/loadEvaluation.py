@@ -43,7 +43,7 @@ class LoadEvaluation:
     def extract_text_from_page(page):
         text = page.extract_text() or ""
         tables = page.extract_tables() or []
-        table_texts = ['\n'.join(['\t'.join(cell for cell in row) for row in table]) for table in tables]
+        table_texts = ['\n'.join(['\t'.join(str(cell) if cell is not None else '' for cell in row) for row in table]) for table in tables]
         return text + '\n\n' + '\n\n'.join(table_texts)
 
     def load_csv(self, file_stream):
@@ -51,7 +51,7 @@ class LoadEvaluation:
         return self._chunk_dataframe(df, "uploaded.csv")
 
     def load_xlsx(self, file_stream):
-        df = pd.read_excel(file_stream)
+        df = pd.read_excel(file_stream, engine='openpyxl')
         return self._chunk_dataframe(df, "uploaded.xlsx")
 
     def _chunk_dataframe(self, df, source_name):

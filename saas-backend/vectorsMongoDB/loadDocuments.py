@@ -5,6 +5,8 @@ This file is used to load documents from the file system into the Vector generat
 @Author: Dinesh Kannan (dkannan)
 '''
 import os
+import fitz
+import pandas as pd
 import pdfplumber
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.schema import Document
