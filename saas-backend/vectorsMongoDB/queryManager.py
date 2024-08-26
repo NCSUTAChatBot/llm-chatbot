@@ -91,31 +91,6 @@ llm = ChatOpenAI(
 def format_docs(docs):
    return "\n\n".join(doc.page_content for doc in docs) 
 
-def format_response(response, context):
-    """
-    This function formats the response by adding bullet points to list items.
-    """
-    lines = response.split('\n')
-    formatted_response = []
-    
-    for line in lines:
-        # Check if the line starts with a numbered list item
-        if line.strip().startswith(("1.", "2.", "3.", "4.", "5.", "6.", "7.", "8.")):
-            # Replace numbered list with bullet points
-            line = line.replace(".", ".", 1)
-            formatted_response.append(f"- {line.strip()}")
-        else:
-            formatted_response.append(line.strip())
-    
-    if "```" in context:
-        code_snippets = context.split("```")
-        for i in range(1, len(code_snippets), 2):
-            formatted_response.append("\n\nHere is the relevant code snippet:\n")
-            formatted_response.append(f"```{code_snippets[i]}```")
-
-
-    return "\n".join(formatted_response)
-
 # Define the retrieval and response chain
 rag_chain = (
     {"context": retriever | format_docs, "question": RunnablePassthrough()} # STEP 4
@@ -144,7 +119,6 @@ def process_query(question):
 
 
         for chunk in stream_response: #chunking allows user to see response as processed,  
-            formatted_chunk = format_response(chunk, context)
             yield chunk
 
     except Exception as e:

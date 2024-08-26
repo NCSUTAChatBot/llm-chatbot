@@ -488,6 +488,7 @@
   grid-template-rows: auto 1fr;
   flex-direction: column;
   min-height: 100vh;
+  max-height: 100vh;
   margin: 0;
   background-color: rgb(20, 21, 21);
 }
@@ -810,6 +811,15 @@
   margin-top: 1px;
 }
 
+.text code {
+  white-space: pre-wrap;
+  overflow-x: auto;
+  display: block;
+  max-width: 100%;
+  word-break: break-word;
+}
+
+
 /* Styling for the chat submit button for the Chat page */
 .submit-chat {
   padding: 1rem;
@@ -920,7 +930,10 @@
 
 /* Styling for the chat input field for the Chat page */
 .input-field {
-  width: 60%; 
+  width:70%;
+  max-height:200px;
+  overflow:auto;
+  resize:vertical;
   border-radius: 25px;
   padding: 10px 20px; 
   height: 31px; 
