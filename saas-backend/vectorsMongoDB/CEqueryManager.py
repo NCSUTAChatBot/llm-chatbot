@@ -30,6 +30,9 @@ db_name = os.getenv('MONGODB_DATABASE')
 collection_name = os.getenv('MONGODB_VECTORS_COURSEEVAL')
 vector_search_idx = os.getenv('MONGODB_VECTOR_INDEX_COURSEEVAL')
 
+collection_name_eval = os.getenv('MONGODB_VECTORS_COURSEEVALUATION_DOCS')
+vector_search_idx_eval = os.getenv('MONGODB_VECTOR_INDEX_TEMPUSER_DOC')
+
 
 # Connect to MongoDB
 client = MongoClient(MONGODB_URI)
@@ -41,6 +44,7 @@ if db_name is None or collection_name is None:
 
 db = client[db_name]
 collection = db[collection_name]
+eval_collection = db[collection_name_eval]
 
 if vector_search_idx is None:
     raise ValueError("Vector search index is not set.")
@@ -50,6 +54,12 @@ vector_search = MongoDBAtlasVectorSearch(
     embedding=OpenAIEmbeddings(disallowed_special=()),
     collection=collection,
     index_name=vector_search_idx,
+)
+
+vector_search_eval = MongoDBAtlasVectorSearch(
+    embedding=OpenAIEmbeddings(disallowed_special=()),
+    collection=eval_collection,
+    index_name=vector_search_idx_eval,
 )
 
 # Configure the retriever
@@ -69,18 +79,27 @@ If the user asks you to generate code, say that you cannot generate code.
 If the user asks any question not related to course evaluations, say, I'm sorry, I can't assist with that.
 If the user asks what you can help with, say you are a Course Evaluation chatbot here to assist with course evaluation feedback.
 If the user greets you, say hello back.
-Please provide a detailed explanation and if applicable, give examples or historical context.
+
+You are an assisstant for a course evaluation chatbot. You have been provided with two major information sources to assist with the course evaluation feedback.
 
 
-{context}
+Use the below information as a reference, the below infomation provides context on how professors can improve their class
+{context1}
+
+THE BELOW INFORMATION IS IMPORTANT AND CONTAINS THE EVALUATION OF THE COURSE:
+{context2}
+
 
 Question: {question}
 
-Answer:
+
+Answer the above question using course evalation feedback and if you need ways to improve on those questions, then use the reference material provided
 """
 
 # Create a prompt template
-custom_rag_prompt = PromptTemplate.from_template(template)
+custom_rag_prompt = PromptTemplate(
+    template=template, input_variables=["context1", "context2", "question"]
+)
 llm = ChatOpenAI(
     model="gpt-4o-mini",
 )
@@ -125,7 +144,7 @@ rag_chain = (
 
 # Function to process a query
 
-def process_query(question):
+def process_query(question, session_id):
     '''
     This function processes a query by invoking the RAG chain with the given question.
     It returns a generator that yields the response in chunks.
@@ -136,20 +155,35 @@ def process_query(question):
 
     try:
         # Retrieve the relevant documents
-        context_docs = retriever.get_relevant_documents(question)
-        context = format_docs(context_docs)
+        #Texbook vectors
+        retriever_eval = vector_search_eval.as_retriever(
+            search_type="similarity",
+            search_kwargs={"k": 10, "score_threshold": 0.8},
+            pre_filter={"source": {"$eq": session_id}}
+        )
+
+        rag_chain = (
+            {   "context1": retriever | format_docs,
+                "context2": retriever_eval | format_docs,
+                "question": RunnablePassthrough()
+            }
+            | custom_rag_prompt
+            | llm
+            | StrOutputParser()
+        )
+
 
         stream_response = rag_chain.invoke(question, config={"callbacks":[langfuse_handler]})
 
 
         for chunk in stream_response: #chunking allows user to see response as processed,  
-            formatted_chunk = format_response(chunk, context)
+            # formatted_chunk = format_response(chunk, context)
             yield chunk
 
     except Exception as e:
         raise RuntimeError(f"An error occurred while processing the query: {e}")
 
-def make_query(input_text: str | None):
+def make_query(input_text: str | None, session_id: str | None):
     '''
     This is the entry function that processes a given query from payload
     '''
@@ -157,7 +191,7 @@ def make_query(input_text: str | None):
         raise ValueError("No valid input provided")
 
     try:
-        response_generator = process_query(input_text)
+        response_generator = process_query(input_text, session_id)
         return response_generator
     except Exception as e:
         raise RuntimeError(f"An error occurred while processing the query: {e}")
