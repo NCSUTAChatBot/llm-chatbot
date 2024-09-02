@@ -139,6 +139,10 @@ Please contact Nirmal Joji (nsjoji@ncsu.edu) to be added to the project on LangF
 | 2024/7/18  | Sanjit Verma   | Fixed chat routing for Virtual TA and Course Evaluations, added CE landing page                                          |
 | 2024/7/22  | Sanjit Verma   | Implemented basic backend RAG Chain for Course Eval stream, created chatpage for stream                                        |
 | 2024/7/27  | Sanjit Verma   | TaChatbot UI refactoring to use MUI                                        |
+| 2024/8/15  | Sanjit Verma   | CE Stream, Implemented basic version with session ID                                      |
+| 2024/8/15  | Nirmal Joji   | CE Stream, Implemented CE stream refactor                                      |
+| 2024/8/25  | Nirmal Joji   | CE Stream, Implemented CE stream refactor                                      |
+| 2024/9/1  | Nirmal Joji + Deepak Rajendran | Markdown Interpreter refactor + UI styling fixes                                     |
 
 
 
