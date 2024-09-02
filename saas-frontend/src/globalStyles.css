@@ -930,21 +930,20 @@
 
 /* Styling for the chat input field for the Chat page */
 .input-field {
-  width:70%;
-  max-height:200px;
-  overflow:auto;
-  resize:vertical;
+  width: 70%;
+  min-height: 32px;
+  max-height: 8em;
+  overflow-y: auto;
+  resize: none;
   border-radius: 25px;
-  padding: 10px 20px; 
-  height: 31px; 
-  line-height: 31px; 
+  padding: 10px 20px;
   background-color: #262626;
   color: #ffffff;
   font-size: 16px;
   font-family: "Arimo";
   outline: none;
   border: none;
-  resize: none; 
+  align-content: center;
 }
 
 
@@ -1706,4 +1705,22 @@ li.deleting {
   text-shadow: none;
   display: inline-block;
   text-align: start;
+}
+
+.zero-pad-markdown > p,
+.zero-pad-markdown > h1,
+.zero-pad-markdown > h2,
+.zero-pad-markdown > h3,
+.zero-pad-markdown > h4,
+.zero-pad-markdown > h5,
+.zero-pad-markdown > h6 {
+  margin: 0;
+}
+
+.zero-pad-markdown > pre {
+  background: black;
+  padding: 6px 14px;
+  border-radius: inherit;
+  margin: 4px 0px;
+  border: 0.2px solid white;
 }

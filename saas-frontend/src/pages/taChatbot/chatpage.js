@@ -446,8 +446,7 @@ const ChatPage = () => {
     const textareaRef = useRef(null);
     useEffect(() => {
         textareaRef.current.style.height = "auto";
-        const scrollHeight = textareaRef.current.scrollHeight;
-        textareaRef.current.style.height = scrollHeight + "px";
+        textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight - 20, 5 * 32)}px`;
     }, [question]);
 
 
@@ -676,7 +675,7 @@ const ChatPage = () => {
                         messages.map((msg, index) => (
                             <div key={index} className={`message ${msg.sender}`}>
                                 <div className="sender">{msg.sender === 'user' ? 'You' : 'Virtual TA'}</div>
-                                <div className="text">
+                                <div className="text zero-pad-markdown">
                                     <Markdown remarkPlugins={[remarkGfm]} children={msg.text}/>
                                 </div>
                             </div>
