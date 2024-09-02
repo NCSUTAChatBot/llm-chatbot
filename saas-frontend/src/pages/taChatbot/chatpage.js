@@ -6,6 +6,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../../globalStyles.css';
+import Markdown from 'react-markdown' 
+import remarkGfm from 'remark-gfm'
 
 const ChatPage = () => {
 
@@ -195,16 +197,6 @@ const ChatPage = () => {
             });
     };
 
-    // Function to format response text into bullet points
-    const formatResponseText = (text) => {
-        const lines = text.split('\n');
-        return lines.map((line, index) => {
-            if (line.trim().startsWith("-")) {
-                return <li key={index}>{line}</li>;
-            }
-            return <span key={index}>{line}<br /></span>;
-        });
-    };
 
     // This function is called when the user submits a question. It handles logic for creating session and managing message history
     const handleSubmit = async (event) => {
@@ -450,6 +442,15 @@ const ChatPage = () => {
         };
     }, [suggestedContainerRef]);
 
+    // This hook is used to to change the height of the textarea based on the content
+    const textareaRef = useRef(null);
+    useEffect(() => {
+        textareaRef.current.style.height = "auto";
+        textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight - 20, 5 * 32)}px`;
+    }, [question]);
+
+
+
     // This hook is used to clear the chat history on page refresh
     useEffect(() => {
         const container = suggestedContainerRef.current;
@@ -674,8 +675,8 @@ const ChatPage = () => {
                         messages.map((msg, index) => (
                             <div key={index} className={`message ${msg.sender}`}>
                                 <div className="sender">{msg.sender === 'user' ? 'You' : 'Virtual TA'}</div>
-                                <div className="text">
-                                    {formatResponseText(msg.text)}
+                                <div className="text zero-pad-markdown">
+                                    <Markdown remarkPlugins={[remarkGfm]} children={msg.text}/>
                                 </div>
                             </div>
                         ))
@@ -710,12 +711,13 @@ const ChatPage = () => {
                     <textarea
                         type="text"
                         id="question"
+                        ref={textareaRef}
                         placeholder="Type a prompt"
                         className="input-field"
                         value={question}
                         onChange={(e) => setQuestion(e.target.value)}
                         onKeyDown={(e) => {
-                            if (e.key === 'Enter' && !isLastMessageNew) {
+                            if (e.key === 'Enter' && !isLastMessageNew  && !e.shiftKey) {
                                 e.preventDefault();
                                 handleSubmit(e);
                             }
