@@ -7,12 +7,14 @@ import random
 import string
 import csv
 from tkinter import filedialog
+
 '''
 @file taChatbotWhiteList.py
 Simple GUI Admin Application to manage user auth
 
 @author Sanjit Verma (skverma)
 '''
+os.system("defaults write -g NSRequiresAquaSystemAppearance -bool Yes")
 class UserWhitelistApp:
     def __init__(self, root):
         self.root = root
@@ -25,14 +27,9 @@ class UserWhitelistApp:
         self.sidebar = tk.Frame(root, bg="#333", width=200)
         self.sidebar.grid(row=0, column=0, sticky="nsew")
 
-        self.auth_users_button = tk.Button(self.sidebar, text="Authenticated Users", command=self.show_auth_users_view, bg="#444", fg="white", padx=10, pady=10)
-        self.auth_users_button.pack(fill=tk.X)
-
-        self.find_user_button = tk.Button(self.sidebar, text="Search User", command=self.show_find_user_view, bg="#444", fg="white", padx=10, pady=10)
-        self.find_user_button.pack(fill=tk.X)
-
-        self.access_codes_button = tk.Button(self.sidebar, text="Access Codes", command=self.show_access_codes_view, bg="#444", fg="white", padx=10, pady=10)
-        self.access_codes_button.pack(fill=tk.X)
+        self.auth_users_button = ttk.Button(self.sidebar, text="Authenticated Users", command=self.show_auth_users_view)
+        self.find_user_button = ttk.Button(self.sidebar, text="Search User", command=self.show_find_user_view)
+        self.access_codes_button = ttk.Button(self.sidebar, text="Access Codes", command=self.show_access_codes_view)
 
         self.main_frame = tk.Frame(root, bg="#f0f0f0")
         self.main_frame.grid(row=0, column=1, sticky="nsew")
