@@ -14,7 +14,6 @@ Simple GUI Admin Application to manage user auth
 
 @author Sanjit Verma (skverma)
 '''
-os.system("defaults write -g NSRequiresAquaSystemAppearance -bool Yes")
 class UserWhitelistApp:
     def __init__(self, root):
         self.root = root
@@ -133,11 +132,11 @@ class UserWhitelistApp:
 
         tk.Label(self.main_frame, text="Access Codes", font=("Helvetica", 16)).grid(row=0, column=0, padx=10, pady=10, columnspan=3, sticky="w")
 
-        self.access_tree = ttk.Treeview(self.main_frame, columns=('First Name', 'Last Name', 'Access Code', 'Used'), show='headings')
+        self.access_tree = ttk.Treeview(self.main_frame, columns=('First Name', 'Last Name', 'Access Code', 'Redeemed'), show='headings')
         self.access_tree.heading('First Name', text='First Name')
         self.access_tree.heading('Last Name', text='Last Name')
         self.access_tree.heading('Access Code', text='Access Code')
-        self.access_tree.heading('Used', text='Used')
+        self.access_tree.heading('Redeemed', text='Redeemed')
 
         self.vsb_access = ttk.Scrollbar(self.main_frame, orient="vertical", command=self.access_tree.yview)
         self.access_tree.configure(yscrollcommand=self.vsb_access.set)

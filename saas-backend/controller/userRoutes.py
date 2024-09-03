@@ -19,11 +19,15 @@ load_dotenv()
 MONGODB_URI = os.getenv('MONGODB_URI')
 MONGODB_USERS = os.getenv('MONGODB_USERS')
 MONGODB_DB = os.getenv('MONGODB_DATABASE')
+MONGODB_WHITELIST = os.getenv('MONGODB_WHITELIST_USERS')
+MONGODB_ACCESSCODES = os.getenv('MONGODB_ACCESSCODES')
 
 # Connect to MongoDB
 client = MongoClient(MONGODB_URI)
 db = client[MONGODB_DB]
 user_collection = db[MONGODB_USERS]
+whitelist_collection = db[MONGODB_WHITELIST]
+access_codes_collection = db[MONGODB_ACCESSCODES]
 
 # Initialize UserRepository and UserService
 user_repository = UserRepository(user_collection)
@@ -39,6 +43,8 @@ def create_user():
     """
     try:
         data = request.get_json()
+        if not whitelist_collection.find_one({'email': {'$regex': f'^{data.get("email")}$', '$options': 'i'}}):
+            return jsonify({'error': 'Email not authorized, please contact support'}), 403
         response, status = user_service.create_user(
             email=data.get('email'),
             password=data.get('password'),
@@ -51,6 +57,36 @@ def create_user():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@user_bp.route('/signupCode', methods=['POST'])
+def create_user_with_code():
+    """
+    This method creates a new user profile using an access code.
+    """
+    try:
+        data = request.get_json()
+
+        access_code_doc = access_codes_collection.find_one({'access_code': data.get('access_code'), 'used': False})
+        if not access_code_doc:
+            return jsonify({'error': 'Invalid or already used access code'}), 403
+
+        response, status = user_service.create_user(
+            email=data.get('email'),
+            password=data.get('password'),
+            first_name=data.get('first_name'),
+            last_name=data.get('last_name')
+        )
+
+        if status == 201:
+            access_codes_collection.update_one(
+                {'access_code': data.get('access_code')},
+                {'$set': {'used': True}}
+            )
+
+        return jsonify(response), status
+    except ValidationError as e:
+        return jsonify({'error': e.errors()}), 400
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 @user_bp.route('/login', methods=['POST'])
 @observe()
