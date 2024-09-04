@@ -1707,6 +1707,7 @@ li.deleting {
   text-align: start;
 }
 
+/* Fixes markdown extra spacing */
 .zero-pad-markdown > p,
 .zero-pad-markdown > h1,
 .zero-pad-markdown > h2,
@@ -1717,10 +1718,19 @@ li.deleting {
   margin: 0;
 }
 
+/* Highlighting markdown code blocks */
 .zero-pad-markdown > pre {
   background: black;
   padding: 6px 14px;
   border-radius: inherit;
   margin: 4px 0px;
   border: 0.2px solid white;
+}
+
+/* Highligting markdown backticks  */ 
+.zero-pad-markdown > p > code {
+  display: inline;
+  background: rgba(128, 128, 128, 0.25);
+  padding: 2px 6px;
+  border-radius: 4px;
 }
