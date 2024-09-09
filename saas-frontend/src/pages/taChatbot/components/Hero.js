@@ -47,7 +47,7 @@ const randomTexts = [
 export default function Hero() {
   const navigate = useNavigate();
   const handleChat = () => {
-    navigate('/virtualTA/chat');
+    navigate('/virtualTA/login');
   };
 
   const [placeholderText, setPlaceholderText] = useState(randomTexts[0]);

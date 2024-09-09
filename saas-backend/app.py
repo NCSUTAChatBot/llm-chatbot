@@ -52,6 +52,7 @@ app.register_blueprint(chat_bp, url_prefix='/chat')
 app.register_blueprint(eval_bp, url_prefix='/courseEvaluation')
 app.register_blueprint(user_bp, url_prefix='/user')
 
+
 # Specify the entry point of the Flask application, which is only executed when the script is run directly.
 if __name__ == '__main__':
     # Run the Flask application on port 8000, accessible from any network interface.
