@@ -33,6 +33,16 @@ function SignupPage() {
     const [hasSpecialChar, setHasSpecialChar] = useState(false);
     const [isLongEnough, setIsLongEnough] = useState(false);
 
+    const [showAccessCodeField, setShowAccessCodeField] = useState(false);
+    const [accessCode, setAccessCode] = useState('');
+    const [accessCodeButtonText, setAccessCodeButtonText] = useState('Have an access code?');
+
+    const handleAccessCodeClick = () => {
+        setShowAccessCodeField(!showAccessCodeField);
+        setAccessCodeButtonText(showAccessCodeField ? 'Have an access code?' : "Don't have an access code?");
+        setMessage(''); 
+    };
+
     const handleLoginClick = () => {
         navigate('/virtualTA/login');
     };
@@ -41,14 +51,17 @@ function SignupPage() {
 
     const handleFirstNameChange = (event) => {
         setFirstName(event.target.value);
+        setMessage('');
     };
 
     const handleLastNameChange = (event) => {
         setLastName(event.target.value);
+        setMessage('');
     };
 
     const handleEmailChange = (event) => {
         setEmail(event.target.value);
+        setMessage('');
     };
 
     const handlePasswordChange = (event) => {
@@ -58,23 +71,32 @@ function SignupPage() {
         setHasNumber(/\d/.test(value));
         setHasSpecialChar(/[!@#$%^&*(),.?":{}|<>_]/.test(value));
         setIsLongEnough(value.length >= 8);
+        setMessage('');
     };
 
     const handleSignup = async (event) => {
         event.preventDefault();
         setIsLoading(true);
+        setMessage('');
         try {
-            const response = await fetch(`${apiUrl}/user/signup`, {
+            const endpoint = showAccessCodeField ? `${apiUrl}/user/signupCode` : `${apiUrl}/user/signup`;
+            const requestBody = {
+                first_name: firstName,
+                last_name: lastName,
+                email,
+                password
+            };
+            
+            if (showAccessCodeField) {
+                requestBody.access_code = accessCode;
+            }
+    
+            const response = await fetch(endpoint, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    first_name: firstName,
-                    last_name: lastName,
-                    email,
-                    password
-                })
+                body: JSON.stringify(requestBody)
             });
             const data = await response.json();
             if (response.status === 201) {
@@ -82,6 +104,7 @@ function SignupPage() {
                 setLastName('');
                 setEmail('');
                 setPassword('');
+                setAccessCode(''); 
                 setTimeout(() => {
                     window.location.href = '/virtualTA/login';
                 }, 1000);
@@ -145,6 +168,7 @@ function SignupPage() {
                             onChange={handlePasswordChange}
                             required
                         />
+                        
                     </div>
                     <div className="passwordCriteria">
                         <label>
@@ -164,13 +188,34 @@ function SignupPage() {
                             At least 8 characters
                         </label>
                     </div>
+                    
                     {message && <p className='signUpError'>{message}</p>}
                     <button type="submit" className="signupButton" disabled={isLoading}>
                         {isLoading ? <FontAwesomeIcon icon={faSpinner} spin /> : 'Sign Up'}
                     </button>
                     <div className='buttonsContainer'>
                         <button type='button' className='newUserButton' onClick={handleLoginClick}>Have an account?</button>
+
                     </div>
+                    <div className='buttonsContainer3'>
+                        <button type='button' className='newUserButton' onClick={handleAccessCodeClick}>
+                            {accessCodeButtonText}
+                        </button>
+                        
+                    </div>
+                    {showAccessCodeField && (
+                            <div className="accessCodeInput">
+                                <input
+                                    type="text"
+                                    name="accessCode"
+                                    placeholder="Access Code"
+                                    className="login-inputContainer"
+                                    value={accessCode}
+                                    onChange={(e) => setAccessCode(e.target.value)}
+                                    required
+                                />
+                            </div>
+                        )}
                 </form>
             </div>
             <SimpleFooter />

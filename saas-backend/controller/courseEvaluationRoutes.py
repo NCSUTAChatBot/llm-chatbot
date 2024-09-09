@@ -96,12 +96,13 @@ def ask():
     if not input_data or 'question' not in input_data:
         return jsonify({"error": "Required data is missing"}), 400
 
-    question = input_data['question']
+    question = input_data.get('question')
+    session_id = input_data.get('session_id') 
 
     def generate_response():
         full_response = "" 
         try:
-            for chunk in queryManager.make_query(question):
+            for chunk in queryManager.make_query(question, session_id):
                 try:
                     chunk_data = json.loads(chunk)
                 except JSONDecodeError:

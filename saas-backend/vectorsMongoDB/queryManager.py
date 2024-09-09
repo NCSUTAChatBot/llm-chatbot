@@ -107,11 +107,11 @@ def format_response(response, context):
         else:
             formatted_response.append(line.strip())
     
-    if "```" in response:
-        code_snippets = response.split("```")
+    if "```" in context:
+        code_snippets = context.split("```")
         for i in range(1, len(code_snippets), 2):
             formatted_response.append("\n\nHere is the relevant code snippet:\n")
-            formatted_response.append(f"```\n{code_snippets[i]}\n```")
+            formatted_response.append(f"```{code_snippets[i]}```")
 
 
     return "\n".join(formatted_response)
@@ -144,7 +144,6 @@ def process_query(question):
 
 
         for chunk in stream_response: #chunking allows user to see response as processed,  
-            formatted_chunk = format_response(chunk, context)
             yield chunk
 
     except Exception as e:

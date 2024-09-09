@@ -6,6 +6,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../../globalStyles.css';
+import Markdown from 'react-markdown' 
+import remarkGfm from 'remark-gfm'
 
 const ChatPage = () => {
 
@@ -195,26 +197,17 @@ const ChatPage = () => {
             });
     };
 
-    // Function to format response text into bullet points
-    const formatResponseText = (text) => {
-        const lines = text.split('\n');
-        return lines.map((line, index) => {
-            if (line.trim().startsWith("-")) {
-                return <li key={index}>{line}</li>;
-            }
-            return <span key={index}>{line}<br /></span>;
-        });
-    };
 
     // This function is called when the user submits a question. It handles logic for creating session and managing message history
     const handleSubmit = async (event) => {
         event.preventDefault();
         if (!question.trim()) return;
 
-        if (!userInfo || !userInfo.email) {
-            handleGuestSubmit(event);
-            return;
-        }
+        //GUEST MODE CODE
+        // if (!userInfo || !userInfo.email) {
+        //     handleGuestSubmit(event);
+        //     return;
+        // }
 
         setIsLastMessageNew(true);
 
@@ -322,77 +315,78 @@ const ChatPage = () => {
         messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
 
-    const handleGuestSubmit = async (event) => {
-        event.preventDefault();
-        if (!question.trim()) return;
-        setIsLastMessageNew(true);
+    // GUEST MODE CODE
+    // const handleGuestSubmit = async (event) => {
+    //     event.preventDefault();
+    //     if (!question.trim()) return;
+    //     setIsLastMessageNew(true);
 
-        const userMessage = { text: question, sender: 'user' };
-        setMessages(prevMessages => [...prevMessages, userMessage]);
-        setQuestion('');
-        try {
-            let response;
-            let payload;
-            if (!currentSessionKey) {
-                response = await fetch(`${apiUrl}/chat/askGuest`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ question: question })
-                });
-                if (response.ok) {
-                    const data = await response.json();
-                    setCurrentSessionKey(data.sessionKey);
-                    response = await fetch(`${apiUrl}/chat/askGuest`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ sessionKey: data.sessionKey, question: question })
-                    });
-                }
-            } else {
-                payload = { sessionKey: currentSessionKey, question };
-                response = await fetch(`${apiUrl}/chat/askGuest`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-            }
-            if (response.ok) {
-                if (response.body) {
-                    const reader = response.body.getReader();
-                    const decoder = new TextDecoder();
-                    let aggregatedText = '';
+    //     const userMessage = { text: question, sender: 'user' };
+    //     setMessages(prevMessages => [...prevMessages, userMessage]);
+    //     setQuestion('');
+    //     try {
+    //         let response;
+    //         let payload;
+    //         if (!currentSessionKey) {
+    //             response = await fetch(`${apiUrl}/chat/askGuest`, {
+    //                 method: 'POST',
+    //                 headers: { 'Content-Type': 'application/json' },
+    //                 body: JSON.stringify({ question: question })
+    //             });
+    //             if (response.ok) {
+    //                 const data = await response.json();
+    //                 setCurrentSessionKey(data.sessionKey);
+    //                 response = await fetch(`${apiUrl}/chat/askGuest`, {
+    //                     method: 'POST',
+    //                     headers: { 'Content-Type': 'application/json' },
+    //                     body: JSON.stringify({ sessionKey: data.sessionKey, question: question })
+    //                 });
+    //             }
+    //         } else {
+    //             payload = { sessionKey: currentSessionKey, question };
+    //             response = await fetch(`${apiUrl}/chat/askGuest`, {
+    //                 method: 'POST',
+    //                 headers: { 'Content-Type': 'application/json' },
+    //                 body: JSON.stringify(payload)
+    //             });
+    //         }
+    //         if (response.ok) {
+    //             if (response.body) {
+    //                 const reader = response.body.getReader();
+    //                 const decoder = new TextDecoder();
+    //                 let aggregatedText = '';
 
-                    while (true) {
-                        const { done, value } = await reader.read();
-                        if (done) break;
+    //                 while (true) {
+    //                     const { done, value } = await reader.read();
+    //                     if (done) break;
 
-                        const chunk = decoder.decode(value, { stream: true });
-                        aggregatedText += chunk;
+    //                     const chunk = decoder.decode(value, { stream: true });
+    //                     aggregatedText += chunk;
 
-                        setMessages(messages => {
-                            const lastMessage = messages[messages.length - 1];
-                            if (lastMessage && lastMessage.sender === 'bot') {
-                                lastMessage.text += chunk;
-                                return [...messages.slice(0, -1), lastMessage];
-                            } else {
-                                return [...messages, { text: chunk, sender: 'bot' }];
-                            }
-                        });
-                    }
-                    reader.releaseLock();
-                }
-            } else {
-                throw new Error('Failed to submit message. Status: ' + response.status);
-            }
-        } catch (error) {
-            console.error('Error submitting question:', error);
-            setMessages(prevMessages => prevMessages.slice(0, -1));
-        } finally {
-            setIsLastMessageNew(false);
-        }
+    //                     setMessages(messages => {
+    //                         const lastMessage = messages[messages.length - 1];
+    //                         if (lastMessage && lastMessage.sender === 'bot') {
+    //                             lastMessage.text += chunk;
+    //                             return [...messages.slice(0, -1), lastMessage];
+    //                         } else {
+    //                             return [...messages, { text: chunk, sender: 'bot' }];
+    //                         }
+    //                     });
+    //                 }
+    //                 reader.releaseLock();
+    //             }
+    //         } else {
+    //             throw new Error('Failed to submit message. Status: ' + response.status);
+    //         }
+    //     } catch (error) {
+    //         console.error('Error submitting question:', error);
+    //         setMessages(prevMessages => prevMessages.slice(0, -1));
+    //     } finally {
+    //         setIsLastMessageNew(false);
+    //     }
 
-        messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    };
+    //     messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    // };
 
     useEffect(() => {
         if (messageEndRef.current) {
@@ -449,6 +443,15 @@ const ChatPage = () => {
             }
         };
     }, [suggestedContainerRef]);
+
+    // This hook is used to to change the height of the textarea based on the content
+    const textareaRef = useRef(null);
+    useEffect(() => {
+        textareaRef.current.style.height = "auto";
+        textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight - 20, 5 * 32)}px`;
+    }, [question]);
+
+
 
     // This hook is used to clear the chat history on page refresh
     useEffect(() => {
@@ -531,6 +534,9 @@ const ChatPage = () => {
         const storedUserInfo = localStorage.getItem('userInfo');
         if (storedUserInfo) {
             setUserInfo(JSON.parse(storedUserInfo));
+        }
+        else { //REMOVE FOR GUEST MODE
+            navigate('/virtualTA/login'); 
         }
     }, [navigate]);
 
@@ -619,7 +625,8 @@ const ChatPage = () => {
                         ))
                     )}
                 </ul>
-                {(!userInfo || !userInfo.email) && (
+                 {/* GUEST MODE CODE */}
+                {/* {(!userInfo || !userInfo.email) && (
                     <div className="guest-login">
                         <p className="login-message">
                             <span className="first-lineCE">Sign Up or Log in</span> <br />
@@ -627,7 +634,7 @@ const ChatPage = () => {
                         </p>                        <button className="signup-button" onClick={() => navigate('/signup')}>Sign up</button>
                         <button className="login-button" onClick={() => navigate('/virtualTA/login')}>Log in</button>
                     </div>
-                )}
+                )} */}
             </aside>
             <main style={{ flex: 1, overflowY: 'hidden', padding: '10px', display: 'flex', flexDirection: 'column' }}>
                 <div className="chat-container">
@@ -674,8 +681,8 @@ const ChatPage = () => {
                         messages.map((msg, index) => (
                             <div key={index} className={`message ${msg.sender}`}>
                                 <div className="sender">{msg.sender === 'user' ? 'You' : 'Virtual TA'}</div>
-                                <div className="text">
-                                    {formatResponseText(msg.text)}
+                                <div className="text zero-pad-markdown">
+                                    <Markdown remarkPlugins={[remarkGfm]} children={msg.text}/>
                                 </div>
                             </div>
                         ))
@@ -710,12 +717,13 @@ const ChatPage = () => {
                     <textarea
                         type="text"
                         id="question"
+                        ref={textareaRef}
                         placeholder="Type a prompt"
                         className="input-field"
                         value={question}
                         onChange={(e) => setQuestion(e.target.value)}
                         onKeyDown={(e) => {
-                            if (e.key === 'Enter' && !isLastMessageNew) {
+                            if (e.key === 'Enter' && !isLastMessageNew  && !e.shiftKey) {
                                 e.preventDefault();
                                 handleSubmit(e);
                             }

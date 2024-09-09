@@ -98,8 +98,14 @@ MONGODB_USERS= MONGODB_USERS
 MONGODB_VECTORS_COURSEEVAL = MONGODB_VECTORS_COURSEEVALUATION
 MONGODB_VECTOR_INDEX_COURSEEVAL = MONGODB_VECTOR_INDEX_COURSEEVALUATION
 
+MONGODB_VECTORS_COURSEEVALUATION_DOCS = MONGODB_VECTORS_COURSEEVALUATION_DOCS
+MONGODB_VECTOR_INDEX_TEMPUSER_DOC = vector_index
+
 MONGODB_TEMPUSER = MONGODB_TEMPUSER
 MONGODB_VECTOR_INDEX_TEMPUSER = MONGODB_VECTOR_INDEX_TEMPUSER
+
+MONGODB_WHITELIST_USERS = MONGODB_WHITELIST_USERS
+MONGODB_ACCESSCODES = MONGODB_ACCESSCODES
 
 OPENAI_API_KEY= <YOU API KEY HERE>
 LANGFUSE_PUBLIC_KEY = <YOU API KEY HERE>
@@ -123,6 +129,21 @@ What it is: Langfuse is a platform designed for logging, monitoring, and observa
 
 Please contact Nirmal Joji (nsjoji@ncsu.edu) to be added to the project on LangFuse and get the API Keys or if you need assistance with LangFuse
 
+## Authenticating Users
+Contact Sanjit Verma (skverma@ncsu.edu) for assistance. Users can be authenticated through the Virtual TA Admin Panel
+
+To access the panel:
+
+1. Navigate to the folder auth
+2. Add the following .env File under the auth folder 
+```
+MONGODB_URI="mongodb+srv://<username>:<password>@chatbot.3zncvhn.mongodb.net/?retryWrites=true&w=majority&appName=chatbot"
+MONGODB_DATABASE=chatbot
+MONGODB_WHITELIST_USERS = MONGODB_WHITELIST_USERS
+MONGODB_ACCESSCODES = MONGODB_ACCESSCODES
+```
+3. Run the tachatbotWhiteList.py app, install any required python libraries
+4. Either add the user directly via email through the Authenticated Users tab or generate an access code to send to the user (no email required)
 
 ## Version Updates
 
@@ -146,6 +167,11 @@ Please contact Nirmal Joji (nsjoji@ncsu.edu) to be added to the project on LangF
 | 2024/7/18  | Sanjit Verma   | Fixed chat routing for Virtual TA and Course Evaluations, added CE landing page                                          |
 | 2024/7/22  | Sanjit Verma   | Implemented basic backend RAG Chain for Course Eval stream, created chatpage for stream                                        |
 | 2024/7/27  | Sanjit Verma   | TaChatbot UI refactoring to use MUI                                        |
+| 2024/8/15  | Sanjit Verma   | CE Stream, Implemented basic version with session ID                                      |
+| 2024/8/15  | Nirmal Joji   | CE Stream, Implemented CE stream refactor                                      |
+| 2024/8/25  | Nirmal Joji   | CE Stream, Implemented CE stream refactor                                      |
+| 2024/9/1  | Nirmal Joji + Deepak Rajendran | Markdown Interpreter refactor + UI styling fixes                                     |
+| 2024/9/3  | Sanjit Verma | TA Chatbot User authentication and permissions portal, removed guest mode, website auth refactoring                                   |
 
 
 
