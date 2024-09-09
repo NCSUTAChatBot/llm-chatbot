@@ -11,6 +11,8 @@ from dotenv import load_dotenv
 from langchain_openai import OpenAIEmbeddings
 from langchain_mongodb import MongoDBAtlasVectorSearch
 import os
+import datetime
+import time
 
 load_dotenv()
 logging.basicConfig(level=logging.INFO)
@@ -50,9 +52,10 @@ class GenerateEvaluation:
                 is_separator_regex=False,
             )  
             docs = text_splitter.create_documents(texts)
-
+            ts = time.time()
             for doc in docs:
-                doc.metadata = {"source": session_id} 
+                doc.metadata = {"source": session_id,
+                                "createdAt": datetime.datetime.fromtimestamp(ts, None) } 
 
     
 
