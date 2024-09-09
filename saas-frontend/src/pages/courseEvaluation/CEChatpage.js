@@ -165,7 +165,10 @@ const ChatPage = () => {
             const response = await fetch(`${apiUrl}/courseEvaluation/ask`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ question })
+                body: JSON.stringify({
+                    question: question,
+                    session_id: currentSessionId
+                  })
             });
     
             if (response.ok) {
