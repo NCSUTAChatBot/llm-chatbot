@@ -115,7 +115,7 @@ def process_query(question):
         context_docs = retriever.get_relevant_documents(question)
         context = format_docs(context_docs)
 
-        stream_response = rag_chain.invoke(question, config={"callbacks":[langfuse_handler]})
+        stream_response = rag_chain.stream(question, config={"callbacks":[langfuse_handler]})
 
 
         for chunk in stream_response: #chunking allows user to see response as processed,  

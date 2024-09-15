@@ -123,7 +123,7 @@ def ask():
     def generate_response():
         full_response = "" 
         try:
-            for chunk in queryManager.make_query(question):
+            for chunk in queryManager.make_query(question, ):
                 try:
                     chunk_data = json.loads(chunk)
                 except JSONDecodeError:
@@ -135,11 +135,11 @@ def ask():
                             bot_response_text = choice["text"]
                             yield f"{bot_response_text}"
                             full_response += bot_response_text  
-                            time.sleep(0.01) # generator needs a short delay to process each chunk in  otherwise generator will process too quickly
+                            # time.sleep(0.01) # generator needs a short delay to process each chunk in  otherwise generator will process too quickly
                 else:
                     yield f"{chunk}"
                     full_response += chunk  
-                    time.sleep(0.01)
+                    # time.sleep(0.01)
 
 
         except Exception as e:
@@ -159,6 +159,54 @@ def ask():
     
     return Response(stream_with_context(generate_response()), content_type='text/plain')
 
+
+@chat_bp.route('/pause_stream', methods=['POST'])
+def pause_stream():
+
+    data = request.json
+    email = data.get('email')
+    session_key = data.get('sessionKey')
+    last_message = data.get('lastMessage')
+
+    if not all([email, session_key, last_message]):
+        return jsonify({"error": "Missing required fields"}), 400
+
+    try:
+        max_attempts = 10
+        attempt = 0
+        while attempt < max_attempts:
+            user = user_collection.find_one({"email": email})
+            if not user or session_key not in user.get('savedChats', {}):
+                return jsonify({"error": "User or session not found"}), 404
+
+            chat_messages = user['savedChats'][session_key].get('messages', [])
+            if chat_messages and chat_messages[-1]['sender'] == 'bot':
+                # Remove the last bot message
+                user_collection.update_one(
+                    {"email": email},
+                    {"$pop": {f"savedChats.{session_key}.messages": 1}}
+                )
+
+                # Add the new bot message
+                bot_response = {
+                    "sender": "bot",
+                    "text": last_message['text'],
+                    "timestamp": datetime.now().isoformat()
+                }
+                user_collection.update_one(
+                    {"email": email},
+                    {"$push": {f"savedChats.{session_key}.messages": bot_response}}
+                )
+                return jsonify({"message": "Stream paused and message updated successfully"}), 200
+
+            # If last message is not from bot, wait and try again
+            time.sleep(0.5)
+            attempt += 1 
+
+        return jsonify({"message": "Stream paused and message updated successfully"}), 200
+    
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @chat_bp.route('/askGuest', methods=['POST', 'OPTIONS'])
 def ask_guest():

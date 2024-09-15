@@ -40,8 +40,12 @@ const ChatPage = () => {
     const [showDropdown, setShowDropdown] = useState(false);
     const [showDropdown2, setShowDropdown2] = useState(false);
     // This hook is used to store the animated titles state
-    const [isLastMessageNew, setIsLastMessageNew] = useState(false);
     const suggestedContainerRef = useRef(null);
+
+    const [isStreaming, setIsStreaming] = useState(false);
+
+    const [abortController, setAbortController] = useState(null);
+
 
     // This function is called when the user clicks on the download as pdf button
     const handleDownloadChat = async () => {
@@ -91,7 +95,6 @@ const ChatPage = () => {
             if (response.ok) {
                 const data = await response.json();
                 setMessages(data.messages);
-                setIsLastMessageNew(false);
             } else {
                 console.error('Failed to fetch messages for selected session', response.status);
             }
@@ -209,8 +212,6 @@ const ChatPage = () => {
         //     return;
         // }
 
-        setIsLastMessageNew(true);
-
         const email = userInfo.email;
         const userMessage = { text: question, sender: 'user' };
         setMessages(prevMessages => [...prevMessages, userMessage]);
@@ -218,6 +219,12 @@ const ChatPage = () => {
         try {
             let response;
             let payload;
+
+            setIsStreaming(true);
+
+            const controller = new AbortController();
+            setAbortController(controller);
+
             //if no session key is set, assume we are creating a new session
             if (!currentSessionKey) {
                 response = await fetch(`${apiUrl}/chat/ask`, {
@@ -263,6 +270,7 @@ const ChatPage = () => {
                     while (true) {
                         const { done, value } = await reader.read();
                         if (done) break;
+                        if (controller.signal.aborted) break;
 
                         const chunk = decoder.decode(value, { stream: true });
                         aggregatedText += chunk;
@@ -305,11 +313,16 @@ const ChatPage = () => {
                 throw new Error('Failed to submit message. Status: ' + response.status);
             }
         } catch (error) {
-            console.error('Error submitting question:', error);
-            setMessages(prevMessages => prevMessages.slice(0, -1)); // Remove the last user message if there is an error
+            if (error.name === 'AbortError') {
+                console.log('Fetch aborted');
+            } else {
+                console.error('Error submitting question:', error);
+                setMessages(prevMessages => prevMessages.slice(0, -1)); // Remove the last user message if there is an error
+            }
         } finally {
             // Enable the submit button again
-            setIsLastMessageNew(false);
+            setIsStreaming(false);
+            setAbortController(null);
         }
 
         messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -387,7 +400,41 @@ const ChatPage = () => {
 
     //     messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     // };
+    const handlePauseStream = async() => {
+        console.log("pausing stream");
+        if (abortController) {
+            abortController.abort();
+            setIsStreaming(false);
+        }
+            // Get the last message from the messages state
+        const lastMessage = messages[messages.length - 1];
 
+        if (lastMessage && currentSessionKey) {
+            try {
+                const response = await fetch(`${apiUrl}/chat/pause_stream`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        "Access-Control-Allow-Origin": "*",
+                    },
+                    body: JSON.stringify({
+                        email: userInfo.email,
+                        sessionKey: currentSessionKey,
+                        lastMessage: lastMessage
+                    }),
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to pause stream on server');
+                }
+
+                console.log('Stream paused successfully on server');
+            } catch (error) {
+                console.error('Error pausing stream:', error);
+            }
+    }
+    };
+    
     useEffect(() => {
         if (messageEndRef.current) {
             messageEndRef.current.scrollIntoView({ behavior: 'smooth' });
@@ -723,17 +770,27 @@ const ChatPage = () => {
                         value={question}
                         onChange={(e) => setQuestion(e.target.value)}
                         onKeyDown={(e) => {
-                            if (e.key === 'Enter' && !isLastMessageNew  && !e.shiftKey) {
+                            if (e.key === 'Enter'  && !e.shiftKey) {
                                 e.preventDefault();
                                 handleSubmit(e);
                             }
                         }}
                     />
-                    <button type="submit" className="submit-chat" onClick={handleSubmit} disabled={isLastMessageNew}>
+                <button 
+                    type="submit" 
+                    className="submit-chat" 
+                    onClick={isStreaming ? handlePauseStream : handleSubmit} 
+                >
+                    {isStreaming ? (
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" width="20" height="20">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 5.25v13.5m-7.5-13.5v13.5" />
+                        </svg>
+                    ) : (
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" width="20" height="20">
                             <path strokeLinecap="round" strokeLinejoin="round" d="m9 9 6-6m0 0 6 6m-6-6v12a6 6 0 0 1-12 0v-3" />
                         </svg>
-                    </button>
+                    )}
+                </button>
 
                 </div>
                 <div className="warning-message">
