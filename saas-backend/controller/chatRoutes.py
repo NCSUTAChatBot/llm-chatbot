@@ -90,6 +90,7 @@ def ask():
     email = input_data['email']
     session_key = input_data.get('sessionKey')
     question = input_data['question']
+    history = input_data.get('history', [])
 
     user = user_collection.find_one({"email": email})
     if not user:
@@ -123,7 +124,7 @@ def ask():
     def generate_response():
         full_response = "" 
         try:
-            for chunk in queryManager.make_query(question):
+            for chunk in queryManager.make_query(question, history):
                 try:
                     chunk_data = json.loads(chunk)
                 except JSONDecodeError:
@@ -219,6 +220,7 @@ def ask_guest():
 
     session_key = input_data.get('sessionKey')
     question = input_data['question']
+    history = input_data.get('history', [])
 
     if not session_key:
         # Generate a new session key
@@ -235,7 +237,7 @@ def ask_guest():
     def generate_response():
         full_response = "" 
         try:
-            for chunk in queryManager.make_query(question):  # Replace with actual query manager
+            for chunk in queryManager.make_query(question, history):  # Replace with actual query manager
                 try:
                     chunk_data = json.loads(chunk)
                 except json.JSONDecodeError:

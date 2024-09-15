@@ -11,15 +11,20 @@ IMPORTANT: Be sure to generate the embeddings using the generateVectorDB.py scri
 '''
 import os
 import logging
+from typing import List
 from pymongo import MongoClient
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain.prompts import PromptTemplate
 from langchain_mongodb import MongoDBAtlasVectorSearch
-from langchain_core.runnables import RunnablePassthrough
+from langchain.schema.runnable import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
 from dotenv import load_dotenv
 from langfuse.callback import CallbackHandler
 from tqdm import tqdm
+from langchain_core.messages import HumanMessage, AIMessage
+import json
+from langchain.schema.runnable import RunnableMap
+
 
 load_dotenv()
 logging.basicConfig(level=logging.INFO)
@@ -75,13 +80,18 @@ If a homework or practice problem question is asked, don't give the answer or so
 
 {context}
 
+Previous conversation:
+{history}
 Question: {question}
 
 Answer:
 """
 
 # Create a prompt template
-custom_rag_prompt = PromptTemplate.from_template(template)
+custom_rag_prompt = PromptTemplate(
+    input_variables=["context", "question", "history"],
+    template = template)
+
 llm = ChatOpenAI(
     model="gpt-4o-mini",
 )
@@ -93,7 +103,11 @@ def format_docs(docs):
 
 # Define the retrieval and response chain
 rag_chain = (
-    {"context": retriever | format_docs, "question": RunnablePassthrough()} # STEP 4
+    {
+        "context": lambda x: x["context"],
+        "history": lambda x: x["history"],
+        "question": lambda x: x["question"]
+    }
     | custom_rag_prompt # STEP 5
     | llm # STEP 6
     | StrOutputParser() # STEP 7
@@ -101,7 +115,7 @@ rag_chain = (
 
 # Function to process a query
 
-def process_query(question):
+def process_query(question, history: List[dict]):
     '''
     This function processes a query by invoking the RAG chain with the given question.
     It returns a generator that yields the response in chunks.
@@ -112,11 +126,18 @@ def process_query(question):
 
     try:
         # Retrieve the relevant documents
-        context_docs = retriever.get_relevant_documents(question)
+        context_docs = retriever.invoke(question)
         context = format_docs(context_docs)
+        history_formatted = ""
 
-        stream_response = rag_chain.stream(question, config={"callbacks":[langfuse_handler]})
+        for chat in history:
+            chat_sender = chat.get("sender", "User")
+            chat_message = chat.get("text", '-')
+            history_formatted += f"{chat_sender}: {chat_message}\n"
 
+        stream_response = rag_chain.invoke(
+            {"question" : question,  "context": context, "history": history_formatted}, 
+            config={"callbacks":[langfuse_handler]})
 
         for chunk in stream_response: #chunking allows user to see response as processed,  
             yield chunk
@@ -124,15 +145,18 @@ def process_query(question):
     except Exception as e:
         raise RuntimeError(f"An error occurred while processing the query: {e}")
 
-def make_query(input_text: str | None):
+def make_query(input_text: str | None, history: List[dict] | None = None):
     '''
     This is the entry function that processes a given query from payload
     '''
     if input_text is None or not isinstance(input_text, str):
         raise ValueError("No valid input provided")
 
+    if history is None:
+        history = []
+
     try:
-        response_generator = process_query(input_text)
+        response_generator = process_query(input_text, history)
         return response_generator
     except Exception as e:
         raise RuntimeError(f"An error occurred while processing the query: {e}")
