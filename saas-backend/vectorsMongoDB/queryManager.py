@@ -21,10 +21,6 @@ from langchain_core.output_parsers import StrOutputParser
 from dotenv import load_dotenv
 from langfuse.callback import CallbackHandler
 from tqdm import tqdm
-from langchain_core.messages import HumanMessage, AIMessage
-import json
-from langchain.schema.runnable import RunnableMap
-
 
 load_dotenv()
 logging.basicConfig(level=logging.INFO)
