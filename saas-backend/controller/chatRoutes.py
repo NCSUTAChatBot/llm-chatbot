@@ -123,7 +123,7 @@ def ask():
     def generate_response():
         full_response = "" 
         try:
-            for chunk in queryManager.make_query(question, ):
+            for chunk in queryManager.make_query(question):
                 try:
                     chunk_data = json.loads(chunk)
                 except JSONDecodeError:
