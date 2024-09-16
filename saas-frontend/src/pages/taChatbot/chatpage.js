@@ -46,6 +46,9 @@ const ChatPage = () => {
 
     const [abortController, setAbortController] = useState(null);
 
+    const [isAutoScroll, setIsAutoScroll] = useState(true);
+
+    const chatContainerRef = useRef(null);
 
     // This function is called when the user clicks on the download as pdf button
     const handleDownloadChat = async () => {
@@ -325,7 +328,7 @@ const ChatPage = () => {
             setAbortController(null);
         }
 
-        messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+        // messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
 
     // GUEST MODE CODE
@@ -434,12 +437,54 @@ const ChatPage = () => {
             }
     }
     };
-    
+
     useEffect(() => {
-        if (messageEndRef.current) {
-            messageEndRef.current.scrollIntoView({ behavior: 'smooth' });
+        const chatContainer = chatContainerRef.current;
+    
+        const handleScroll = () => {
+            if (!chatContainer) return;
+            const { scrollTop, scrollHeight, clientHeight } = chatContainer;
+            const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
+            
+            // Adjust threshold as needed
+            const isAtBottom = distanceFromBottom < 60; 
+    
+            setIsAutoScroll(isAtBottom);
+    
+            // Show or hide the scroll-to-top button
+            const scrollToTopButton = document.querySelector('.scroll-to-top');
+            if (scrollTop > 500) {
+                scrollToTopButton.style.display = 'block';
+            } else {
+                scrollToTopButton.style.display = 'none';
+            }
+        };
+    
+        if (chatContainer) {
+            chatContainer.addEventListener('scroll', handleScroll);
         }
-    }, [messages]);
+    
+        return () => {
+            if (chatContainer) {
+                chatContainer.removeEventListener('scroll', handleScroll);
+            }
+        };
+    }, []);
+
+    useEffect(() => {
+        if (isAutoScroll && messageEndRef.current) {
+            // Delay the scrolling to ensure the DOM has updated
+            requestAnimationFrame(() => {
+                messageEndRef.current.scrollIntoView({ behavior: 'smooth' });
+            });
+        }
+    }, [messages, isAutoScroll]);
+    
+    // useEffect(() => {
+    //     if (messageEndRef.current) {
+    //         messageEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    //     }
+    // }, [messages]);
 
     useEffect(() => {
         const fetchSavedChats = async () => {
@@ -684,7 +729,7 @@ const ChatPage = () => {
                 )} */}
             </aside>
             <main style={{ flex: 1, overflowY: 'hidden', padding: '10px', display: 'flex', flexDirection: 'column' }}>
-                <div className="chat-container">
+                <div className="chat-container" ref={chatContainerRef}>
                     {messages.length === 0 ? (
                         <div className='chatModal' >
                             <p className="chat-welcome">
@@ -734,6 +779,7 @@ const ChatPage = () => {
                             </div>
                         ))
                     )}
+                    <div ref={messageEndRef} />
                     <button className="scroll-to-top" onClick={scrollToTop}>
                         <svg width="22px" height="22px" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: '22px', height: '22px', stroke: '#ffffff', strokeWidth: '4' }}>
                             <path d="M12 33L24 21L36 33" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
@@ -758,7 +804,7 @@ const ChatPage = () => {
                             </svg>
                         </div>
                     </div>
-                    <div ref={messageEndRef} />
+                    
                 </div>
                 <div className="input-row">
                     <textarea
