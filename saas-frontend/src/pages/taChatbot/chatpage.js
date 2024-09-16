@@ -89,6 +89,10 @@ const ChatPage = () => {
     // This function is called when the user clicks on a saved chat session. It fetches the chat messages for the selected session
     //and sets the chat session key to be used
     const selectChat = async (sessionKey) => {
+        if (currentSessionKey === sessionKey) {
+            return;
+        }
+        
         setCurrentSessionKey(sessionKey);
         try {
             const response = await fetch(`${apiUrl}/chat/get_chat_by_session`, {
