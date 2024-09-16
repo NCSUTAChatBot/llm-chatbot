@@ -14,3 +14,4 @@ flask_mail==0.10.0
 python-dotenv==1.0.1
 reportlab==4.2.2
 langchain_mongodb==0.1.6
+markdown2==2.5.0
