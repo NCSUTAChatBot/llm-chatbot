@@ -37,7 +37,7 @@ const ChatPage = () => {
     const [currentSessionId, setCurrentSessionId] = useState('');
     const location = useLocation();
     const isEvaluationsUploaded = uploadingFiles.length > 0;
-    
+
 
     const handleFeedback = () => {
         window.open(FEEDBACK_URL);
@@ -52,7 +52,7 @@ const ChatPage = () => {
     };
 
     const initiateSession = async () => {
-        if (!currentSessionId) { 
+        if (!currentSessionId) {
             const response = await fetch(`${apiUrl}/courseEvaluation/start_session`, {
                 method: 'GET'
             });
@@ -65,7 +65,7 @@ const ChatPage = () => {
             }
         }
     };
-    
+
 
     useEffect(() => {
         initiateSession();
@@ -106,16 +106,16 @@ const ChatPage = () => {
                 setUploadingFiles(prevFiles =>
                     prevFiles.map(f => f.name === newFile.name ? { ...f, progress: 100 } : f)
                 );
-                setFile(null); 
+                setFile(null);
             } else {
                 if (contentType && contentType.includes('application/json')) {
                     const errorData = await response.json();
                     console.error('Error response JSON:', errorData);
-                    
+
                 } else {
                     const errorText = await response.text();
                     console.error('Error response text:', errorText);
-                    
+
                 }
             }
         } catch (error) {
@@ -124,24 +124,55 @@ const ChatPage = () => {
             setIsUploading(false);
         }
     };
-    
-    
+
+    const handleDownloadChat = async () => {
+        if (!currentSessionId) {
+            console.error("No chat session selected to download.");
+            return;
+        }
+        try {
+            const response = await fetch(`${apiUrl}/courseEvaluation/export_single_chat_to_pdf`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    session_id: currentSessionId
+                })
+            });
+            if (response.ok) {
+                // Convert the response to a Blob representing the PDF file
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `chat_${currentSessionId}.pdf`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            } else {
+                throw new Error(`Failed to generate PDF. Status: ${response.status}`);
+            }
+        } catch (error) {
+            console.error('Error downloading chat PDF:', error);
+        }
+    };
+
     const handleDeleteFile = (fileName) => {
         setUploadingFiles(prevFiles => prevFiles.filter(file => file.name !== fileName));
     };
 
-    
+
     const handleNewChat = async () => {
         try {
             setCurrentSessionKey('');
             setMessages([]);
-            setUploadingFiles([]);  
+            setUploadingFiles([]);
             initiateSession()
         } catch (error) {
             console.error('Error creating new chat session:', error);
         }
     };
-    
+
 
     // This function is called when the user clicks on the Logout button
     const handleLogout = async () => {
@@ -151,15 +182,15 @@ const ChatPage = () => {
     const handleSubmit = async (event) => {
         event.preventDefault();
         if (!question.trim()) return;
-    
+
         // Set the last message as new
         setIsLastMessageNew(true);
-    
+
         // Add the user's question to the chat
         const userMessage = { text: question, sender: 'user' };
         setMessages(prevMessages => [...prevMessages, userMessage]);
         setQuestion('');
-    
+
         try {
             // Send the question to the backend
             const response = await fetch(`${apiUrl}/courseEvaluation/ask`, {
@@ -168,23 +199,23 @@ const ChatPage = () => {
                 body: JSON.stringify({
                     question: question,
                     session_id: currentSessionId
-                  })
+                })
             });
-    
+
             if (response.ok) {
                 // If the response body is present, handle streaming responses for displaying chat messages
                 if (response.body) {
                     const reader = response.body.getReader();
                     const decoder = new TextDecoder();
                     let aggregatedText = ''; // Buffer for the streamed text
-    
+
                     while (true) {
                         const { done, value } = await reader.read();
                         if (done) break;
-    
+
                         const chunk = decoder.decode(value, { stream: true });
                         aggregatedText += chunk;
-    
+
                         // Update messages without duplicating or adding unnecessary spaces
                         setMessages(messages => {
                             const lastMessage = messages[messages.length - 1];
@@ -196,7 +227,7 @@ const ChatPage = () => {
                             }
                         });
                     }
-    
+
                     // Ensure the reader is closed
                     reader.releaseLock();
                 }
@@ -211,7 +242,7 @@ const ChatPage = () => {
             setIsLastMessageNew(false);
         }
     };
-    
+
     useEffect(() => {
         if (messageEndRef.current) {
             messageEndRef.current.scrollIntoView({ behavior: 'smooth' });
@@ -350,51 +381,53 @@ const ChatPage = () => {
                 </div>
             </div>
             <aside className="sidebar">
-    <div className="sidebar-newchat">
-        <button className="start-chat" onClick={handleNewChat} disabled={isUploading}>
-            New Chat
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" style={{ width: '22px', height: '22px' }}>
-                <path strokeLinecap="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
-            </svg>
-        </button>
-        <input
-            type="file"
-            id="file-upload"
-            style={{ display: 'none' }}
-            onChange={handleFileChange}
-            accept=".csv, .xlsx"
-        />
-        <button className="upload-button" title="Upload Eval" onClick={() => document.getElementById('file-upload').click()} disabled={isUploading}>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6" style={{ width: '26px', height: '26px', color: 'rgb(179, 33, 33)', marginTop: '11px' }}>
-                <path fillRule="evenodd" d="M2.25 4.5A.75.75 0 0 1 3 3.75h14.25a.75.75 0 0 1 0 1.5H3a.75.75 0 0 1-.75-.75Zm14.47 3.97a.75.75 0 0 1 1.06 0l3.75 3.75a.75.75 0 1 1-1.06 1.06L18 10.81V21a.75.75 0 0 1-1.5 0V10.81l-2.47 2.47a.75.75 0 1 1-1.06-1.06l3.75-3.75ZM2.25 9A.75.75 0 0 1 3 8.25h9.75a.75.75 0 0 1 0 1.5H3A.75.75 0 0 1 2.25 9Zm0 4.5a.75.75 0 0 1 .75-.75h5.25a.75.75 0 0 1 0 1.5H3a.75.75 0 0 1-.75-.75Z" clipRule="evenodd" />
-            </svg>
-        </button>
-    </div>
-    <div className="uploaded-files">
-        {uploadingFiles.map((file, index) => (
-            <div key={index} className="file-item">
-                <div className="file-info">
-                    <span className="file-name">{file.name}</span>
-                    <span className="file-type">{file.type}</span>
-                    <button className="delete-file-button" onClick={() => handleDeleteFile(file.name)}>
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6" style={{ zIndex:'20' , width: '14px', height: '14px', marginTop: '30px' }}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14" />
+                <div className="sidebar-newchat">
+                    <button className="start-chat" onClick={handleNewChat} disabled={isUploading}>
+                        New Chat
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" style={{ width: '22px', height: '22px' }}>
+                            <path strokeLinecap="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
                         </svg>
                     </button>
+                    <input
+                        type="file"
+                        id="file-upload"
+                        style={{ display: 'none' }}
+                        onChange={handleFileChange}
+                        accept=".csv, .xlsx"
+                    />
+                    {userInfo && (
+                        <button className="refresh-button" onClick={handleDownloadChat} title="Download Chat">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" style={{ width: '22px', height: '22px' }}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                            </svg>
+                        </button>
+                    )}
                 </div>
-                <div className="progress-bar">
-                    <div className="progress" style={{ width: `${file.progress}%` }}></div>
+                <div className="uploaded-files">
+                    {uploadingFiles.map((file, index) => (
+                        <div key={index} className="file-item">
+                            <div className="file-info">
+                                <span className="file-name">{file.name}</span>
+                                <span className="file-type">{file.type}</span>
+                                <button className="delete-file-button" onClick={() => handleDeleteFile(file.name)}>
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6" style={{ zIndex:'20' , width: '14px', height: '14px', marginTop: '30px' }}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14" />
+                                    </svg>
+                                </button>
+                            </div>
+                            <div className="progress-bar">
+                                <div className="progress" style={{ width: `${file.progress}%` }}></div>
+                            </div>
+                        </div>
+                    ))}
                 </div>
-            </div>
-        ))}
-    </div>
-    <div className="guest-login">
-        <p className="login-messageCE">
-            <span className="first-lineCE">Uploaded Course Evaluations Appear here</span> <br />
-            .csv and .xlsx files are supported
-        </p>
-    </div>
-</aside>
+                <div className="guest-login">
+                    <p className="login-messageCE">
+                        <span className="first-lineCE">Uploaded Course Evaluations Appear here</span> <br />
+                        .csv and .xlsx files are supported
+                    </p>
+                </div>
+            </aside>
 
 
             <main style={{ flex: 1, overflowY: 'hidden', padding: '10px', display: 'flex', flexDirection: 'column' }}>
