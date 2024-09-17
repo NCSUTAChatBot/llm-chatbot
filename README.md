@@ -172,6 +172,9 @@ MONGODB_ACCESSCODES = MONGODB_ACCESSCODES
 | 2024/8/25  | Nirmal Joji   | CE Stream, Implemented CE stream refactor                                      |
 | 2024/9/1  | Nirmal Joji + Deepak Rajendran | Markdown Interpreter refactor + UI styling fixes                                     |
 | 2024/9/3  | Sanjit Verma | TA Chatbot User authentication and permissions portal, removed guest mode, website auth refactoring                                   |
+| 2024/9/15 | Deepak | Chatbot History Context                               |
+| 2024/9/15 | Nirmal Joji | pause stream option and button, scrolling issue resolved, streaming issue fix                               |
+| 2024/9/15 | Amrita Visalam | pdf generation and download chat improvements                              |
 
 
 
