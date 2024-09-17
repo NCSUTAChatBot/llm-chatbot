@@ -3,7 +3,7 @@ flask-cors==3.0.10
 langchain
 langchain_community
 langchain_openai
-textract==1.6.4
+# textract==1.6.4
 transformers==4.37.2
 faiss-cpu==1.8.0
 pymongo==4.7.2
@@ -14,3 +14,8 @@ flask_mail==0.10.0
 python-dotenv==1.0.1
 reportlab==4.2.2
 langchain_mongodb==0.1.6
+markdown2==2.5.0
+langfuse==2.48.1
+email-validator==2.2.0
+pandas==2.2.2
+pdfplumber==0.11.4
