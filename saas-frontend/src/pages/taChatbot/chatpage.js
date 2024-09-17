@@ -227,7 +227,7 @@ const ChatPage = () => {
                 });
                 // If a session key exists, continue the existing session with a new message
             } else {
-                payload = { email, sessionKey: currentSessionKey, question, history: messages }; 
+                payload = { email, sessionKey: currentSessionKey, question, history: messages.slice(-10) }; 
                 response = await fetch(`${apiUrl}/chat/ask`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },

@@ -167,7 +167,8 @@ const ChatPage = () => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     question: question,
-                    session_id: currentSessionId
+                    session_id: currentSessionId,
+                    history: messages.slice(-10),
                   })
             });
     

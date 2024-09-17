@@ -100,9 +100,9 @@ def format_docs(docs):
 # Define the retrieval and response chain
 rag_chain = (
     {
-        "context": lambda x: x["context"],
-        "history": lambda x: x["history"],
-        "question": lambda x: x["question"]
+        "context": lambda x: x.get("context", ""),
+        "history": lambda x: x.get("history", ""),
+        "question": lambda x: x.get("question", "")
     }
     | custom_rag_prompt # STEP 5
     | llm # STEP 6
