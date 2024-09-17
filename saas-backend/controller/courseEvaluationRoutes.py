@@ -105,6 +105,7 @@ def ask():
 
     question = input_data.get('question')
     session_id = input_data.get('session_id') 
+    history = input_data.get('history', [])
 
     if not session_id:
         return jsonify({"error": "Session ID is required"}), 400
@@ -128,7 +129,7 @@ def ask():
     def generate_response():
         full_response = "" 
         try:
-            for chunk in queryManager.make_query(question, session_id):
+            for chunk in queryManager.make_query(question, session_id, history):
                 try:
                     chunk_data = json.loads(chunk)
                 except JSONDecodeError:
@@ -140,11 +141,9 @@ def ask():
                             bot_response_text = choice["text"]
                             yield f"{bot_response_text}"
                             full_response += bot_response_text  
-                            time.sleep(0.01) # generator needs a short delay to process each chunk in  otherwise generator will process too quickly
                 else:
                     yield f"{chunk}"
                     full_response += chunk  
-                    time.sleep(0.01)
 
         except Exception as e:
             yield f"Error: {str(e)}"
