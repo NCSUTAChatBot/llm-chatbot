@@ -131,7 +131,7 @@ def process_query(question, history: List[dict]):
             chat_message = chat.get("text", '-')
             history_formatted += f"{chat_sender}: {chat_message}\n"
 
-        stream_response = rag_chain.invoke(
+        stream_response = rag_chain.stream(
             {"question" : question,  "context": context, "history": history_formatted}, 
             config={"callbacks":[langfuse_handler]})
 
