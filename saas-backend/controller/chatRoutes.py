@@ -252,11 +252,9 @@ def ask_guest():
                             bot_response_text = choice["text"]
                             yield f"{bot_response_text}"
                             full_response += bot_response_text  
-                            time.sleep(0.01) # generator needs a short delay to process each chunk in otherwise generator will process too quickly
                 else:
                     yield f"{chunk}"
                     full_response += chunk  
-                    time.sleep(0.01)
         except Exception as e:
             yield f"Error: {str(e)}"
             return
