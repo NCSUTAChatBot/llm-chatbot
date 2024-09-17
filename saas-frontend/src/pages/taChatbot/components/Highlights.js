@@ -42,28 +42,28 @@ export default function Highlights() {
         </Box>
         <div className="landingbox-container">
           <div className="landingbox-box">
-            <p>Explain Problem 1 from the Homework 1 assignment </p>
-            <small className="landingbox-box-small">I need help with problem 1 from the first assignment</small>
+            <p>Summarize 1.10 Guided Tour and How To Use This Book</p>
+            <small className="landingbox-box-small">I need want a quick summary of a chapter or concept</small>
           </div>
           <div className="landingbox-box">
-            <p>When are my professor's office hours on Tuesdays and Thursdays?</p>
-            <small className="landingbox-box-small">I need to discuss my last exam in the office hours</small>
+            <p>Explain what a dependency manager is and why it's needed?</p>
+            <small className="landingbox-box-small">I don't understand a concept and need an explanation</small>
           </div>
           <div className="landingbox-box">
-            <p>Can you explain Chapter 2 Section 2 of the Engineering SAAS textbook?</p>
-            <small className="landingbox-box-small">I need a refresher of the content from the last class</small>
+            <p>What is the SMART acronym stand for, what is it used for?</p>
+            <small className="landingbox-box-small">I need a refresher of the content from today's reading</small>
           </div>
           <div className="landingbox-box">
-            <p>When is our midterm 1 exam and what topics will the exam cover?</p>
-            <small className="landingbox-box-small">I'm not sure when our next midterm is and how to prepare for it</small>
+            <p>Provide the example from Figure 2.10 that finds the maximum-valued element</p>
+            <small className="landingbox-box-small">I need a sample of code from the textbook.</small>
           </div>
           <div className="landingbox-box">
-            <p>What percentage of our class grade is projects?</p>
-            <small className="landingbox-box-small">I want to know the project weight for our class</small>
+            <p>Why is Self-Check 10.1.1 Scrum is appropriate when it is difficult to plan ahead true? </p>
+            <small className="landingbox-box-small">I need some further explanation for the self check</small>
           </div>
           <div className="landingbox-box">
-            <p>How can I contact my TA, Sanjit, for help?</p>
-            <small className="landingbox-box-small">I need help debugging an issue in my code</small>
+            <p>What does this book talk about, who is the author?</p>
+            <small className="landingbox-box-small">I want to learn more about the textbook and authors</small>
           </div>
 
         </div>

@@ -1374,6 +1374,15 @@ li.deleting {
   width: 100%;
 }
 
+.buttonsContainer3 {
+  display: flex;
+  justify-content: space-evenly;
+  align-self: center;
+  margin-top: 5px;
+  margin-bottom: 15px;
+  width: 100%;
+}
+
 .buttonsContainer2 {
   display: flex;
   justify-content: space-evenly;
@@ -1570,6 +1579,13 @@ li.deleting {
   height: 42px;
 }
 
+.accessCodeInput {
+  width: 200px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 /******************** STYLING FOR THE SIGNUP PAGE *********************/
 
 .forgotPasswordModalContainer {
@@ -1627,8 +1643,7 @@ li.deleting {
 }
 
 .passwordCriteria {
-  margin-top: 10px;
-  margin-bottom: 10px;
+  margin-top: 20px;
   font-size: 10px;
   display: flex;
   text-align: center;
@@ -1636,7 +1651,6 @@ li.deleting {
   color: white;
   position: absolute;
   accent-color: rgb(179, 33, 33);
-  
 }
 
 .passwordCriteria2 {
@@ -1707,6 +1721,7 @@ li.deleting {
   text-align: start;
 }
 
+/* Fixes markdown extra spacing */
 .zero-pad-markdown > p,
 .zero-pad-markdown > h1,
 .zero-pad-markdown > h2,
@@ -1717,10 +1732,19 @@ li.deleting {
   margin: 0;
 }
 
+/* Highlighting markdown code blocks */
 .zero-pad-markdown > pre {
   background: black;
   padding: 6px 14px;
   border-radius: inherit;
   margin: 4px 0px;
   border: 0.2px solid white;
+}
+
+/* Highligting markdown backticks  */ 
+.zero-pad-markdown > p > code {
+  display: inline;
+  background: rgba(128, 128, 128, 0.25);
+  padding: 2px 6px;
+  border-radius: 4px;
 }

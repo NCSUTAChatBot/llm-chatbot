@@ -126,9 +126,10 @@ function LoginPage() {
                         <button type='button' className='forgotPasswordButton' onClick={handleForgotPassword}>Forgot Password?</button>
                         <button type='button' className='newUserButton' onClick={handleNewUser}>Need to Sign Up?</button>
                     </div>
-                    <div className='buttonsContainer2'>
+                    {/* Guest Mode code */}
+                    {/* <div className='buttonsContainer2'>
                         <button type='button' className='guestButton' onClick={handleGuest}>Continue as a Guest</button>
-                    </div>
+                    </div> */}
                 </form>
             </div>
             <SimpleFooter />

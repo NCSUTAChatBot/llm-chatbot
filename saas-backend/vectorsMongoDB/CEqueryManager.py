@@ -1,12 +1,10 @@
 '''
-@file queryManager.py
-This file contains the code to perform vector search on a MongoDB collection using the OpenAI embeddings and the MongoDB Atlas Vector Search.
-The code uses the langchain_openai, langchain_mongodb, langchain_core libraries to perform the vector search and retrieve the most relevant documents.
+@file CEqueryManager.py
+This file contains the code to perform vector search on a course evaluation MongoDB collection using the OpenAI embeddings and the MongoDB Atlas Vector Search.
 
 IMPORTANT: Be sure to generate the embeddings using the generateVectorDB.py script before and be sure to intialize the MongoDB Atlas Vector Search index before running this script.
 
 @author Sanjit Verma (skverma)
-@modified by Dinesh Kannan (dkannan)
 
 '''
 import os
@@ -16,7 +14,7 @@ from pymongo import MongoClient
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain.prompts import PromptTemplate
 from langchain_mongodb import MongoDBAtlasVectorSearch
-from langchain.schema.runnable import RunnablePassthrough
+from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
 from dotenv import load_dotenv
 from langfuse.callback import CallbackHandler
@@ -30,8 +28,11 @@ logger = logging.getLogger()
 OPENAI_KEY = os.getenv("OPENAI_API_KEY")
 MONGODB_URI = os.getenv('MONGODB_URI')
 db_name = os.getenv('MONGODB_DATABASE')
-collection_name = os.getenv('MONGODB_VECTORS')
-vector_search_idx = os.getenv('MONGODB_VECTOR_INDEX')
+collection_name = os.getenv('MONGODB_VECTORS_COURSEEVAL')
+vector_search_idx = os.getenv('MONGODB_VECTOR_INDEX_COURSEEVAL')
+
+collection_name_eval = os.getenv('MONGODB_VECTORS_COURSEEVALUATION_DOCS')
+vector_search_idx_eval = os.getenv('MONGODB_VECTOR_INDEX_TEMPUSER_DOC')
 
 
 # Connect to MongoDB
@@ -44,6 +45,7 @@ if db_name is None or collection_name is None:
 
 db = client[db_name]
 collection = db[collection_name]
+eval_collection = db[collection_name_eval]
 
 if vector_search_idx is None:
     raise ValueError("Vector search index is not set.")
@@ -53,6 +55,12 @@ vector_search = MongoDBAtlasVectorSearch(
     embedding=OpenAIEmbeddings(disallowed_special=()),
     collection=collection,
     index_name=vector_search_idx,
+)
+
+vector_search_eval = MongoDBAtlasVectorSearch(
+    embedding=OpenAIEmbeddings(disallowed_special=()),
+    collection=eval_collection,
+    index_name=vector_search_idx_eval,
 )
 
 # Configure the retriever
@@ -65,29 +73,36 @@ retriever = vector_search.as_retriever(
 # Define the template for the language model
 template = """
 Use the following pieces of context to answer the question at the end.
-If asked a question not in the context, do not answer it and say I'm sorry, I do not know the answer to that question.
+If asked a question not in the context, do not answer it and say I'm sorry, the course evaluation does not reference that.
 If you don't know the answer or if it is not provided in the context, just say that you don't know, don't try to make up an answer.
 If the answer is in the context, don't say mentioned in the context.
-If the user asks what you can help with, say you are a Teaching Assistant chatbot and can help with questions related to the course material.
+If the user asks you to generate code, say that you cannot generate code.
+If the user asks any question not related to course evaluations, say, I'm sorry, I can't assist with that.
+If the user asks what you can help with, say you are a Course Evaluation chatbot here to assist with course evaluation feedback.
 If the user greets you, say hello back.
-If asked to provide a code example, provide a code snippet that is relevant to the question from the textbook.
-Please provide a detailed explanation and if applicable, give examples or historical context.
-If a homework or practice problem question is asked, don't give the answer or solve it directly, instead help the student reach the answer.
 
-{context}
+You are an assisstant for a course evaluation chatbot. You have been provided with two major information sources to assist with the course evaluation feedback.
+
+
+Use the below information as a reference, the below infomation provides context on how professors can improve their class
+{context1}
+
+THE BELOW INFORMATION IS IMPORTANT AND CONTAINS THE EVALUATION OF THE COURSE:
+{context2}
 
 Previous conversation:
 {history}
+
 Question: {question}
 
-Answer:
+
+Answer the above question using course evalation feedback and if you need ways to improve on those questions, then use the reference material provided
 """
 
 # Create a prompt template
 custom_rag_prompt = PromptTemplate(
-    input_variables=["context", "question", "history"],
-    template = template)
-
+    template=template, input_variables=["context1", "context2", "question", "history"]
+)
 llm = ChatOpenAI(
     model="gpt-4o-mini",
 )
@@ -97,13 +112,34 @@ llm = ChatOpenAI(
 def format_docs(docs):
    return "\n\n".join(doc.page_content for doc in docs) 
 
+def format_response(response, context):
+    """
+    This function formats the response by adding bullet points to list items.
+    """
+    lines = response.split('\n')
+    formatted_response = []
+    
+    for line in lines:
+        # Check if the line starts with a numbered list item
+        if line.strip().startswith(("1.", "2.", "3.", "4.", "5.", "6.", "7.", "8.")):
+            # Replace numbered list with bullet points
+            line = line.replace(".", ".", 1)
+            formatted_response.append(f"- {line.strip()}")
+        else:
+            formatted_response.append(line.strip())
+    
+    if "```" in context:
+        code_snippets = context.split("```")
+        for i in range(1, len(code_snippets), 2):
+            formatted_response.append("\n\nHere is the relevant code snippet:\n")
+            formatted_response.append(f"```{code_snippets[i]}```")
+
+
+    return "\n".join(formatted_response)
+
 # Define the retrieval and response chain
 rag_chain = (
-    {
-        "context": lambda x: x.get("context", ""),
-        "history": lambda x: x.get("history", ""),
-        "question": lambda x: x.get("question", "")
-    }
+    {"context": retriever | format_docs, "question": RunnablePassthrough()} # STEP 4
     | custom_rag_prompt # STEP 5
     | llm # STEP 6
     | StrOutputParser() # STEP 7
@@ -111,7 +147,7 @@ rag_chain = (
 
 # Function to process a query
 
-def process_query(question, history: List[dict]):
+def process_query(question, session_id, history: List[dict]):
     '''
     This function processes a query by invoking the RAG chain with the given question.
     It returns a generator that yields the response in chunks.
@@ -119,29 +155,53 @@ def process_query(question, history: List[dict]):
     '''
     if not isinstance(question, str):
         raise ValueError("The question must be a string.")
+    
+    history_formatted = ""
+    for chat in history:
+        chat_sender = chat.get("sender", "User")
+        chat_message = chat.get("text", '-')
+        history_formatted += f"{chat_sender}: {chat_message}\n"
 
     try:
         # Retrieve the relevant documents
-        context_docs = retriever.invoke(question)
-        context = format_docs(context_docs)
-        history_formatted = ""
+        #Texbook vectors
+        retriever_eval = vector_search_eval.as_retriever(
+            search_type="similarity",
+            search_kwargs={"k": 10, "score_threshold": 0.8},
+            pre_filter={"source": {"$eq": session_id}}
+        )
 
-        for chat in history:
-            chat_sender = chat.get("sender", "User")
-            chat_message = chat.get("text", '-')
-            history_formatted += f"{chat_sender}: {chat_message}\n"
+        context_ce = format_docs(retriever_eval.invoke(question))
+        context_tb = format_docs(retriever.invoke(question))
+        
+        rag_chain = (
+            {
+                "context1": lambda x: x.get('context1', ''),
+                "context2": lambda x: x.get('context2', ''),
+                "question": lambda x: x.get('question', ''),
+                "history": lambda x: x.get('history', '')
+            }
+            | custom_rag_prompt
+            | llm
+            | StrOutputParser()
+        )
 
-        stream_response = rag_chain.stream(
-            {"question" : question,  "context": context, "history": history_formatted}, 
-            config={"callbacks":[langfuse_handler]})
+        stream_response = rag_chain.stream({
+            "question": question,
+            "context1": context_tb,
+            "context2": context_ce,
+            "history": history
+            }, config={"callbacks":[langfuse_handler]})
+
 
         for chunk in stream_response: #chunking allows user to see response as processed,  
+            # formatted_chunk = format_response(chunk, context)
             yield chunk
 
     except Exception as e:
         raise RuntimeError(f"An error occurred while processing the query: {e}")
 
-def make_query(input_text: str | None, history: List[dict] | None = None):
+def make_query(input_text: str | None, session_id: str | None, history: List[dict] | None = None):
     '''
     This is the entry function that processes a given query from payload
     '''
@@ -152,7 +212,7 @@ def make_query(input_text: str | None, history: List[dict] | None = None):
         history = []
 
     try:
-        response_generator = process_query(input_text, history)
+        response_generator = process_query(input_text, session_id, history)
         return response_generator
     except Exception as e:
         raise RuntimeError(f"An error occurred while processing the query: {e}")

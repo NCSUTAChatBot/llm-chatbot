@@ -6,7 +6,6 @@ This file is used to load documents from the file system into the Vector generat
 '''
 import os
 import pdfplumber
-from langchain.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.schema import Document
 from tqdm import tqdm

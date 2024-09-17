@@ -13,13 +13,16 @@ from pymongo import MongoClient, ReturnDocument
 from dotenv import load_dotenv
 import os
 import secrets
-from reportlab.lib.pagesizes import letter
-from reportlab.pdfgen import canvas
 import io
 from flask_cors import CORS
 import vectorsMongoDB.queryManager as queryManager
 import time
 from langfuse.decorators import observe, langfuse_context
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib import colors
+import markdown2
 
 # a blueprint named 'chat'
 chat_bp = Blueprint('chat', __name__)
@@ -90,6 +93,7 @@ def ask():
     email = input_data['email']
     session_key = input_data.get('sessionKey')
     question = input_data['question']
+    history = input_data.get('history', [])
 
     user = user_collection.find_one({"email": email})
     if not user:
@@ -123,7 +127,7 @@ def ask():
     def generate_response():
         full_response = "" 
         try:
-            for chunk in queryManager.make_query(question):
+            for chunk in queryManager.make_query(question, history):
                 try:
                     chunk_data = json.loads(chunk)
                 except JSONDecodeError:
@@ -135,11 +139,11 @@ def ask():
                             bot_response_text = choice["text"]
                             yield f"{bot_response_text}"
                             full_response += bot_response_text  
-                            time.sleep(0.01) # generator needs a short delay to process each chunk in  otherwise generator will process too quickly
+                            # time.sleep(0.01) # generator needs a short delay to process each chunk in  otherwise generator will process too quickly
                 else:
                     yield f"{chunk}"
                     full_response += chunk  
-                    time.sleep(0.01)
+                    # time.sleep(0.01)
 
 
         except Exception as e:
@@ -160,6 +164,54 @@ def ask():
     return Response(stream_with_context(generate_response()), content_type='text/plain')
 
 
+@chat_bp.route('/pause_stream', methods=['POST'])
+def pause_stream():
+
+    data = request.json
+    email = data.get('email')
+    session_key = data.get('sessionKey')
+    last_message = data.get('lastMessage')
+
+    if not all([email, session_key, last_message]):
+        return jsonify({"error": "Missing required fields"}), 400
+
+    try:
+        max_attempts = 10
+        attempt = 0
+        while attempt < max_attempts:
+            user = user_collection.find_one({"email": email})
+            if not user or session_key not in user.get('savedChats', {}):
+                return jsonify({"error": "User or session not found"}), 404
+
+            chat_messages = user['savedChats'][session_key].get('messages', [])
+            if chat_messages and chat_messages[-1]['sender'] == 'bot':
+                # Remove the last bot message
+                user_collection.update_one(
+                    {"email": email},
+                    {"$pop": {f"savedChats.{session_key}.messages": 1}}
+                )
+
+                # Add the new bot message
+                bot_response = {
+                    "sender": "bot",
+                    "text": last_message['text'],
+                    "timestamp": datetime.now().isoformat()
+                }
+                user_collection.update_one(
+                    {"email": email},
+                    {"$push": {f"savedChats.{session_key}.messages": bot_response}}
+                )
+                return jsonify({"message": "Stream paused and message updated successfully"}), 200
+
+            # If last message is not from bot, wait and try again
+            time.sleep(0.5)
+            attempt += 1 
+
+        return jsonify({"message": "Stream paused and message updated successfully"}), 200
+    
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 @chat_bp.route('/askGuest', methods=['POST', 'OPTIONS'])
 def ask_guest():
     if request.method == 'OPTIONS':
@@ -171,6 +223,7 @@ def ask_guest():
 
     session_key = input_data.get('sessionKey')
     question = input_data['question']
+    history = input_data.get('history', [])
 
     if not session_key:
         # Generate a new session key
@@ -187,7 +240,7 @@ def ask_guest():
     def generate_response():
         full_response = "" 
         try:
-            for chunk in queryManager.make_query(question):  # Replace with actual query manager
+            for chunk in queryManager.make_query(question, history):  # Replace with actual query manager
                 try:
                     chunk_data = json.loads(chunk)
                 except json.JSONDecodeError:
@@ -199,11 +252,9 @@ def ask_guest():
                             bot_response_text = choice["text"]
                             yield f"{bot_response_text}"
                             full_response += bot_response_text  
-                            time.sleep(0.01) # generator needs a short delay to process each chunk in otherwise generator will process too quickly
                 else:
                     yield f"{chunk}"
                     full_response += chunk  
-                    time.sleep(0.01)
         except Exception as e:
             yield f"Error: {str(e)}"
             return
@@ -326,63 +377,99 @@ def generate_pdf(email, chat_sessions):
     This function takes the user's email and a list of chat sessions, and generates a PDF file with the chat history.
     """
     buffer = io.BytesIO()
-    p = canvas.Canvas(buffer, pagesize=letter)
-    width, height = letter
+    doc = SimpleDocTemplate(buffer, pagesize=letter,
+                            rightMargin=72, leftMargin=72,
+                            topMargin=72, bottomMargin=18)
+    styles = getSampleStyleSheet()
+
+    # Custom style for chat messages
+    message_style = ParagraphStyle(
+        name='MessageStyle',
+        fontName='Helvetica',
+        fontSize=10,
+        leading=12,
+        spaceAfter=6,
+        textColor=colors.black,
+        wordWrap='CJK',  
+    )
+
+    # Custom style for table headings to allow wrapping
+    heading_style = ParagraphStyle(
+        name='HeadingStyle',
+        fontName='Helvetica-Bold',
+        fontSize=12,
+        leading=12,
+        textColor=colors.whitesmoke,
+        alignment=1,  # Center alignment
+    )
+
+    elements = []
 
     for session in chat_sessions:
-        p.setFont("Helvetica-Bold", 16)
-        p.drawString(40, height - 40, f"Chat Title: {session['chatTitle']}")
-        p.setFont("Helvetica", 12)
-        p.drawString(40, height - 60, f"Session Key: {session['sessionKey']}")
-        p.drawString(40, height - 80, f"Chat History for {email}")
-        p.drawString(40, height - 100, "="*80)
+        # Add the chat title and session key as headings
+        elements.append(Paragraph(f"Chat Title: {session['chatTitle']}", styles['Title']))
+        elements.append(Spacer(1, 12))
+        elements.append(Paragraph(f"Session Key: {session['sessionKey']}", styles['Normal']))
+        elements.append(Paragraph(f"Chat History for {email}", styles['Normal']))
+        elements.append(Spacer(1, 24))
 
-        # Begin text object for chat history
-        text_object = p.beginText(40, int(height) - 120)
-        text_object.setFont("Helvetica", 12)
-        text_object.setWordSpace(0.5)
-        text_object.setLeading(14)
-
-        y = height - 120
-        line_height = 14
-        max_lines_per_page = int((height - 120) / line_height)
+        # Prepare the table data for the chat messages, combining Timestamp and Sender columns
+        # Wrap "Timestamp & Sender" heading using a Paragraph
+        table_data = [[
+            Paragraph('Timestamp &<br/>Sender', heading_style),  # Wrapped header
+            Paragraph('Message', heading_style)
+        ]] 
 
         # Iterate through each message
         for message in session['messages']:
             timestamp = message.get('timestamp', 'Unknown Time')
             sender = message.get('sender', 'Unknown Sender')
-            text = message.get('text', 'No Text')
-            # Prepare and wrap text
-            full_text = f"{timestamp} - {sender}: {text}"
-            while full_text:
-                # Find space to break line
-                space_index = full_text.rfind(' ', 0, 100)
-                if space_index == -1 or len(full_text) < 100:  # No space or short text
-                    space_index = len(full_text)
-                # Add line and update text
-                line_text = full_text[:space_index]
-                text_object.textLine(line_text)
-                full_text = full_text[space_index:].strip()
-                y -= line_height
+            # Convert the message text from Markdown to HTML
+            markdown_text = message.get('text', 'No Text')
+            html_text = markdown2.markdown(markdown_text)
 
-                if y <= 40:  # If the current page is full, create a new page
-                    p.drawText(text_object)
-                    p.showPage()
-                    text_object = p.beginText(40, int(height) - 40)
-                    text_object.setFont("Helvetica", 12)
-                    text_object.setWordSpace(0.5)
-                    text_object.setLeading(14)
-                    y = height - 40
+            # Split the HTML into separate paragraphs by splitting on <p> tags
+            paragraphs = html_text.split('</p>')
 
+            timestamp_sender = Paragraph(f"{timestamp}<br/>{sender}", message_style)
 
-        p.drawText(text_object)
-        p.showPage()
+            # Create a list to hold the message Paragraphs
+            message_paragraphs = []
+            for para in paragraphs:
+                clean_para = para.replace('<p>', '').strip()  # Remove the <p> tag and clean up whitespace
+                if clean_para:  # If the paragraph is not empty
+                    message_paragraphs.append(Paragraph(clean_para, message_style))
+                    message_paragraphs.append(Spacer(1, 6))  # Add a small space between paragraphs
 
-    p.save()
+            # Append the timestamp_sender and combined message paragraphs as separate rows
+            table_data.append([timestamp_sender, message_paragraphs])
+
+        # Define table style
+        table_style = TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, 0), 12),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+            ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+            ('GRID', (0, 0), (-1, -1), 1, colors.black),
+            ('ALIGN', (0, 1), (-1, -1), 'LEFT'),
+            ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+            ('FONTSIZE', (0, 1), (-1, -1), 10),
+            ('VALIGN', (0, 0), (-1, -1), 'TOP'), 
+        ])
+
+        # Create the table with a fixed width for the timestamp_sender column
+        message_table = Table(table_data, style=table_style, colWidths=[100, 380])  # 100 is the width of the timestamp_sender column
+        elements.append(message_table)
+        elements.append(Spacer(1, 24))
+        elements.append(PageBreak())
+
+    # Build the PDF
+    doc.build(elements)
     buffer.seek(0)
     return buffer
-
-
 
 @chat_bp.route('/export_single_chat_to_pdf', methods=['POST'])
 def export_single_chat_to_pdf():
