@@ -9,6 +9,7 @@ IMPORTANT: Be sure to generate the embeddings using the generateVectorDB.py scri
 '''
 import os
 import logging
+from typing import List
 from pymongo import MongoClient
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain.prompts import PromptTemplate
@@ -89,6 +90,8 @@ Use the below information as a reference, the below infomation provides context 
 THE BELOW INFORMATION IS IMPORTANT AND CONTAINS THE EVALUATION OF THE COURSE:
 {context2}
 
+Previous conversation:
+{history}
 
 Question: {question}
 
@@ -98,7 +101,7 @@ Answer the above question using course evalation feedback and if you need ways t
 
 # Create a prompt template
 custom_rag_prompt = PromptTemplate(
-    template=template, input_variables=["context1", "context2", "question"]
+    template=template, input_variables=["context1", "context2", "question", "history"]
 )
 llm = ChatOpenAI(
     model="gpt-4o-mini",
@@ -144,7 +147,7 @@ rag_chain = (
 
 # Function to process a query
 
-def process_query(question, session_id):
+def process_query(question, session_id, history: List[dict]):
     '''
     This function processes a query by invoking the RAG chain with the given question.
     It returns a generator that yields the response in chunks.
@@ -152,6 +155,12 @@ def process_query(question, session_id):
     '''
     if not isinstance(question, str):
         raise ValueError("The question must be a string.")
+    
+    history_formatted = ""
+    for chat in history:
+        chat_sender = chat.get("sender", "User")
+        chat_message = chat.get("text", '-')
+        history_formatted += f"{chat_sender}: {chat_message}\n"
 
     try:
         # Retrieve the relevant documents
@@ -162,18 +171,27 @@ def process_query(question, session_id):
             pre_filter={"source": {"$eq": session_id}}
         )
 
+        context_ce = format_docs(retriever_eval.invoke(question))
+        context_tb = format_docs(retriever.invoke(question))
+        
         rag_chain = (
-            {   "context1": retriever | format_docs,
-                "context2": retriever_eval | format_docs,
-                "question": RunnablePassthrough()
+            {
+                "context1": lambda x: x.get('context1', ''),
+                "context2": lambda x: x.get('context2', ''),
+                "question": lambda x: x.get('question', ''),
+                "history": lambda x: x.get('history', '')
             }
             | custom_rag_prompt
             | llm
             | StrOutputParser()
         )
 
-
-        stream_response = rag_chain.invoke(question, config={"callbacks":[langfuse_handler]})
+        stream_response = rag_chain.stream({
+            "question": question,
+            "context1": context_tb,
+            "context2": context_ce,
+            "history": history
+            }, config={"callbacks":[langfuse_handler]})
 
 
         for chunk in stream_response: #chunking allows user to see response as processed,  
@@ -183,15 +201,18 @@ def process_query(question, session_id):
     except Exception as e:
         raise RuntimeError(f"An error occurred while processing the query: {e}")
 
-def make_query(input_text: str | None, session_id: str | None):
+def make_query(input_text: str | None, session_id: str | None, history: List[dict] | None = None):
     '''
     This is the entry function that processes a given query from payload
     '''
     if input_text is None or not isinstance(input_text, str):
         raise ValueError("No valid input provided")
 
+    if history is None:
+        history = []
+
     try:
-        response_generator = process_query(input_text, session_id)
+        response_generator = process_query(input_text, session_id, history)
         return response_generator
     except Exception as e:
         raise RuntimeError(f"An error occurred while processing the query: {e}")
