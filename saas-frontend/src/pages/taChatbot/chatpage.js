@@ -118,6 +118,7 @@ const ChatPage = () => {
         try {
             setCurrentSessionKey('');
             setMessages([]);
+            abortController.abort();
 
             const sessionResponse = await fetch(`${apiUrl}/chat/createSession`, {
                 method: 'POST',
