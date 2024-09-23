@@ -35,6 +35,8 @@ const ChatPage = () => {
   const location = useLocation();
   const isEvaluationsUploaded = uploadingFiles.length > 0;
 
+  const MAX_FILE_SIZE = 16 * 1024 * 1024; // 16 MB
+
   const handleFeedback = () => {
     window.open(FEEDBACK_URL);
   };
@@ -42,6 +44,16 @@ const ChatPage = () => {
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (file) {
+      if (file.size > MAX_FILE_SIZE) {
+        alert("File is too large. Maximum size allowed is 16 MB.");
+        return;
+      }
+      const allowedExtensions = /(\.csv|\.xlsx)$/i;
+      if (!allowedExtensions.exec(file.name)) {
+        alert("Invalid file type. Only .csv and .xlsx files are allowed.");
+        return;
+      }
+
       setFile(file);
       handleFileUpload(file);
     }
@@ -103,6 +115,7 @@ const ChatPage = () => {
           )
         );
         setFile(null);
+        alert("File uploaded successfully!");
       } else {
         if (contentType && contentType.includes("application/json")) {
           const errorData = await response.json();
@@ -122,6 +135,7 @@ const ChatPage = () => {
   const handleDownloadChat = async () => {
     if (!currentSessionId) {
       console.error("No chat session selected to download.");
+      alert("No chat session selected to download.");
       return;
     }
     try {
@@ -328,7 +342,7 @@ const ChatPage = () => {
     const storedUserInfo = localStorage.getItem("userInfo");
     if (storedUserInfo) {
       setUserInfo(JSON.parse(storedUserInfo));
-    }
+    } 
   }, [navigate]);
 
   const toggleDropdown = () => setShowDropdown(!showDropdown);
@@ -452,7 +466,7 @@ const ChatPage = () => {
             onChange={handleFileChange}
             accept=".csv, .xlsx"
           />
-          {userInfo && (
+          {(
             <button
               className="refresh-button"
               onClick={handleDownloadChat}
