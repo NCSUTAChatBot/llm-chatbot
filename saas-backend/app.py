@@ -36,6 +36,8 @@ app.config['MAIL_USE_TLS'] = True
 # TODO: Add Admin email and app password using environment variables 
 app.config['MAIL_USERNAME'] = MAIL_USERNAME
 app.config['MAIL_PASSWORD'] = MAIL_PASSWORD 
+# Set the maximum file size for file uploads to 16MB.
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
 # Initialize session handling for the app.
 Session(app)
