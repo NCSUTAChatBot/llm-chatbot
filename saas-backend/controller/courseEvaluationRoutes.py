@@ -89,8 +89,7 @@ def upload_file():
 
     filename = secure_filename(file.filename)
 
-    mimetype = file.mimetype
-    if not allowed_file(filename, mimetype):
+    if not allowed_file(filename, file.mimetype):
         return jsonify({"error": "Unsupported file type"}), 400
     
     file_type = filename.rsplit('.', 1)[-1].lower()
