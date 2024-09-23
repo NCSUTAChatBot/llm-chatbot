@@ -50,6 +50,8 @@ const ChatPage = () => {
 
     const chatContainerRef = useRef(null);
 
+    const [activeDropdown, setActiveDropdown] = useState(null);
+
     // This function is called when the user clicks on the download as pdf button
     const handleDownloadChat = async () => {
         if (!currentSessionKey) {
@@ -182,6 +184,40 @@ const ChatPage = () => {
             console.error('Error deleting chat:', error);
         }
     };
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (!event.target.closest('.dropdown-container')) {
+                setActiveDropdown(null);
+            }
+        };
+    
+        document.addEventListener('click', handleClickOutside);
+        return () => {
+            document.removeEventListener('click', handleClickOutside);
+        };
+    }, []);
+
+
+    
+
+    const handleRenameChat = async (session) => {
+        const newTitle = prompt("Enter new chat title:", session.chatTitle);
+        if (newTitle && newTitle.trim() !== "") {
+            try {
+                await updateChatTitle(userInfo.email, session.sessionKey, newTitle.trim());
+                // Update the local state to reflect the new title
+                setSavedSessionKeys(prevKeys => prevKeys.map(s => 
+                    s.sessionKey === session.sessionKey ? { ...s, chatTitle: newTitle.trim() } : s
+                ));
+            } catch (error) {
+                console.error("Error renaming chat title:", error);
+                alert("Failed to rename chat title. Please try again.");
+            }
+        }
+    };
+
+
     //used to update chat title of a session key that already exists
     const updateChatTitle = async (email, sessionKey, newTitle) => {
         await fetch(`${apiUrl}/chat/update_chat_title`, {
@@ -331,7 +367,7 @@ const ChatPage = () => {
         // messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
 
-    // GUEST MODE CODE
+        // GUEST MODE CODE
     // const handleGuestSubmit = async (event) => {
     //     event.preventDefault();
     //     if (!question.trim()) return;
@@ -403,6 +439,7 @@ const ChatPage = () => {
 
     //     messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     // };
+
     const handlePauseStream = async() => {
         console.log("pausing stream");
         if (abortController) {
@@ -672,7 +709,7 @@ const ChatPage = () => {
                 <div className="sidebar-newchat">
                     <button className="start-chat" onClick={handleNewChat} >
                         New Chat
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" style={{ width: '22px', height: '22px' }}>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" style={{ width: '24px', height: '24px' }}>
                             <path strokeLinecap="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
                         </svg>
                     </button>
@@ -685,38 +722,77 @@ const ChatPage = () => {
                     )}
 
                 </div>
-                <ul>
+                <div>
                     {savedSessionKeys.length === 0 && userInfo ? (
-                        <li className="empty-message">
+                        <div className="empty-message">
                             Saved Chats appear here
                             <br />
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6" style={{ marginTop: '20px', color: '#888', width: '30px', height: '30px' }}>
                                 <path strokeLinecap="round" strokeLinejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0-3-3m3 3 3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" />
                             </svg>
-                        </li>
+                        </div>
                     ) : (
-                        savedSessionKeys.map((session, index) => (
-                            <li key={index} className={`${currentSessionKey === session.sessionKey ? 'selected' : ''} ${deletingSessionKey === session.sessionKey ? 'deleting' : ''}`}
-                                onClick={() => selectChat(session.sessionKey)}>
-                                <span>{currentSessionKey === session.sessionKey ? renderChatTitle(truncateText(session.chatTitle, 53)) : truncateText(session.chatTitle, 53)}</span>
-                                {currentSessionKey !== session.sessionKey && (
-                                    <button
-                                        className="delete-button"
+                        savedSessionKeys.map((session) => (
+                            <div 
+                                key={session.sessionKey} 
+                                className={`chat-item ${currentSessionKey === session.sessionKey ? 'selected' : ''} ${deletingSessionKey === session.sessionKey ? 'deleting' : ''}`}
+                                onClick={() => selectChat(session.sessionKey)}
+                                style={{ position: 'relative' }} // Ensure positioning for dropdown
+                            >
+                                {/* Flex Container */}
+                                <div className="chat-item-content">
+                                    {/* Chat Title */}
+                                    <span className="chat-title">
+                                        {currentSessionKey === session.sessionKey ? renderChatTitle(truncateText(session.chatTitle, 53)) : truncateText(session.chatTitle, 53)}
+                                    </span>
+                                    
+                                    {/* Three Dots Button */}
+                                    <button 
+                                        className="options-button" 
                                         onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleDeleteChat(session.sessionKey);
+                                            e.stopPropagation(); // Prevent triggering selectChat
+                                            setActiveDropdown(activeDropdown === session.sessionKey ? null : session.sessionKey);
                                         }}
-                                        title="Delete Chat"
+                                        title="Options"
+                                        aria-haspopup="true"
+                                        aria-expanded={activeDropdown === session.sessionKey}
                                     >
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6" style={{ width: '20px', height: '20px' }}>
+                                        {/* Ellipsis SVG Icon */}
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" style={{ width: '20px', height: '20px' }}>
                                             <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
                                         </svg>
                                     </button>
+                                </div>
+
+                                {/* Dropdown Menu */}
+                                {activeDropdown === session.sessionKey && (
+                                    <div className="dropdown-container">
+                                        <button 
+                                            className="dropdown-item" 
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setActiveDropdown(null);
+                                                handleDeleteChat(session.sessionKey);
+                                            }}
+                                        >
+                                            Delete
+                                        </button>
+                                        <button 
+                                            className="dropdown-item" 
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setActiveDropdown(null);
+                                                handleRenameChat(session);
+                                            }}
+                                        >
+                                            Rename
+                                        </button>
+                                    </div>
                                 )}
-                            </li>
+                            </div>
                         ))
                     )}
-                </ul>
+                </div>
                  {/* GUEST MODE CODE */}
                 {/* {(!userInfo || !userInfo.email) && (
                     <div className="guest-login">
