@@ -12,8 +12,7 @@ from json import JSONDecodeError
 from langchain_community.vectorstores import FAISS         
 from langchain_openai import OpenAIEmbeddings    
 from flask import current_app
-from flask_cors import CORS
-from langchain_openai import OpenAIEmbeddings              
+from flask_cors import CORS              
 from langchain_community.llms import OpenAI                 
 from langchain.chains import ConversationalRetrievalChain  
 from vectorsMongoDB.loadEvaluation import LoadEvaluation
@@ -29,6 +28,8 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib import colors
 import markdown2
 import io
+from werkzeug.utils import secure_filename
+import mimetypes
 
 # Load environment variables
 load_dotenv()
@@ -44,6 +45,13 @@ user_collection = db[MONGODB_TEMPUSER]
 eval_bp = Blueprint('courseEvaluation', __name__)
 CORS(eval_bp, resources={r"/*": {"origins": "http://localhost:3000"}})
 sessions = {}
+
+# Global variables
+ALLOWED_EXTENSIONS = {'csv', 'xlsx'}
+ALLOWED_MIME_TYPES = {
+    'text/csv',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+}
 
 class Document:
     def __init__(self, text, embedding=None):
@@ -65,6 +73,9 @@ def start_session():
     sessions[session_id] = {'vector_store': None}  
     return jsonify({'session_id': session_id})
 
+def allowed_file(filename, mimetype):
+    ext = filename.rsplit('.', 1)[-1].lower()
+    return ext in ALLOWED_EXTENSIONS and mimetype in ALLOWED_MIME_TYPES
 
 @eval_bp.route('/upload', methods=['POST'])
 def upload_file():
@@ -76,8 +87,14 @@ def upload_file():
     if not file:
         return jsonify({"error": "File is required"}), 400
 
+    filename = secure_filename(file.filename)
 
-    file_type = file.filename.rsplit('.', 1)[-1].lower()
+    mimetype = file.mimetype
+    if not allowed_file(filename, mimetype):
+        return jsonify({"error": "Unsupported file type"}), 400
+    
+    file_type = filename.rsplit('.', 1)[-1].lower()
+
     loader = LoadEvaluation()
     with file.stream:
         documents = loader.load_from_stream(file.stream, file_type)
