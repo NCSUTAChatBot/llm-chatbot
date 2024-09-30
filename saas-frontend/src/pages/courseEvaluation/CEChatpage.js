@@ -35,6 +35,8 @@ const ChatPage = () => {
   const location = useLocation();
   const isEvaluationsUploaded = uploadingFiles.length > 0;
 
+  const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
+
   const handleFeedback = () => {
     window.open(FEEDBACK_URL);
   };
@@ -42,6 +44,16 @@ const ChatPage = () => {
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (file) {
+      if (file.size > MAX_FILE_SIZE) {
+        alert("File is too large. Maximum size allowed is 16 MB.");
+        return;
+      }
+      const allowedExtensions = /(\.csv|\.xlsx)$/i;
+      if (!allowedExtensions.exec(file.name)) {
+        alert("Invalid file type. Only .csv and .xlsx files are allowed.");
+        return;
+      }
+
       setFile(file);
       handleFileUpload(file);
     }
@@ -103,6 +115,7 @@ const ChatPage = () => {
           )
         );
         setFile(null);
+        alert("File uploaded successfully!");
       } else {
         if (contentType && contentType.includes("application/json")) {
           const errorData = await response.json();
@@ -122,6 +135,7 @@ const ChatPage = () => {
   const handleDownloadChat = async () => {
     if (!currentSessionId) {
       console.error("No chat session selected to download.");
+      alert("No chat session selected to download.");
       return;
     }
     try {
@@ -445,35 +459,26 @@ const ChatPage = () => {
               />
             </svg>
           </button>
-          <input
-            type="file"
-            id="file-upload"
-            style={{ display: "none" }}
-            onChange={handleFileChange}
-            accept=".csv, .xlsx"
-          />
-          {userInfo && (
-            <button
-              className="refresh-button"
-              onClick={handleDownloadChat}
-              title="Download Chat"
+          <button
+            className="refresh-button"
+            onClick={handleDownloadChat}
+            title="Download Chat"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth="1.5"
+              stroke="currentColor"
+              style={{ width: "22px", height: "22px" }}
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth="1.5"
-                stroke="currentColor"
-                style={{ width: "22px", height: "22px" }}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"
-                />
-              </svg>
-            </button>
-          )}
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"
+              />
+            </svg>
+          </button>
         </div>
         <div className="uploaded-files">
           {uploadingFiles.map((file, index) => (
