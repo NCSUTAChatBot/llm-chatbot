@@ -1774,7 +1774,7 @@ li.deleting {
     justify-content: center;
 }
 
-//******************** STYLING FOR THE CHAT PAGE *********************/
+/* ******************** STYLING FOR THE CHAT PAGE ******************** */ 
 
 
 .chat-item {
@@ -1906,4 +1906,16 @@ li.deleting {
 /* Ensure Sidebar Items Stack Vertically */
 .sidebar > div > .chat-item {
   width: 100%;
+}
+
+.zero-pad-markdown > table > thead > tr > th {
+  border: 1px solid white;
+  padding: 2px 4px;
+}
+.zero-pad-markdown table td {
+  border: 1px solid white;
+  padding: 2px 4px;
+}
+.zero-pad-markdown table {
+  border-collapse: collapse;
 }
