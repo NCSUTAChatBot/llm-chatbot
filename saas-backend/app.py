@@ -15,6 +15,7 @@ from flask_mail import Mail
 from controller.chatRoutes import chat_bp
 from controller.userRoutes import user_bp
 from controller.courseEvaluationRoutes import eval_bp
+from flask_swagger_ui import get_swaggerui_blueprint
 import os
 
 MAIL_USERNAME = os.getenv('MAIL_USERNAME')
@@ -48,9 +49,22 @@ JWTManager(app)
 
 mail= Mail(app)
 
+
+SWAGGER_URL="/swagger"
+API_URL="/static/swagger.yaml"
+
+swagger_ui_blueprint = get_swaggerui_blueprint(
+    SWAGGER_URL,
+    API_URL,
+    config={
+        'app_name': 'Access API'
+    }
+)
+
 app.register_blueprint(chat_bp, url_prefix='/chat')
 app.register_blueprint(eval_bp, url_prefix='/courseEvaluation')
 app.register_blueprint(user_bp, url_prefix='/user')
+app.register_blueprint(swagger_ui_blueprint, url_prefix=SWAGGER_URL)
 
 
 # Specify the entry point of the Flask application, which is only executed when the script is run directly.
