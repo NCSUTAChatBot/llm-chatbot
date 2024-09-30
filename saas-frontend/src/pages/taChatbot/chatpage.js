@@ -52,6 +52,17 @@ const ChatPage = () => {
 
     const [activeDropdown, setActiveDropdown] = useState(null);
 
+    const [confirmDelete, setConfirmDelete] = useState(null);
+
+    const [editingSessionKey, setEditingSessionKey] = useState(null);
+    const [editedTitle, setEditedTitle] = useState(''); 
+    const dropdownRef = useRef(null);
+
+
+    const editInputRef = useRef(null);
+
+
+
     // This function is called when the user clicks on the download as pdf button
     const handleDownloadChat = async () => {
         if (!currentSessionKey) {
@@ -89,10 +100,13 @@ const ChatPage = () => {
     // This function is called when the user clicks on a saved chat session. It fetches the chat messages for the selected session
     //and sets the chat session key to be used
     const selectChat = async (sessionKey) => {
-        if (currentSessionKey === sessionKey) {
-            return;
+        // Abort any ongoing stream
+        if (isStreaming && abortController) {
+            abortController.abort();
+            setIsStreaming(false);
+            setAbortController(null);
         }
-        
+    
         setCurrentSessionKey(sessionKey);
         try {
             const response = await fetch(`${apiUrl}/chat/get_chat_by_session`, {
@@ -100,7 +114,7 @@ const ChatPage = () => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email: userInfo.email, sessionKey: sessionKey })
             });
-
+    
             if (response.ok) {
                 const data = await response.json();
                 setMessages(data.messages);
@@ -111,6 +125,8 @@ const ChatPage = () => {
             console.error('Error fetching chat messages:', error);
         }
     };
+    
+    
 
     // This function is called when the user clicks on the Feedback button
     const handleFeedback = () => {
@@ -118,20 +134,48 @@ const ChatPage = () => {
     };
 
 
+    useEffect(() => {
+        return () => {
+            if (abortController) {
+                abortController.abort();
+            }
+        };
+    }, [abortController]);
+
+    useEffect(() => {
+        if (activeDropdown !== null) {
+            const handleClickOutside = (event) => {
+                if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                    setActiveDropdown(null);
+                }
+            };
+            document.addEventListener('mousedown', handleClickOutside);
+            return () => {
+                document.removeEventListener('mousedown', handleClickOutside);
+            };
+        }
+    }, [activeDropdown]);
+
     // This function is called when the user clicks on the Start New Chat button. It handles chat sessions and message history 
     //when creating a new chat session using the new chat button
     const handleNewChat = async () => {
+        // Abort any ongoing stream
+        if (isStreaming && abortController) {
+            abortController.abort();
+            setIsStreaming(false);
+            setAbortController(null);
+        }
+    
         try {
             setCurrentSessionKey('');
             setMessages([]);
-            abortController.abort();
-
+    
             const sessionResponse = await fetch(`${apiUrl}/chat/createSession`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email: userInfo.email })
             });
-
+    
             if (sessionResponse.ok) {
                 const sessionData = await sessionResponse.json();
                 setCurrentSessionKey(sessionData.sessionKey);  // Set the new session key
@@ -139,7 +183,7 @@ const ChatPage = () => {
                 throw new Error('Failed to create a new chat session.');
             }
         } catch (error) {
-
+            console.error('Error creating new chat session:', error);
         }
     };
 
@@ -164,62 +208,55 @@ const ChatPage = () => {
     };
 
     // This function is called when the user clicks on the delete button for a chat session
-    const handleDeleteChat = async (sessionKey) => {
+    const performDeleteChat = async (sessionKey) => {
         try {
             setDeletingSessionKey(sessionKey);
-            setTimeout(async () => {
-                const response = await fetch(`${apiUrl}/chat/delete_chat`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email: userInfo.email, sessionKey: sessionKey })
-                });
+            const response = await fetch(`${apiUrl}/chat/delete_chat`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: userInfo.email, sessionKey: sessionKey })
+            });
 
-                if (response.ok) {
-                    setSavedSessionKeys(keys => keys.filter(session => session.sessionKey !== sessionKey));
-                    if (currentSessionKey === sessionKey) {
-                        setCurrentSessionKey('');
-                        setMessages([]);
-                    }
-                    setDeletingSessionKey(null);
-                } else {
-                    throw new Error('Failed to delete chat');
+            if (response.ok) {
+                setSavedSessionKeys(keys => keys.filter(session => session.sessionKey !== sessionKey));
+                if (currentSessionKey === sessionKey) {
+                    setCurrentSessionKey('');
+                    setMessages([]);
                 }
-            }, 300);
+                setDeletingSessionKey(null);
+            } else {
+                throw new Error('Failed to delete chat');
+            }
         } catch (error) {
             console.error('Error deleting chat:', error);
         }
     };
 
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (!event.target.closest('.dropdown-container')) {
-                setActiveDropdown(null);
-            }
-        };
-    
-        document.addEventListener('click', handleClickOutside);
-        return () => {
-            document.removeEventListener('click', handleClickOutside);
-        };
-    }, []);
+    // Updated handleDeleteChat to set confirmation
+    const handleDeleteChat = (sessionKey) => {
+        setConfirmDelete(sessionKey);
+    };
 
-
-    
-
-    const handleRenameChat = async (session) => {
-        const newTitle = prompt("Enter new chat title:", session.chatTitle);
-        if (newTitle && newTitle.trim() !== "") {
-            try {
-                await updateChatTitle(userInfo.email, session.sessionKey, newTitle.trim());
-                // Update the local state to reflect the new title
-                setSavedSessionKeys(prevKeys => prevKeys.map(s => 
-                    s.sessionKey === session.sessionKey ? { ...s, chatTitle: newTitle.trim() } : s
-                ));
-            } catch (error) {
-                console.error("Error renaming chat title:", error);
-                alert("Failed to rename chat title. Please try again.");
-            }
+    // New function to handle confirmation
+    const confirmDeleteChat = async () => {
+        if (confirmDelete) {
+            await performDeleteChat(confirmDelete);
+            setConfirmDelete(null);
         }
+    };
+
+    // New function to handle cancellation
+    const cancelDeleteChat = () => {
+        setConfirmDelete(null);
+    };
+
+
+    
+
+    const handleRenameChat = (session) => {
+        setEditingSessionKey(session.sessionKey);
+        setEditedTitle(session.chatTitle);
+        setActiveDropdown(null); // Close the dropdown
     };
 
 
@@ -244,133 +281,173 @@ const ChatPage = () => {
             });
     };
 
+    // Function to save the edited title
+    const saveEditedTitle = async (sessionKey) => {
+    if (editedTitle.trim() === '') {
+        alert("Chat title cannot be empty.");
+        return;
+    }
+    try {
+        await updateChatTitle(userInfo.email, sessionKey, editedTitle.trim());
+        setSavedSessionKeys(prevKeys => prevKeys.map(s => 
+            s.sessionKey === sessionKey ? { ...s, chatTitle: editedTitle.trim() } : s
+        ));
+        setEditingSessionKey(null);
+        setEditedTitle('');
+    } catch (error) {
+        console.error("Error renaming chat title:", error);
+        alert("Failed to rename chat title. Please try again.");
+    }
+    };
+
+    // Function to handle input blur
+    const handleInputBlur = (sessionKey) => {
+    saveEditedTitle(sessionKey);
+    };
+
+// Function to handle key down in input
+    const handleInputKeyDown = (e, sessionKey) => {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        saveEditedTitle(sessionKey);
+    } else if (e.key === 'Escape') {
+        setEditingSessionKey(null);
+        setEditedTitle('');
+    }
+    };
+
 
     // This function is called when the user submits a question. It handles logic for creating session and managing message history
+    // 2. Update handleSubmit to associate streams with session keys
     const handleSubmit = async (event) => {
-        event.preventDefault();
-        if (!question.trim()) return;
+    event.preventDefault();
+    if (!question.trim()) return;
 
-        //GUEST MODE CODE
-        // if (!userInfo || !userInfo.email) {
-        //     handleGuestSubmit(event);
-        //     return;
-        // }
+    const email = userInfo.email;
+    const userMessage = { text: question, sender: 'user' };
+    setMessages(prevMessages => [...prevMessages, userMessage]);
+    setQuestion('');
+    try {
+        let response;
+        let payload;
 
-        const email = userInfo.email;
-        const userMessage = { text: question, sender: 'user' };
-        setMessages(prevMessages => [...prevMessages, userMessage]);
-        setQuestion('');
-        try {
-            let response;
-            let payload;
+        setIsStreaming(true);
 
-            setIsStreaming(true);
+        const controller = new AbortController();
+        setAbortController(controller);
 
-            const controller = new AbortController();
-            setAbortController(controller);
+        // Capture the current session key
+        const sessionKeyAtStart = currentSessionKey;
 
-            //if no session key is set, assume we are creating a new session
+        // If no session key is set, assume creating a new session
+        if (!currentSessionKey) {
+            response = await fetch(`${apiUrl}/chat/ask`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: email, question: question, chatTitle: question })
+            });
+        } else {
+            payload = { email, sessionKey: currentSessionKey, question, history: messages.slice(-10) };
+            response = await fetch(`${apiUrl}/chat/ask`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+        }
+
+        if (response.ok) {
+            // Handle new session creation
             if (!currentSessionKey) {
+                const data = await response.json();
+                setCurrentSessionKey(data.sessionKey); // Set the new session key
+
+                // Re-fetch the ask endpoint with the new sessionKey for streaming
                 response = await fetch(`${apiUrl}/chat/ask`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email: email, question: question, chatTitle: question })
+                    body: JSON.stringify({ email, sessionKey: data.sessionKey, question })
                 });
-                // If a session key exists, continue the existing session with a new message
-            } else {
-                payload = { email, sessionKey: currentSessionKey, question, history: messages.slice(-10) }; 
-                response = await fetch(`${apiUrl}/chat/ask`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
+
+                // Add the new session to the saved sessions list with the chat title
+                setSavedSessionKeys(prevKeys => [
+                    { sessionKey: data.sessionKey, chatTitle: question },
+                    ...prevKeys
+                ]);
             }
-            if (response.ok) {
-                // If no session key was set assume we are creating a new session
-                if (!currentSessionKey) {
-                    const data = await response.json();
-                    setCurrentSessionKey(data.sessionKey);
 
-                    //  re-fetch the ask endpoint with the new sessionKey for streaming
-                    response = await fetch(`${apiUrl}/chat/ask`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ email, sessionKey: data.sessionKey, question })
-                    });
+            // Handle streaming responses
+            if (response.body) {
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let aggregatedText = ''; // Buffer for the streamed text
 
-                    // Add the new session to the saved sessions list with the chat title
-                    setSavedSessionKeys(prevKeys => [
-                        { sessionKey: data.sessionKey, chatTitle: question },
-                        ...prevKeys
-                    ]);
-                }
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    if (controller.signal.aborted) break;
 
-                // If the response body is present, handle streaming responses for displaying chat messages
-                if (response.body) {
-                    const reader = response.body.getReader();
-                    const decoder = new TextDecoder();
-                    let aggregatedText = ''; // Buffer for the streamed text
+                    const chunk = decoder.decode(value, { stream: true });
+                    aggregatedText += chunk;
 
-                    while (true) {
-                        const { done, value } = await reader.read();
-                        if (done) break;
-                        if (controller.signal.aborted) break;
-
-                        const chunk = decoder.decode(value, { stream: true });
-                        aggregatedText += chunk;
-
-                        // Update messages without duplicating or adding unnecessary spaces
-                        setMessages(messages => {
-                            const lastMessage = messages[messages.length - 1];
-                            if (lastMessage && lastMessage.sender === 'bot') {
-                                lastMessage.text += chunk;
-                                return [...messages.slice(0, -1), lastMessage];
-                            } else {
-                                return [...messages, { text: chunk, sender: 'bot' }];
-                            }
-                        });
+                    // Check if the session key hasn't changed
+                    if (sessionKeyAtStart !== currentSessionKey) {
+                        console.log('Session key changed, aborting stream.');
+                        controller.abort();
+                        break;
                     }
 
-                    // Ensure the reader is closed
-                    reader.releaseLock();
-                }
-
-                // Update the session title in local state if necessary, based on session history
-                if (currentSessionKey) {
-                    setSavedSessionKeys(prevKeys => {
-                        const sessionIndex = prevKeys.findIndex(session => session.sessionKey === currentSessionKey);
-                        if (sessionIndex === -1) {
-                            // If the session is not found in the local state add it with the new title
-                            updateChatTitle(email, currentSessionKey, question);
-                            return [{ sessionKey: currentSessionKey, chatTitle: question }, ...prevKeys];
+                    // Update messages without duplicating or adding unnecessary spaces
+                    setMessages(messages => {
+                        const lastMessage = messages[messages.length - 1];
+                        if (lastMessage && lastMessage.sender === 'bot') {
+                            lastMessage.text += chunk;
+                            return [...messages.slice(0, -1), lastMessage];
                         } else {
-                            // If found, check if it's the first message or if the title is 'Untitled Chat'
-                            const updatedSessions = [...prevKeys];
-                            if (!updatedSessions[sessionIndex].chatTitle) {
-                                updatedSessions[sessionIndex].chatTitle = question;
-                            }
-                            return updatedSessions;
+                            return [...messages, { text: chunk, sender: 'bot' }];
                         }
                     });
                 }
-            } else {
-                throw new Error('Failed to submit message. Status: ' + response.status);
-            }
-        } catch (error) {
-            if (error.name === 'AbortError') {
-                console.log('Fetch aborted');
-            } else {
-                console.error('Error submitting question:', error);
-                setMessages(prevMessages => prevMessages.slice(0, -1)); // Remove the last user message if there is an error
-            }
-        } finally {
-            // Enable the submit button again
-            setIsStreaming(false);
-            setAbortController(null);
-        }
 
-        // messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    };
+                // Ensure the reader is closed
+                reader.releaseLock();
+            }
+
+            // Update the session title in local state if necessary, based on session history
+            if (currentSessionKey) {
+                setSavedSessionKeys(prevKeys => {
+                    const sessionIndex = prevKeys.findIndex(session => session.sessionKey === currentSessionKey);
+                    if (sessionIndex === -1) {
+                        // If the session is not found in the local state add it with the new title
+                        updateChatTitle(email, currentSessionKey, question);
+                        return [{ sessionKey: currentSessionKey, chatTitle: question }, ...prevKeys];
+                    } else {
+                        // If found, check if it's the first message or if the title is 'Untitled Chat'
+                        const updatedSessions = [...prevKeys];
+                        if (!updatedSessions[sessionIndex].chatTitle) {
+                            updatedSessions[sessionIndex].chatTitle = question;
+                        }
+                        return updatedSessions;
+                    }
+                });
+            }
+        } else {
+            throw new Error('Failed to submit message. Status: ' + response.status);
+        }
+    } catch (error) {
+        if (error.name === 'AbortError') {
+            console.log('Fetch aborted');
+        } else {
+            console.error('Error submitting question:', error);
+            setMessages(prevMessages => prevMessages.slice(0, -1)); // Remove the last user message if there is an error
+        }
+    } finally {
+        // Enable the submit button again
+        setIsStreaming(false);
+        setAbortController(null);
+    }
+
+    // messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+};
 
         // GUEST MODE CODE
     // const handleGuestSubmit = async (event) => {
@@ -628,6 +705,12 @@ const ChatPage = () => {
         ));
     };
 
+    useEffect(() => {
+        if (editingSessionKey && editInputRef.current) {
+            editInputRef.current.focus();
+        }
+    }, [editingSessionKey]);
+
     // Function to scroll to the top of the chat container
     const scrollToTop = () => {
         const chatContainer = document.querySelector('.chat-container');
@@ -744,56 +827,70 @@ const ChatPage = () => {
                                 onClick={() => selectChat(session.sessionKey)}
                                 style={{ position: 'relative' }} // Ensure positioning for dropdown
                             >
-                                {/* Flex Container */}
-                                <div className="chat-item-content">
-                                    {/* Chat Title */}
-                                    <span className="chat-title">
-                                        {currentSessionKey === session.sessionKey ? renderChatTitle(truncateText(session.chatTitle, 53)) : truncateText(session.chatTitle, 53)}
-                                    </span>
-                                    
-                                    {/* Three Dots Button */}
-                                    <button 
-                                        className="options-button" 
-                                        onClick={(e) => {
-                                            e.stopPropagation(); // Prevent triggering selectChat
-                                            setActiveDropdown(activeDropdown === session.sessionKey ? null : session.sessionKey);
-                                        }}
-                                        title="Options"
-                                        aria-haspopup="true"
-                                        aria-expanded={activeDropdown === session.sessionKey}
-                                    >
-                                        {/* Ellipsis SVG Icon */}
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" style={{ width: '20px', height: '20px' }}>
-                                            <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
-                                        </svg>
-                                    </button>
-                                </div>
-
-                                {/* Dropdown Menu */}
-                                {activeDropdown === session.sessionKey && (
-                                    <div className="dropdown-container">
+                                {/* Wrap the options button and dropdown in a parent div */}
+                                <div className="chat-item-content-wrapper" ref={activeDropdown === session.sessionKey ? dropdownRef : null}>
+                                    <div className="chat-item-content">
+                                        {/* Chat Title or Editable Input */}
+                                        {editingSessionKey === session.sessionKey ? (
+                                            <input
+                                                ref={editInputRef}
+                                                type="text"
+                                                className="edit-chat-title-input"
+                                                value={editedTitle}
+                                                onChange={(e) => setEditedTitle(e.target.value)}
+                                                onBlur={() => handleInputBlur(session.sessionKey)}
+                                                onKeyDown={(e) => handleInputKeyDown(e, session.sessionKey)}
+                                            />
+                                        ) : (
+                                            <span className="chat-title">
+                                                {currentSessionKey === session.sessionKey ? renderChatTitle(truncateText(session.chatTitle, 53)) : truncateText(session.chatTitle, 53)}
+                                            </span>
+                                        )}
+                                        
+                                        {/* Three Dots Button */}
                                         <button 
-                                            className="dropdown-item" 
+                                            className="options-button" 
                                             onClick={(e) => {
-                                                e.stopPropagation();
-                                                setActiveDropdown(null);
-                                                handleDeleteChat(session.sessionKey);
+                                                e.stopPropagation(); // Prevent triggering selectChat
+                                                setActiveDropdown(activeDropdown === session.sessionKey ? null : session.sessionKey);
                                             }}
+                                            title="Options"
+                                            aria-haspopup="true"
+                                            aria-expanded={activeDropdown === session.sessionKey}
                                         >
-                                            Delete
-                                        </button>
-                                        <button 
-                                            className="dropdown-item" 
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                setActiveDropdown(null);
-                                                handleRenameChat(session);
-                                            }}
-                                        >
-                                            Rename
+                                            {/* Ellipsis SVG Icon */}
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" style={{ width: '20px', height: '20px' }}>
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                                            </svg>
                                         </button>
                                     </div>
-                                )}
+
+                                    {/* Dropdown Menu */}
+                                    {activeDropdown === session.sessionKey && (
+                                        <div className="dropdown-container">
+                                            <button 
+                                                className="dropdown-item" 
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setActiveDropdown(null);
+                                                    handleDeleteChat(session.sessionKey);
+                                                }}
+                                            >
+                                                Delete
+                                            </button>
+                                            <button 
+                                                className="dropdown-item" 
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setActiveDropdown(null);
+                                                    handleRenameChat(session);
+                                                }}
+                                            >
+                                                Rename
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         ))
                     )}
@@ -925,6 +1022,18 @@ const ChatPage = () => {
                     Chatbot can make mistakes. Please verify sensitive information.
                 </div>
             </main>
+            {confirmDelete && (
+                <div className="modal-overlay">
+                    <div className="modal-content">
+                        <h3>Confirm Deletion</h3>
+                        <p>Are you sure you want to delete this chat?</p>
+                        <div className="modal-buttons">
+                            <button className="confirm-button" onClick={confirmDeleteChat}>Yes, Delete</button>
+                            <button className="cancel-button" onClick={cancelDeleteChat}>Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

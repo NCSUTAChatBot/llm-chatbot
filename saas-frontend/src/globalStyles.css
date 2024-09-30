@@ -1919,3 +1919,79 @@ li.deleting {
 .zero-pad-markdown table {
   border-collapse: collapse;
 }
+
+
+/* Modal Overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000; /* Ensure it's on top */
+}
+
+/* Modal Content */
+.modal-content {
+  background: #1e1e1e; /* Dark background matching chat UI */
+  padding: 20px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  color: #ffffff; /* White text */
+  text-align: center;
+}
+
+/* Modal Buttons */
+.modal-buttons {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-around;
+}
+
+.confirm-button,
+.cancel-button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.confirm-button {
+  background-color: #d9534f; /* Bootstrap's danger color */
+  color: #ffffff;
+}
+
+.cancel-button {
+  background-color: #6c757d; /* Bootstrap's secondary color */
+  color: #ffffff;
+}
+
+.confirm-button:hover {
+  background-color: #c9302c;
+}
+
+.cancel-button:hover {
+  background-color: #5a6268;
+}
+
+
+.edit-chat-title-input {
+  width: 100%;
+  padding: 4px 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  outline: none;
+}
+
+.edit-chat-title-input:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
