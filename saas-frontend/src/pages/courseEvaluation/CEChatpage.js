@@ -35,7 +35,7 @@ const ChatPage = () => {
   const location = useLocation();
   const isEvaluationsUploaded = uploadingFiles.length > 0;
 
-  const MAX_FILE_SIZE = 16 * 1024 * 1024; // 16 MB
+  const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
 
   const handleFeedback = () => {
     window.open(FEEDBACK_URL);
