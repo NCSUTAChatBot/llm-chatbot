@@ -1,0 +1,498 @@
+openapi: 3.0.3
+info:
+  title: Chat API
+  description: API documentation for the Chat backend.
+  version: 1.0.0
+servers:
+  - url: http://localhost:5000/api
+    description: Local server
+paths:
+  /createSession:
+    post:
+      summary: Create a new chat session
+      description: Creates a new chat session for a user by generating a secure session key.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+                chatTitle:
+                  type: string
+                  example: "My First Chat"
+      responses:
+        '200':
+          description: Session created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sessionKey:
+                    type: string
+                    example: "A1B2C3D4E5F6G7H8"
+        '400':
+          description: Bad Request - Missing Email
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: User Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /ask:
+    post:
+      summary: Ask a question in a chat session
+      description: Sends a user's question to the chat session and streams the bot's response.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - question
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+                sessionKey:
+                  type: string
+                  example: "A1B2C3D4E5F6G7H8"
+                question:
+                  type: string
+                  example: "What is the weather today?"
+                history:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      sender:
+                        type: string
+                        enum: [user, bot]
+                      text:
+                        type: string
+                      timestamp:
+                        type: string
+                        format: date-time
+      responses:
+        '200':
+          description: Streamed bot response
+          content:
+            text/plain:
+              schema:
+                type: string
+        '400':
+          description: Bad Request - Missing Data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: User Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /pause_stream:
+    post:
+      summary: Pause the response stream
+      description: Pauses the streaming response and updates the last message.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - sessionKey
+                - lastMessage
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+                sessionKey:
+                  type: string
+                  example: "A1B2C3D4E5F6G7H8"
+                lastMessage:
+                  type: object
+                  properties:
+                    text:
+                      type: string
+                      example: "Pausing the stream."
+      responses:
+        '200':
+          description: Stream paused successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Stream paused and message updated successfully"
+        '400':
+          description: Bad Request - Missing Fields
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: User or Session Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /askGuest:
+    post:
+      summary: Ask a question as a guest
+      description: Allows a guest to ask a question without user authentication.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - question
+              properties:
+                sessionKey:
+                  type: string
+                  example: "G1H2I3J4K5L6M7N8"
+                question:
+                  type: string
+                  example: "How does this work?"
+                history:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      sender:
+                        type: string
+                        enum: [user, bot]
+                      text:
+                        type: string
+                      timestamp:
+                        type: string
+                        format: date-time
+      responses:
+        '200':
+          description: Streamed bot response or new session key
+          content:
+            text/plain:
+              schema:
+                type: string
+        '400':
+          description: Bad Request - Missing Data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /update_chat_title:
+    post:
+      summary: Update the title of a chat session
+      description: Updates the title of an existing chat session.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - sessionKey
+                - newTitle
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+                sessionKey:
+                  type: string
+                  example: "A1B2C3D4E5F6G7H8"
+                newTitle:
+                  type: string
+                  example: "Updated Chat Title"
+      responses:
+        '200':
+          description: Chat title updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Chat title updated successfully"
+                  sessionKey:
+                    type: string
+                    example: "A1B2C3D4E5F6G7H8"
+        '400':
+          description: Bad Request - Missing Fields
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: User or Session Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Failed to Update Chat Title
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /clear_chat:
+    post:
+      summary: Clear chat history
+      description: Clears the chat history for the current session.
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Chat history cleared successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "Chat history cleared"
+
+  /get_saved_chats:
+    get:
+      summary: Get all saved chat sessions for a user
+      description: Retrieves a list of all saved chat sessions for a specific user.
+      parameters:
+        - in: query
+          name: email
+          schema:
+            type: string
+            format: email
+          required: true
+          description: Email of the user
+      responses:
+        '200':
+          description: List of saved chat sessions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  savedChatSessions:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        sessionKey:
+                          type: string
+                          example: "A1B2C3D4E5F6G7H8"
+                        chatTitle:
+                          type: string
+                          example: "My First Chat"
+        '400':
+          description: Bad Request - Missing Email
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: User Not Found or No Saved Chats
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /delete_chat:
+    post:
+      summary: Delete a specific chat session
+      description: Deletes a specific chat session for a user based on the session key.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - sessionKey
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+                sessionKey:
+                  type: string
+                  example: "A1B2C3D4E5F6G7H8"
+      responses:
+        '200':
+          description: Chat deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Chat with session key 'A1B2C3D4E5F6G7H8' deleted"
+        '400':
+          description: Bad Request - Missing Fields
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: User or Session Key Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /get_chat_by_session:
+    post:
+      summary: Get chat messages by session key
+      description: Retrieves all messages for a specific chat session based on the session key.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - sessionKey
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+                sessionKey:
+                  type: string
+                  example: "A1B2C3D4E5F6G7H8"
+      responses:
+        '200':
+          description: Retrieved chat messages successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  email:
+                    type: string
+                    format: email
+                    example: user@example.com
+                  sessionKey:
+                    type: string
+                    example: "A1B2C3D4E5F6G7H8"
+                  messages:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        sender:
+                          type: string
+                          enum: [user, bot]
+                        text:
+                          type: string
+                        timestamp:
+                          type: string
+                          format: date-time
+        '400':
+          description: Bad Request - Missing Fields
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: User or Session Key Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /export_single_chat_to_pdf:
+    post:
+      summary: Export a single chat session to PDF
+      description: Exports the specified chat session to a PDF file and sends it as a downloadable response.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - sessionKey
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+                sessionKey:
+                  type: string
+                  example: "A1B2C3D4E5F6G7H8"
+      responses:
+        '200':
+          description: PDF file generated successfully
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: Bad Request - Missing Fields
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: User or Session Key Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "User not found"
