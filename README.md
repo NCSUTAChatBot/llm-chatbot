@@ -175,6 +175,11 @@ MONGODB_ACCESSCODES = MONGODB_ACCESSCODES
 | 2024/9/15 | Deepak | Chatbot History Context                               |
 | 2024/9/15 | Nirmal Joji | pause stream option and button, scrolling issue resolved, streaming issue fix                               |
 | 2024/9/15 | Amrita Visalam | pdf generation and download chat improvements                              |
+| 2024/9/30 | Nirmal Joji | Sidebar design improved and added swagger documentation                              |
+| 2024/9/30 | Deepak | Added Css formatting for tables + Chat History context fix                             |
+| 2024/9/30 | Amrita Visalam | Upload sanitization Course Evaluation                              |
+
+
 
 
 
