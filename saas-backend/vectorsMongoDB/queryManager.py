@@ -21,6 +21,8 @@ from langchain_core.output_parsers import StrOutputParser
 from dotenv import load_dotenv
 from langfuse.callback import CallbackHandler
 from tqdm import tqdm
+from datetime import date
+
 
 load_dotenv()
 logging.basicConfig(level=logging.INFO)
@@ -65,19 +67,23 @@ retriever = vector_search.as_retriever(
 # Define the template for the language model
 template = """
 Use the following pieces of context to answer the question at the end.
-If asked a question not in the context, do not answer it and say I'm sorry, I do not know the answer to that question.
-If you don't know the answer or if it is not provided in the context, just say that you don't know, don't try to make up an answer.
-If the answer is in the context, don't say mentioned in the context.
+If asked a question not in the context, previous conversation, or additional context, do not answer it and say I'm sorry, I do not know the answer to that question.
+If the answer is not in the context, previous conversation, or additional context, just say that you don't know, don't try to make up an answer.
 If the user asks what you can help with, say you are a Teaching Assistant chatbot and can help with questions related to the course material.
-If the user greets you, say hello back.
+If the user greets you, say hello back. If they provide their name remeber the name.
 If asked to provide a code example, provide a code snippet that is relevant to the question from the textbook.
 Please provide a detailed explanation and if applicable, give examples or historical context.
 If a homework or practice problem question is asked, don't give the answer or solve it directly, instead help the student reach the answer.
 
+Context:
 {context}
 
 Previous conversation:
 {history}
+
+Additional context:
+Today is {date}
+
 Question: {question}
 
 Answer:
@@ -127,7 +133,8 @@ rag_chain = (
     {
         "context": lambda x: x.get("context", ""),
         "history": lambda x: x.get("history", ""),
-        "question": lambda x: x.get("question", "")
+        "question": lambda x: x.get("question", ""),
+        "date": lambda x: x.get("date", "")
     }
     | custom_rag_prompt # STEP 5
     | llm # STEP 6
@@ -150,6 +157,10 @@ def process_query(question, history: List[dict]):
         context_docs = retriever.invoke(question)
         context = format_docs(context_docs)
         history_formatted = ""
+        
+
+        today = date.today()
+        human_readable_date = today.strftime("%B %d, %Y")
 
         for chat in history:
             chat_sender = chat.get("sender", "User")
@@ -157,7 +168,12 @@ def process_query(question, history: List[dict]):
             history_formatted += f"{chat_sender}: {chat_message}\n"
 
         stream_response = rag_chain.stream(
-            {"question" : question,  "context": context, "history": history_formatted}, 
+                    {
+                        "question" : question,
+                        "context": context,
+                        "history": history_formatted,
+                        "date": human_readable_date
+                    }, 
             config={"callbacks":[langfuse_handler]})
 
         for chunk in stream_response: #chunking allows user to see response as processed,  
