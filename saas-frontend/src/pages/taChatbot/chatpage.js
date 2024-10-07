@@ -104,6 +104,9 @@ const ChatPage = () => {
         }
       }, []);
 
+    const onSuggestedQuestionClick = (e, question) => {
+        handleSubmit(e, question);
+    };
 
     // This function is called when the user clicks on the download as pdf button
     const handleDownloadChat = async () => {
@@ -361,12 +364,12 @@ const ChatPage = () => {
 
     // This function is called when the user submits a question. It handles logic for creating session and managing message history
     // 2. Update handleSubmit to associate streams with session keys
-    const handleSubmit = async (event) => {
+    const handleSubmit = async (event, _question) => {
     event.preventDefault();
-    if (!question.trim()) return;
+    if (!_question.trim()) return;
 
     const email = userInfo.email;
-    const userMessage = { text: question, sender: 'user' };
+    const userMessage = { text: _question, sender: 'user' };
     setMessages(prevMessages => [...prevMessages, userMessage]);
     setQuestion('');
     try {
@@ -386,10 +389,10 @@ const ChatPage = () => {
             response = await fetch(`${apiUrl}/chat/ask`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: email, question: question, chatTitle: question })
+                body: JSON.stringify({ email: email, question: _question, chatTitle: _question })
             });
         } else {
-            payload = { email, sessionKey: currentSessionKey, question, history: messages.slice(-10) };
+            payload = { email, sessionKey: currentSessionKey, question: _question, history: messages.slice(-10) };
             response = await fetch(`${apiUrl}/chat/ask`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -407,12 +410,12 @@ const ChatPage = () => {
                 response = await fetch(`${apiUrl}/chat/ask`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, sessionKey: data.sessionKey, question })
+                    body: JSON.stringify({ email, sessionKey: data.sessionKey, question: _question })
                 });
 
                 // Add the new session to the saved sessions list with the chat title
                 setSavedSessionKeys(prevKeys => [
-                    { sessionKey: data.sessionKey, chatTitle: question },
+                    { sessionKey: data.sessionKey, chatTitle: _question },
                     ...prevKeys
                 ]);
             }
@@ -460,13 +463,13 @@ const ChatPage = () => {
                     const sessionIndex = prevKeys.findIndex(session => session.sessionKey === currentSessionKey);
                     if (sessionIndex === -1) {
                         // If the session is not found in the local state add it with the new title
-                        updateChatTitle(email, currentSessionKey, question);
-                        return [{ sessionKey: currentSessionKey, chatTitle: question }, ...prevKeys];
+                        updateChatTitle(email, currentSessionKey, _question);
+                        return [{ sessionKey: currentSessionKey, chatTitle: _question }, ...prevKeys];
                     } else {
                         // If found, check if it's the first message or if the title is 'Untitled Chat'
                         const updatedSessions = [...prevKeys];
                         if (!updatedSessions[sessionIndex].chatTitle) {
-                            updatedSessions[sessionIndex].chatTitle = question;
+                            updatedSessions[sessionIndex].chatTitle = _question;
                         }
                         return updatedSessions;
                     }
@@ -963,7 +966,7 @@ const ChatPage = () => {
 
                                 <div className="suggested-container" ref={suggestionContainerRef}>
                                     {suggestedQuestions.map((item, index) => (
-                                        <div key={index} className="suggested-box">
+                                        <div key={index} className="suggested-box" onClick={(e) => onSuggestedQuestionClick(e, item.question)}>
                                             <p>{item.question}</p>
                                             <small className="suggested-box-small">{item.description}</small>
                                         </div>
@@ -1021,25 +1024,20 @@ const ChatPage = () => {
                         onKeyDown={(e) => {
                             if (e.key === 'Enter'  && !e.shiftKey) {
                                 e.preventDefault();
-                                handleSubmit(e);
+                                handleSubmit(e, question);
                             }
                         }}
                     />
-                <button 
-                    type="submit" 
-                    className="submit-chat" 
-                    onClick={isStreaming ? handlePauseStream : handleSubmit} 
-                >
-                    {isStreaming ? (
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" width="20" height="20">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 5.25v13.5m-7.5-13.5v13.5" />
-                        </svg>
-                    ) : (
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" width="20" height="20">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="m9 9 6-6m0 0 6 6m-6-6v12a6 6 0 0 1-12 0v-3" />
-                        </svg>
-                    )}
-                </button>
+                {isStreaming && <button type="submit" className="submit-chat" onClick={handlePauseStream}>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" width="20" height="20">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 5.25v13.5m-7.5-13.5v13.5" />
+                    </svg>
+                </button> }
+                {!isStreaming && <button type="submit" className="submit-chat" onClick={(e) => handleSubmit(e, question)}>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" width="20" height="20">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="m9 9 6-6m0 0 6 6m-6-6v12a6 6 0 0 1-12 0v-3" />
+                    </svg>
+                </button> }
 
                 </div>
                 <div className="warning-message">
