@@ -736,7 +736,7 @@ const ChatPage = () => {
     const truncateText = (text, maxWords) => {
         const words = text.trim().split(/\s+/);
         if (words.length > maxWords) {
-            return words.slice(0, maxWords).join(' ') + ' ...';
+            return words.slice(0, maxWords).join(' ');
         }
         return text;
     };
@@ -894,7 +894,7 @@ const ChatPage = () => {
                                             />
                                         ) : (
                                             <span className="chat-title">
-                                                {currentSessionKey === session.sessionKey ? renderChatTitle(truncateText(session.chatTitle, 5)) : truncateText(session.chatTitle, 5)}
+                                                {currentSessionKey === session.sessionKey ? renderChatTitle(truncateText(session.chatTitle, 10)) : truncateText(session.chatTitle, 10)}
                                             </span>
                                         )}
                                         
