@@ -3,8 +3,8 @@
  *
  * @author Sanjit Verma (skverma)
  */
-import React, { useState, useRef, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import React, { useState, useRef, useEffect, useContext } from "react";
+import { useNavigate, useLocation, UNSAFE_NavigationContext as NavigationContext } from "react-router-dom";
 import "../../globalStyles.css";
 
 const ChatPage = () => {
@@ -36,6 +36,24 @@ const ChatPage = () => {
   const isEvaluationsUploaded = uploadingFiles.length > 0;
 
   const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
+
+  // Handler for beforeunload event
+  const handleBeforeUnload = (e) => {
+    if (messages.length > 0) {
+      e.preventDefault();
+      e.returnValue = ''; // For Chrome
+    }
+  };
+
+  useEffect(() => {
+    // Add beforeunload event listener
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    // Cleanup the event listener on component unmount
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [messages]);
 
   const handleFeedback = () => {
     window.open(FEEDBACK_URL);
@@ -541,6 +559,15 @@ const ChatPage = () => {
           flexDirection: "column",
         }}
       >
+        {messages.length > 0 && (
+          <div className="session-warning">
+            <p>
+              Warning: Refreshing or closing the page will delete your current session.
+              To save your chat, please download it before leaving.
+            </p>
+          </div>
+        )}
+
         <div className="chat-container">
           {messages.length === 0 ? (
             <div className="chatModal">
