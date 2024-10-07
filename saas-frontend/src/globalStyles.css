@@ -256,6 +256,8 @@
   height: 100vh;
   width: 240px;
   position: relative;
+  overflow-y: auto; /* Enables vertical scrolling */
+  overflow-x: hidden; /* Prevents horizontal scrolling */
   font-family: 'Mona';
   font-size: 15px;
 }
@@ -1757,9 +1759,9 @@ li.deleting {
 .chat-title {
     flex: 1; /* Allows the title to take up remaining space */
     margin-right: 10px; /* Space between title and options button */
-    word-wrap: break-word; /* Allows text to wrap to next line */
-    white-space: pre-wrap; /* Preserves whitespace and allows wrapping */
+    white-space: nowrap; /* Preserves whitespace and allows wrapping */
     overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* Options Button Styling */
@@ -1778,17 +1780,16 @@ li.deleting {
 
 
 .chat-item {
-  display: flex;
   align-items: center;
   justify-content: space-between;
   background-color: transparent;
   color: white;
   border: none;
-  border-radius: 10px; /* Rounded corners */
-  padding: 16px 20px; /* Top/Bottom: 16px, Left/Right: 20px */
+  border-radius: 10px;
   text-align: left;
   cursor: pointer;
-  position: relative; /* For positioning the dropdown */
+  position: relative;
+  transition: background-color 0.3s ease;
 }
 
 .chat-item:hover {

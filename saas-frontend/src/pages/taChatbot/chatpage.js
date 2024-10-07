@@ -688,8 +688,12 @@ const ChatPage = () => {
     }, [suggestedContainerRef.current]);
 
     //cutrs off length for long chat titles
-    const truncateText = (text, maxLength) => {
-        return text.length > maxLength ? `${text.substring(0, maxLength)}` : text;
+    const truncateText = (text, maxWords) => {
+        const words = text.trim().split(/\s+/);
+        if (words.length > maxWords) {
+            return words.slice(0, maxWords).join(' ') + ' ...';
+        }
+        return text;
     };
 
     // This function is used to render the chat title with a typing animation
@@ -760,6 +764,8 @@ const ChatPage = () => {
 
     const toggleDropdown = () => setShowDropdown(!showDropdown);
     const toggleDropdown2 = () => setShowDropdown2(!showDropdown2);
+
+    const chatToDelete = savedSessionKeys.find(session => session.sessionKey === confirmDelete);
 
     return (
         <div className='chat-page'>
@@ -843,7 +849,7 @@ const ChatPage = () => {
                                             />
                                         ) : (
                                             <span className="chat-title">
-                                                {currentSessionKey === session.sessionKey ? renderChatTitle(truncateText(session.chatTitle, 53)) : truncateText(session.chatTitle, 53)}
+                                                {currentSessionKey === session.sessionKey ? renderChatTitle(truncateText(session.chatTitle, 5)) : truncateText(session.chatTitle, 5)}
                                             </span>
                                         )}
                                         
@@ -1026,7 +1032,9 @@ const ChatPage = () => {
                 <div className="modal-overlay">
                     <div className="modal-content">
                         <h3>Confirm Deletion</h3>
-                        <p>Are you sure you want to delete this chat?</p>
+                        <p>
+                            Are you sure you want to delete the chat "<strong>{chatToDelete?.chatTitle}</strong>"?
+                        </p>
                         <div className="modal-buttons">
                             <button className="confirm-button" onClick={confirmDeleteChat}>Yes, Delete</button>
                             <button className="cancel-button" onClick={cancelDeleteChat}>Cancel</button>
