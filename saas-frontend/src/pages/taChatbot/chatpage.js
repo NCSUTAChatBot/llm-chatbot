@@ -61,6 +61,48 @@ const ChatPage = () => {
 
     const editInputRef = useRef(null);
 
+    const suggestedQuestions = [
+        {
+          question: "Summarize 1.10 Guided Tour and How To Use This Book",
+          description: "I want a quick summary of a chapter or concept"
+        },
+        {
+          question: "Explain what a dependency manager is and why it's needed?",
+          description: "I don't understand a concept and need an explanation"
+        },
+        {
+          question: "What does the SMART acronym stand for, what is it used for?",
+          description: "I need a refresher of the content from today's reading"
+        },
+        {
+          question: "Provide the example from Figure 2.10 that finds the maximum-valued element",
+          description: "I need a sample of code from the textbook"
+        },
+        {
+          question: "Why is Self-Check 10.1.1 Scrum is appropriate when it is difficult to plan ahead true?",
+          description: "I need some further explanation for the self-check"
+        },
+        {
+          question: "What does this book talk about, who is the author?",
+          description: "I want to learn more about the textbook and authors"
+        }
+    ];
+    
+    const suggestionContainerRef = useRef(null);
+
+    useEffect(() => {
+        const container = suggestionContainerRef.current;
+        if (container) {
+          const handleWheel = (e) => {
+            if (e.deltaY !== 0) {
+              e.preventDefault();
+              container.scrollLeft += e.deltaY;
+            }
+          };
+          container.addEventListener('wheel', handleWheel, { passive: false });
+          return () => container.removeEventListener('wheel', handleWheel);
+        }
+      }, []);
 
 
     // This function is called when the user clicks on the download as pdf button
@@ -919,32 +961,14 @@ const ChatPage = () => {
                                 <p className="suggested-title">Suggested </p>
 
 
-                                <div className="suggested-container" ref={suggestedContainerRef}>
-    <div className="suggested-box">
-        <p>Summarize 1.10 Guided Tour and How To Use This Book</p>
-        <small className="suggested-box-small">I want a quick summary of a chapter or concept</small>
-    </div>
-    <div className="suggested-box">
-        <p>Explain what a dependency manager is and why it's needed?</p>
-        <small className="suggested-box-small">I don't understand a concept and need an explanation</small>
-    </div>
-    <div className="suggested-box">
-        <p>What does the SMART acronym stand for, what is it used for?</p>
-        <small className="suggested-box-small">I need a refresher of the content from today's reading</small>
-    </div>
-    <div className="suggested-box">
-        <p>Provide the example from Figure 2.10 that finds the maximum-valued element</p>
-        <small className="suggested-box-small">I need a sample of code from the textbook</small>
-    </div>
-    <div className="suggested-box">
-        <p>Why is Self-Check 10.1.1 Scrum is appropriate when it is difficult to plan ahead true?</p>
-        <small className="suggested-box-small">I need some further explanation for the self-check</small>
-    </div>
-    <div className="suggested-box">
-        <p>What does this book talk about, who is the author?</p>
-        <small className="suggested-box-small">I want to learn more about the textbook and authors</small>
-    </div>
-</div>
+                                <div className="suggested-container" ref={suggestionContainerRef}>
+                                    {suggestedQuestions.map((item, index) => (
+                                        <div key={index} className="suggested-box">
+                                            <p>{item.question}</p>
+                                            <small className="suggested-box-small">{item.description}</small>
+                                        </div>
+                                    ))}
+                                </div>
 
                             </div>
                         </div>
