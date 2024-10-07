@@ -7,6 +7,7 @@ This file contains the routes for the course evaluation API
 from flask import Blueprint, request, jsonify, send_file, stream_with_context, Response, session
 import pandas as pd
 import secrets
+import uuid
 import json
 from json import JSONDecodeError 
 from langchain_community.vectorstores import FAISS         
@@ -102,10 +103,14 @@ def upload_file():
         return jsonify({"error": "No documents were processed"}), 500
 
     generator = GenerateEvaluation()
-    success = generator.generate_embeddings(session_id, documents)
+    file_id = str(uuid.uuid4())
+    success = generator.generate_embeddings(session_id, file_id, documents)
 
     if success:
-        return jsonify({"message": "Embeddings successfully created"}), 200
+        return jsonify({
+            "message": "Embeddings successfully created",
+            "file_id": file_id
+        }), 200
     else:
         return jsonify({"error": "Failed to generate embeddings"}), 500
 
@@ -174,6 +179,32 @@ def ask():
             session_data['chat_history'].append(bot_message)
     
     return Response(stream_with_context(generate_response()), content_type='text/plain')
+
+
+@eval_bp.route('/delete_file', methods=['POST'])
+def delete_file():
+    input_data = request.json
+    if not input_data or 'file_id' not in input_data:
+        return jsonify({"error": "file_id is required"}), 400
+
+    file_id = input_data['file_id']
+
+    try:
+        collection = db[os.getenv('MONGODB_VECTORS_COURSEEVALUATION_DOCS')]
+
+        delete_filter = {
+            "file_id": file_id
+        }
+
+        delete_result = collection.delete_many(delete_filter)
+
+        if delete_result.deleted_count > 0:
+            return jsonify({"message": "File and related embeddings deleted successfully"}), 200
+        else:
+            return jsonify({"error": "No matching embeddings found to delete"}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 
 def generate_pdf(chat_sessions):
     """
