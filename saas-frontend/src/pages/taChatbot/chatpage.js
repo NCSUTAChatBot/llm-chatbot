@@ -1058,7 +1058,7 @@ const ChatPage = () => {
                             Are you sure you want to delete the chat "<strong>{chatToDelete?.chatTitle}</strong>"?
                         </p>
                         <div className="modal-buttons">
-                            <button className="confirm-button" onClick={confirmDeleteChat}>Yes, Delete</button>
+                            <button className="confirm-button" onClick={confirmDeleteChat}>Delete</button>
                             <button className="cancel-button" onClick={cancelDeleteChat}>Cancel</button>
                         </div>
                     </div>

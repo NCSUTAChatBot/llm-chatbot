@@ -1852,10 +1852,9 @@ li.deleting {
   position: absolute;
   top: 100%; /* Position below the chat item */
   right: 20px; /* Align to the right within the chat item */
-  background-color: #ffffff; /* Background color */
-  border: 1px solid #ddd; /* Border */
+  background-color: rgb(49, 46, 46); /* Background color */
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); /* Shadow for depth */
-  border-radius: 4px; /* Rounded corners */
+  border-radius: 10px; /* Rounded corners */
   z-index: 1000; /* Ensure it appears above other elements */
   min-width: 120px; /* Minimum width */
   padding: 5px 0; /* Vertical padding */
@@ -1881,11 +1880,12 @@ li.deleting {
   cursor: pointer;
   font-size: 14px;
   font-family: 'Mona';
-  color: #000000; /* Text color */
+  color: #ffffff; /* Text color */
 }
 
 .dropdown-item:hover {
-  background-color: #f5f5f5; /* Hover background */
+  background-color: rgb(101, 99, 99); /* Hover background */
+  border-radius: 10px;
 }
 
 /* Sidebar Container */
