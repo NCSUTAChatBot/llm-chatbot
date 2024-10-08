@@ -91,6 +91,7 @@ const ChatPage = () => {
       name: file.name,
       type: file.type.includes("spreadsheet") ? "xlsx" : "csv",
       progress: 0,
+      file_id: null, // This will be set after the file is uploaded
     };
     setUploadingFiles((prevFiles) => [...prevFiles, newFile]);
 
@@ -111,7 +112,7 @@ const ChatPage = () => {
         console.log("Upload success:", data);
         setUploadingFiles((prevFiles) =>
           prevFiles.map((f) =>
-            f.name === newFile.name ? { ...f, progress: 100 } : f
+            f.name === newFile.name ? { ...f, progress: 100, file_id: data.file_id } : f
           )
         );
         setFile(null);
@@ -168,11 +169,46 @@ const ChatPage = () => {
     }
   };
 
-  const handleDeleteFile = (fileName) => {
-    setUploadingFiles((prevFiles) =>
-      prevFiles.filter((file) => file.name !== fileName)
-    );
-  };
+
+const handleDeleteFile = (fileName) => {
+  // Find the file object to get its file_id
+  const fileToDelete = uploadingFiles.find((file) => file.name === fileName);
+  
+  if (!fileToDelete || !fileToDelete.file_id) {
+    console.error("File not found for the file:", fileName);
+    alert("Unable to delete the file. File not found.");
+    return;
+  }
+
+  const { file_id } = fileToDelete;
+
+  // Remove the file from the state
+  setUploadingFiles((prevFiles) =>
+    prevFiles.filter((file) => file.name !== fileName)
+  );
+
+  // Call backend to delete embeddings
+  fetch(`${apiUrl}/courseEvaluation/delete_file`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ file_id: file_id })
+  })
+    .then(response => response.json())
+    .then(data => {
+      if (data.message) {
+        console.log(data.message);
+        alert('File deleted successfully.');
+      } else if (data.error) {
+        console.error(data.error);
+        alert(`Failed to delete file: ${data.error}`);
+      }
+    })
+    .catch(error => {
+      console.error('Error deleting file:', error);
+      alert('Error deleting file.');
+    });
+};
+
 
   const handleNewChat = async () => {
     try {
