@@ -7,7 +7,7 @@ This file is used to load documents from the file system into the Vector generat
 import os
 import fitz
 import pandas as pd
-import pdfplumber
+import json
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.schema import Document
 from tqdm import tqdm
@@ -97,7 +97,7 @@ def load_pdfs(directory):
 
         try:
             pdf_document = fitz.open(pdf_path)
-            for page_num in range(295,296):  # Process all pages
+            for page_num in range(pdf_document.page_count):  # Process all pages
                 page = pdf_document.load_page(page_num)
                 text = extract_text_and_table_from_page(page)
                 print(text)
@@ -115,8 +115,46 @@ def load_pdfs(directory):
 
     return documents
 
-current_script_dir = os.path.dirname(os.path.abspath(__file__))
-base_dir = os.path.dirname(current_script_dir) # navigate to the parent directory
-pdf_directory = os.path.join(base_dir, 'pdfData') # navigate to the pdfData directory
+def load_json(directory):
+    documents = []
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1048, chunk_overlap=100)
 
-docs = load_pdfs(pdf_directory)
+    unique_contents = set()  # To track unique document content
+
+    try:
+        # Load JSON file
+        with open(directory, 'r') as file:
+            data = json.load(file)
+        
+        # Extract content from the nested structure (e.g., under "content", or any other relevant field)
+        if 'main_page' in data and 'content' in data['main_page']:
+            content = data['main_page']['content']  # Adjust this path based on your structure
+
+            # If 'content' contains lists of strings, join them to form a text document
+            if isinstance(content, dict) and 'lists' in content:
+                for idx, content_list in enumerate(content['lists']):
+                    # Combine the list of strings into one text document
+                    full_text = " ".join(content_list).strip()
+
+                    # Ensure that the content is unique and non-empty
+                    if full_text and full_text not in unique_contents:
+                        unique_contents.add(full_text)
+                        doc = Document(page_content=full_text, metadata={"document_number": idx})
+                        docs = text_splitter.split_documents([doc])
+                        documents.extend(docs)
+                    else:
+                        tqdm.write(f"Duplicate or empty content in document {idx}.")
+        else:
+            raise ValueError("JSON file does not contain expected 'main_page' -> 'content' structure.")
+        
+        tqdm.write(f"Loaded and processed {len(documents)} chunks from {directory}.")
+    
+    except Exception as e:
+        tqdm.write(f"Failed to process {directory}: {e}")
+
+    return documents
+# current_script_dir = os.path.dirname(os.path.abspath(__file__))
+# base_dir = os.path.dirname(current_script_dir) # navigate to the parent directory
+# pdf_directory = os.path.join(base_dir, 'pdfData') # navigate to the pdfData directory
+
+# docs = load_pdfs(pdf_directory)

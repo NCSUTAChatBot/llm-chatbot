@@ -28,34 +28,43 @@ logger = logging.getLogger()
 OPENAI_KEY = os.getenv("OPENAI_API_KEY")
 MONGODB_URI = os.getenv('MONGODB_URI')
 db_name = os.getenv('MONGODB_DATABASE')
-collection_name = os.getenv('MONGODB_VECTORS_COURSEEVAL')
-vector_search_idx = os.getenv('MONGODB_VECTOR_INDEX_COURSEEVAL')
+#collection_name = os.getenv('MONGODB_VECTORS_COURSEEVAL')
+#vector_search_idx = os.getenv('MONGODB_VECTOR_INDEX_COURSEEVAL')
 
 collection_name_eval = os.getenv('MONGODB_VECTORS_COURSEEVALUATION_DOCS')
 vector_search_idx_eval = os.getenv('MONGODB_VECTOR_INDEX_TEMPUSER_DOC')
 
+collection_name_website= os.getenv('MONGODB_VECTORS_COURSEWEBSITE')
+vector_search_idx_website=os.getenv('MONGODB_VECTOR_INDEX_WEBSITE')
 
 # Connect to MongoDB
 client = MongoClient(MONGODB_URI)
 langfuse_handler = CallbackHandler()
 langfuse_handler.auth_check()
 
-if db_name is None or collection_name is None:
+#if db_name is None or collection_name is None:
+    #raise ValueError("Database name or collection name is not set.")
+
+if db_name is None or collection_name_website is None:
     raise ValueError("Database name or collection name is not set.")
 
 db = client[db_name]
-collection = db[collection_name]
+# collection = db[collection_name]
 eval_collection = db[collection_name_eval]
+website_collection=db[collection_name_website]
 
-if vector_search_idx is None:
-    raise ValueError("Vector search index is not set.")
+#if vector_search_idx is None:
+    #raise ValueError("Vector search index for website is not set.")
 
-# Setup MongoDB Atlas Vector Search
-vector_search = MongoDBAtlasVectorSearch(
-    embedding=OpenAIEmbeddings(disallowed_special=()),
-    collection=collection,
-    index_name=vector_search_idx,
-)
+if vector_search_idx_website is None:
+    raise ValueError("Vector search index for website is not set.")
+
+#Setup MongoDB Atlas Vector Search
+# vector_search = MongoDBAtlasVectorSearch(
+#     embedding=OpenAIEmbeddings(disallowed_special=()),
+#     collection=collection_name,
+#     index_name=vector_search_idx,
+# )
 
 vector_search_eval = MongoDBAtlasVectorSearch(
     embedding=OpenAIEmbeddings(disallowed_special=()),
@@ -63,9 +72,21 @@ vector_search_eval = MongoDBAtlasVectorSearch(
     index_name=vector_search_idx_eval,
 )
 
+vector_search_website = MongoDBAtlasVectorSearch(
+    embedding=OpenAIEmbeddings(disallowed_special=()),
+    collection=website_collection,
+    index_name=vector_search_idx_website,
+)
+
 # Configure the retriever
 # STEP 2
-retriever = vector_search.as_retriever(
+
+# retriever = vector_search.as_retriever(
+#     search_type="similarity",
+#     search_kwargs={"k": 10, "score_threshold": 0.8}
+# )
+
+retriever = vector_search_website.as_retriever(
     search_type="similarity",
     search_kwargs={"k": 10, "score_threshold": 0.8}
 )
