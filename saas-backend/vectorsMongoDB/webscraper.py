@@ -85,7 +85,7 @@ def extract_info(url):
         structured_content = extract_content_with_structure(soup)
         
         # Extracting all links
-        links = [urljoin(url, a['href']) for a in soup.find_all('a', href=True)]
+        links = [urljoin(url, a['href']) for a in soup.find_all('a', href=True) if not is_social_media_link(a['href']) and not is_video_link(a['href'])]
         
         return {'url': url, 'content': structured_content, 'links': links}
     
@@ -100,28 +100,13 @@ def scrape_website(url):
     
     main_page_data = {'url': url, 'content': data['content'], 'links': []}
     inner_page_data = []  # To hold data for inner pages (one layer deep)
-    video_links = []  # To store video links
-    social_media_links = []  # To store social media links
+
     
     # Now process the links found on the main page (one layer deep)
     for link in data['links']:
         if link in visited_links:
             continue  # Skip if already visited
-        
-        # Check if the link is a social media link
-        if is_social_media_link(link):
-            social_media_links.append(link)  # Just store the link, no further processing
-            visited_links.add(link)  # Mark as visited and skip scraping the content
-            continue
-        
-        # Check if the link is a video link (e.g., YouTube)
-        if is_video_link(link):
-            time.sleep(1)  # Optional: Add delay to avoid overloading the server
-            page_data = extract_info(link)  # Extract only the text from the page
-            video_links.append({'url': link, 'text': page_data['content']['raw_text']})
-            visited_links.add(link)
-            continue
-        
+                
         # For all other links, extract the content (but no deeper sublinks)
         if link.startswith('http'):
             time.sleep(1)  # Optional: Add delay to avoid overloading the server
@@ -133,11 +118,9 @@ def scrape_website(url):
     return {
         'main_page': main_page_data,
         'inner_pages': inner_page_data,  # Only first layer deep
-        'social_media_links': social_media_links,  # List of social media links (no content)
-        'video_links': video_links  # List of video links with text content
     }
 
-url="https://www.purdue.edu/innovativelearning/about-us/center-for-instructional-excellence-about/"
+url="https://crlt.umich.edu/"
 driver.get(url)
 
 scraped_data = scrape_website(url)
@@ -146,7 +129,7 @@ scraped_data = scrape_website(url)
 driver.quit()
 
 # Saving data to JSON
-with open('../courseWebsiteData/Purdue_scraped_data.json', 'w') as f:
+with open('../courseWebsiteData/UMich_scraped_data.json', 'w') as f:
     json.dump(scraped_data, f, indent=4)
 
 print("Website information extracted and saved to scraped_data.json")

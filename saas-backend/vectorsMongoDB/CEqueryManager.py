@@ -94,7 +94,9 @@ retriever = vector_search_website.as_retriever(
 # Define the template for the language model
 template = """
 Use the following pieces of context to answer the question at the end.
-If asked a question not in the context, do not answer it and say I'm sorry, the course evaluation does not reference that.
+If asked a question not in the context1 and context2, do not answer it and say I'm sorry, the course evaluation does not reference that.
+If asked a question that is either in context1 or context2, answer the question by primarily referring to context1, while ensuring that the answer relates to the evaluation feedback provided in context2. 
+Do not repeat the exact feedback from context2 unless it's necessary to clarify.
 If you don't know the answer or if it is not provided in the context, just say that you don't know, don't try to make up an answer.
 If the answer is in the context, don't say mentioned in the context.
 If the user asks you to generate code, say that you cannot generate code.
