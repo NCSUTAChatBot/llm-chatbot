@@ -35,14 +35,16 @@ load_dotenv()
 MONGODB_URI = os.getenv('MONGODB_URI')
 MONGODB_USERS = os.getenv('MONGODB_USERS')
 MONGODB_DB = os.getenv('MONGODB_DATABASE')
+MONGODB_SUGGESTIONS = os.getenv('MONGODB_SUGGESTIONS')
 
-if MONGODB_URI is None or MONGODB_USERS is None or MONGODB_DB is None:
+if MONGODB_URI is None or MONGODB_USERS is None or MONGODB_DB is None or MONGODB_SUGGESTIONS is None:
     raise ValueError("MongoDB URI, database name, or collection name is not set.")
 
 # Connect to MongoDB
 client = MongoClient(MONGODB_URI)
 db = client[MONGODB_DB]
 user_collection = db[MONGODB_USERS]
+suggestions_collection = db[MONGODB_SUGGESTIONS]
 
 chatReset = False
 
@@ -506,3 +508,58 @@ def export_single_chat_to_pdf():
     # Send the pdf as a response
     return send_file(pdf_buffer, as_attachment=True, download_name=f"{chat_sessions[0]['chatTitle']}.pdf", mimetype='application/pdf')
 
+@chat_bp.route('/suggestions', methods=['GET'])
+def get_suggestions():
+    """
+    Fetch prompt suggestions from the database.
+    """
+    suggestions =  list(suggestions_collection.find({'enabled':True}, {'_id': 0, 'enabled': 0}))
+    return jsonify(suggestions), 200
+
+@chat_bp.route('/suggestions', methods=['POST'])
+def add_suggestions():
+    """
+    Add a new prompt suggestion to the database.
+    """
+    input_data = request.json
+    if not input_data or 'question' not in input_data or 'description' not in input_data:
+        return jsonify({"error": "Valid input fields not provided"}), 400
+
+    question = input_data['question']
+    description = input_data['description']
+    enabled = input_data.get('enabled', True)
+
+    # Insert the new suggestion into the database
+    result = suggestions_collection.insert_one({
+        'question': question,
+        'description': description,
+        'enabled': enabled
+    })
+
+    if result.inserted_id:
+        return jsonify({"message": "Suggestion added successfully"}), 201
+    else:
+        return jsonify({"error": "Failed to add suggestion"}), 500
+    
+@chat_bp.route('/suggestions/status', methods=['POST'])
+def set_suggestion_status():
+    """
+    Changed the enabled status of a suggestion.
+    """
+    input_data = request.json
+    if not input_data or 'question' not in input_data or 'enabled' not in input_data:
+        return jsonify({"error": "Valid input fields not provided"}), 400
+
+    question = input_data['question']
+    enabled = input_data['enabled']
+
+    # Update the enabled status of the suggestion in the database
+    result = suggestions_collection.update_one(
+        {'question': question},
+        {'$set': {'enabled': enabled}}
+    )
+
+    if result.modified_count:
+        return jsonify({"message": "Suggestion status updated successfully"}), 200
+    else:
+        return jsonify({"error": "Failed to update suggestion status"}), 500

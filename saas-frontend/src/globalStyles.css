@@ -1761,10 +1761,9 @@ li.deleting {
 .chat-title {
     flex: 1; /* Allows the title to take up remaining space */
     margin-right: 10px; /* Space between title and options button */
-    word-wrap: break-word; 
+    word-wrap: break-word; /* Allows text to wrap to next line */
     white-space: pre-wrap; /* Preserves whitespace and allows wrapping */
     overflow: hidden;
-    
 }
 
 /* Options Button Styling */

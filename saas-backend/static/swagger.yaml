@@ -488,6 +488,100 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 
+  /chat/suggestions:
+    get:
+      summary: Get prompt suggestions
+      description: Fetch prompt suggestions from the database.
+      responses:
+        '200':
+          description: List of prompt suggestions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    question:
+                      type: string
+                      example: "What is the weather like today?"
+                    description:
+                      type: string
+                      example: "Ask about the current weather."
+    post:
+      summary: Add a new prompt suggestion
+      description: Add a new prompt suggestion to the database.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - question
+                - description
+              properties:
+                question:
+                  type: string
+                  example: "What is the weather like today?"
+                description:
+                  type: string
+                  example: "Ask about the current weather."
+                enabled:
+                  type: boolean
+                  example: true
+      responses:
+        '201':
+          description: Suggestion added successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Suggestion added successfully"
+        '400':
+          description: Bad Request - Valid input fields not provided
+        '500':
+          description: Failed to add suggestion
+
+  /chat/suggestions/status:
+    post:
+      summary: Change the enabled status of a suggestion
+      description: Change the enabled status of a suggestion in the database.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - question
+                - enabled
+              properties:
+                question:
+                  type: string
+                  example: "What is the weather like today?"
+                enabled:
+                  type: boolean
+                  example: true
+      responses:
+        '200':
+          description: Suggestion status updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Suggestion status updated successfully"
+        '400':
+          description: Bad Request - Valid input fields not provided
+        '500':
+          description: Failed to update suggestion status
+
 components:
   schemas:
     Error:
