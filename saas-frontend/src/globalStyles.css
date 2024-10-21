@@ -981,6 +981,13 @@
     
            
 }
+.text ol, .text ul {
+  padding-left: 20px; /* Indent lists */
+}
+
+.text strong {
+  font-weight: bold;
+}
 
 /* Styling for the user chat messages padding for the Chat page */
 .message.user {
