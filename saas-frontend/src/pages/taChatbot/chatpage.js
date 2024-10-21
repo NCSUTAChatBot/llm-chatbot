@@ -58,35 +58,26 @@ const ChatPage = () => {
     const [editedTitle, setEditedTitle] = useState(''); 
     const dropdownRef = useRef(null);
 
-
     const editInputRef = useRef(null);
+    
+    const [suggestedQuestions, setSuggestedQuestions] = useState([]);
 
-    const suggestedQuestions = [
-        {
-          question: "Summarize 1.10 Guided Tour and How To Use This Book",
-          description: "I want a quick summary of a chapter or concept"
-        },
-        {
-          question: "Explain what a dependency manager is and why it's needed?",
-          description: "I don't understand a concept and need an explanation"
-        },
-        {
-          question: "What does the SMART acronym stand for, what is it used for?",
-          description: "I need a refresher of the content from today's reading"
-        },
-        {
-          question: "Provide the example from Figure 2.10 that finds the maximum-valued element",
-          description: "I need a sample of code from the textbook"
-        },
-        {
-          question: "Why is Self-Check 10.1.1 Scrum is appropriate when it is difficult to plan ahead true?",
-          description: "I need some further explanation for the self-check"
-        },
-        {
-          question: "What does this book talk about, who is the author?",
-          description: "I want to learn more about the textbook and authors"
+    useEffect(() => {
+        fetchSuggestions();
+    }, []);
+
+    const fetchSuggestions = async () => {
+    try {
+        const response = await fetch(`${apiUrl}/chat/suggestions`);  // Fetch data from the API
+        if (!response.ok) {
+            throw new Error('Error in fetching suggestions');
         }
-    ];
+        const data = await response.json();
+        setSuggestedQuestions(data);
+        } catch (error) {
+            console.error('Error fetching suggestions:', error);
+        }
+    };
     
     const suggestionContainerRef = useRef(null);
 
@@ -107,6 +98,7 @@ const ChatPage = () => {
     const onSuggestedQuestionClick = (e, question) => {
         handleSubmit(e, question);
     };
+    
 
     // This function is called when the user clicks on the download as pdf button
     const handleDownloadChat = async () => {
@@ -967,7 +959,7 @@ const ChatPage = () => {
                             </p>
                             <p className="chat-welcome-text">{CHAT_WELCOME_TEXT}</p>
                             <div className="suggested-section">
-                                <p className="suggested-title">Suggested </p>
+                                {suggestedQuestions.length > 0 && <p className="suggested-title">Suggested </p>}
 
 
                                 <div className="suggested-container" ref={suggestionContainerRef}>
