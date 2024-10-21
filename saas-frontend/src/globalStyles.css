@@ -2001,4 +2001,6 @@ li.deleting {
   border-left: 6px solid #f44336;
   padding: 10px;
   margin-bottom: 15px;
+  border-radius: 4px;
+  font-size: 14px;
 }

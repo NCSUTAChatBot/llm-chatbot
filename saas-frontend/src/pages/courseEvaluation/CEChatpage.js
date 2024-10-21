@@ -569,6 +569,14 @@ const ChatPage = () => {
           ))}
         </div>
         <div className="guest-login">
+        {messages.length > 0 && (
+          <div className="session-warning">
+            <p>
+              <strong>Warning:</strong> Closing the page will delete your current session.
+              To save your chat, please download it before leaving.
+            </p>
+          </div>
+        )}
           <p className="login-messageCE">
             <span className="first-lineCE">
               Uploaded Course Evaluations Appear here
@@ -588,15 +596,6 @@ const ChatPage = () => {
           flexDirection: "column",
         }}
       >
-        {messages.length > 0 && (
-          <div className="session-warning">
-            <p>
-              Warning: Closing the page will delete your current session.
-              To save your chat, please download it before leaving.
-            </p>
-          </div>
-        )}
-
         <div className="chat-container">
           {messages.length === 0 ? (
             <div className="chatModal">
