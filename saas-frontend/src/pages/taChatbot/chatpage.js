@@ -58,6 +58,7 @@ const ChatPage = () => {
     const [editedTitle, setEditedTitle] = useState(''); 
     const dropdownRef = useRef(null);
 
+<<<<<<< HEAD
     const editInputRef = useRef(null);
     
     const [suggestedQuestions, setSuggestedQuestions] = useState([]);
@@ -78,6 +79,37 @@ const ChatPage = () => {
             console.error('Error fetching suggestions:', error);
         }
     };
+=======
+
+    const editInputRef = useRef(null);
+
+    const suggestedQuestions = [
+        {
+          question: "Summarize 1.10 Guided Tour and How To Use This Book",
+          description: "I want a quick summary of a chapter or concept"
+        },
+        {
+          question: "Explain what a dependency manager is and why it's needed?",
+          description: "I don't understand a concept and need an explanation"
+        },
+        {
+          question: "What does the SMART acronym stand for, what is it used for?",
+          description: "I need a refresher of the content from today's reading"
+        },
+        {
+          question: "Provide the example from Figure 2.10 that finds the maximum-valued element",
+          description: "I need a sample of code from the textbook"
+        },
+        {
+          question: "Why is Self-Check 10.1.1 Scrum is appropriate when it is difficult to plan ahead true?",
+          description: "I need some further explanation for the self-check"
+        },
+        {
+          question: "What does this book talk about, who is the author?",
+          description: "I want to learn more about the textbook and authors"
+        }
+    ];
+>>>>>>> 12231b8048399802d2883d9ad6321ebe4347b127
     
     const suggestionContainerRef = useRef(null);
 
@@ -98,7 +130,10 @@ const ChatPage = () => {
     const onSuggestedQuestionClick = (e, question) => {
         handleSubmit(e, question);
     };
+<<<<<<< HEAD
     
+=======
+>>>>>>> 12231b8048399802d2883d9ad6321ebe4347b127
 
     // This function is called when the user clicks on the download as pdf button
     const handleDownloadChat = async () => {
@@ -725,8 +760,12 @@ const ChatPage = () => {
     }, [suggestedContainerRef.current]);
 
     //cutrs off length for long chat titles
-    const truncateText = (text, maxLength) => {
-        return text.length > maxLength ? `${text.substring(0, maxLength)}` : text;
+    const truncateText = (text, maxWords) => {
+        const words = text.trim().split(/\s+/);
+        if (words.length > maxWords) {
+            return words.slice(0, maxWords).join(' ');
+        }
+        return text;
     };
 
     // This function is used to render the chat title with a typing animation
@@ -797,6 +836,8 @@ const ChatPage = () => {
 
     const toggleDropdown = () => setShowDropdown(!showDropdown);
     const toggleDropdown2 = () => setShowDropdown2(!showDropdown2);
+
+    const chatToDelete = savedSessionKeys.find(session => session.sessionKey === confirmDelete);
 
     return (
         <div className='chat-page'>
@@ -880,7 +921,7 @@ const ChatPage = () => {
                                             />
                                         ) : (
                                             <span className="chat-title">
-                                                {currentSessionKey === session.sessionKey ? renderChatTitle(truncateText(session.chatTitle, 53)) : truncateText(session.chatTitle, 53)}
+                                                {currentSessionKey === session.sessionKey ? renderChatTitle(truncateText(session.chatTitle, 10)) : truncateText(session.chatTitle, 10)}
                                             </span>
                                         )}
                                         
@@ -1040,9 +1081,11 @@ const ChatPage = () => {
                 <div className="modal-overlay">
                     <div className="modal-content">
                         <h3>Confirm Deletion</h3>
-                        <p>Are you sure you want to delete this chat?</p>
+                        <p>
+                            Are you sure you want to delete the chat "<strong>{chatToDelete?.chatTitle}</strong>"?
+                        </p>
                         <div className="modal-buttons">
-                            <button className="confirm-button" onClick={confirmDeleteChat}>Yes, Delete</button>
+                            <button className="confirm-button" onClick={confirmDeleteChat}>Delete</button>
                             <button className="cancel-button" onClick={cancelDeleteChat}>Cancel</button>
                         </div>
                     </div>
