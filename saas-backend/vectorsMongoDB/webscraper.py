@@ -1,3 +1,10 @@
+'''
+@file webscraper.py
+This file contains the code to extract information fromcourse websites and store them in a json file.
+
+@author by Dinesh Kannan (dkannan)
+'''
+
 import json
 from selenium import webdriver
 from selenium.webdriver.firefox.service import Service as FirefoxService

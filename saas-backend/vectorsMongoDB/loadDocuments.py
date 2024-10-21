@@ -5,114 +5,86 @@ This file is used to load documents from the file system into the Vector generat
 @Author: Dinesh Kannan (dkannan)
 '''
 import os
-import fitz
-import pandas as pd
+import pdfplumber
 import json
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.schema import Document
 from tqdm import tqdm
 
-def extract_tables_from_page(page):
+'''def load_pdfs(directory):
     """
-    Extract tables from a PDF page using PyMuPDF.
-    Args:
-    - page: A PDF page object.
-    
-    Returns:
-    - tables: List of DataFrames representing the tables.
-    - table_boxes: List of bounding boxes of the tables.
+    Load all PDFs from a directory, split them into chunks, and return the chunks.
     """
-    tables = []
-    table_boxes = []
-    blocks = page.get_text("dict")["blocks"]
-    for b in blocks:
-        if "lines" in b:
-            table = []
-            for l in b["lines"]:
-                span_texts = [span["text"] for span in l["spans"] if span["text"].strip()]
-                table.append(span_texts)
-            if table:
-                df = pd.DataFrame(table)
-                tables.append(df)
-                table_boxes.append(fitz.Rect(b['bbox']))
-    return tables, table_boxes
+    # Split PDF into chunks
+    # need to reserach this further, chunk size refers to how many characters each document or text chunk will contain
+    # chunk overlap refers to how many characters will be shared between each document or text chunk 
+    # this is important because it will allow context retention if phrase or info is split akwardly between chunks
+    # i belive 1048 is a good chunk size and 100 is a good overlap size for academic material for testing rn but need to study further
 
-def extract_text_and_table_from_page(page):
-    """
-    Extract text and tables from a PDF page.
-    Args:
-    - page: A PDF page object.
-    
-    Returns:
-    - A combined string of text and table data.
-    """
-    # Extract tables and their bounding boxes
-    tables, table_boxes = extract_tables_from_page(page)
+    # List to store all the documents/ text chunks extracted
+    # RecursiveCharacterTextSplitter is a class that splits text into chunks based on character count
 
-    # Extract text from blocks not overlapping with table bounding boxes
-    text_blocks = []
-    code_blocks = []
-    blocks = page.get_text("dict")["blocks"]
-    for b in blocks:
-        box = fitz.Rect(b['bbox'])
-        if not any(box.intersects(tb) for tb in table_boxes) and 'text' in b:
-            block_text = b["text"].strip()
-            if block_text:
-                # Check if the block is a code block by detecting typical code indentation/pattern
-                if any(line.strip().startswith(tuple("0123456789")) for line in block_text.splitlines()):
-                    code_blocks.append(block_text)
-                else:
-                    text_blocks.append(block_text)
-    
-    text = "\n".join(text_blocks).replace("None", "").strip()  # Combine text blocks into a single string
-
-    table_texts = []
-    for table in tables:
-        table_text = table.to_string(index=False, header=False)
-        table_texts.append(table_text)
-
-    # Combine text, code blocks, and table texts
-    result = text + "\n\n" + "\n\n".join(code_blocks) + "\n\n" + "\n\n".join(table_texts)
-    return result.strip()
-
-def load_pdfs(directory):
-    """
-    Load all PDFs from a directory, extract content, and return document chunks.
-    Args:
-    - directory: Path to the directory containing PDF files.
-    
-    Returns:
-    - List of document chunks.
-    """
     documents = []
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=1048, chunk_overlap=100)
-    unique_contents = set()  # To track unique document content
-
+    
     # List all PDF files in the directory, filter out non-PDF files
     pdf_files = [f for f in os.listdir(directory) if f.endswith('.pdf')]
-
-    # Loop over all the PDF files in the directory
+    
+    #loop over all the PDF files in the directory, tqdm is a progress bar
     for filename in tqdm(pdf_files, desc="Processing PDFs", unit="file"):
+        # construct pdf path for ewach file
         pdf_path = os.path.join(directory, filename)
-
+        # PyPDFLoader is a class that loads PDFs and splits them by page
+        # https://api.python.langchain.com/en/latest/document_loaders/langchain_community.document_loaders.pdf.PyPDFLoader.html
+        
+        loader = PyPDFLoader(pdf_path) # Loader chunks by page and stores page numbers in metadata.
         try:
-            pdf_document = fitz.open(pdf_path)
-            for page_num in range(pdf_document.page_count):  # Process all pages
-                page = pdf_document.load_page(page_num)
-                text = extract_text_and_table_from_page(page)
-                print(text)
-                if text.strip() and text not in unique_contents:  # Only proceed if there is text content
-                    unique_contents.add(text)
-                    doc = Document(page_content=text, metadata={"page_number": page_num, "source": filename})
-                    docs = text_splitter.split_documents([doc])
-                    documents.extend(docs)
-                else:
-                    tqdm.write(f"No text or duplicate text extracted from page {page_num} of {filename}.")
-            pdf_document.close()
+            # Load data into Document objects and then Split the data into chunks and store them in the documents list
+            data = loader.load()
+            docs = text_splitter.split_documents(data)
+            documents.extend(docs)
             tqdm.write(f"Loaded and processed {len(docs)} chunks from {filename}.")
         except Exception as e:
             tqdm.write(f"Failed to process {filename}: {e}")
+    return documents'''
 
+def extract_text_from_page(page):
+    text = page.extract_text() or ""  # Ensure text is a string
+    tables = page.extract_tables() or []
+
+    table_texts = []
+    for table in tables:
+        if table:
+            table_text = "\n".join(["\t".join(cell or "" for cell in row) for row in table])
+            table_texts.append(table_text)
+    
+    return text + "\n\n" + "\n\n".join(table_texts)
+
+def load_pdfs(directory):
+    """
+    Load all PDFs from a directory, split them into chunks, and return the chunks.
+    """
+    documents = []
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1048, chunk_overlap=100)
+    
+    # List all PDF files in the directory, filter out non-PDF files
+    pdf_files = [f for f in os.listdir(directory) if f.endswith('.pdf')]
+    
+    #loop over all the PDF files in the directory, tqdm is a progress bar
+    for filename in tqdm(pdf_files, desc="Processing PDFs", unit="file"):
+        pdf_path = os.path.join(directory, filename)
+        
+        try:
+            with pdfplumber.open(pdf_path) as pdf:
+                for page_num, page in enumerate(pdf.pages, start=1):
+                    text = extract_text_from_page(page)
+                    doc = Document(page_content=text, metadata={"page_number": page_num, "source": filename})
+                    docs = text_splitter.split_documents([doc])
+                    documents.extend(docs)
+            tqdm.write(f"Loaded and processed {len(docs)} chunks from {filename}.")
+        except Exception as e:
+            tqdm.write(f"Failed to process {filename}: {e}")
+            
     return documents
 
 def load_json(directory):

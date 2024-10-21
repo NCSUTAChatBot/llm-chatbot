@@ -5,6 +5,7 @@ This file contains the code to perform vector search on a course evaluation Mong
 IMPORTANT: Be sure to generate the embeddings using the generateVectorDB.py script before and be sure to intialize the MongoDB Atlas Vector Search index before running this script.
 
 @author Sanjit Verma (skverma)
+@modifiedby Dinesh Kannan (dkannan)
 
 '''
 import os
