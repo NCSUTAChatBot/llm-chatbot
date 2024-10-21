@@ -3,7 +3,7 @@
  *
  * @author Sanjit Verma (skverma)
  */
-import React, { useState, useRef, useEffect, useContext } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "../../globalStyles.css";
 
@@ -70,10 +70,7 @@ const ChatPage = () => {
   };
 
   useEffect(() => {
-    // Add beforeunload event listener
     window.addEventListener('beforeunload', handleBeforeUnload);
-
-    // Cleanup the event listener on component unmount
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
     };
