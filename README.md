@@ -186,7 +186,7 @@ MONGODB_ACCESSCODES = MONGODB_ACCESSCODES
 | 2024/10/22 | Dinesh Kannan | Course Evaluation web scraping and adding information into database                            |
 | 2024/10/22 | Amrita Visalam | CE Warning Banner for users                            |
 | 2024/10/22 | Deepak | Configurable suggestions for landing page                          |
-
+| 2024/10/23 | Sanjit Verma | Bug and UI Fixes, Renames Chatbot and Deployed new release                          |
 
 
 
