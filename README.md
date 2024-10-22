@@ -182,9 +182,12 @@ MONGODB_ACCESSCODES = MONGODB_ACCESSCODES
 | 2024/9/30 | Nirmal Joji | Sidebar design improved and added swagger documentation                              |
 | 2024/9/30 | Deepak | Added Css formatting for tables + Chat History context fix                             |
 | 2024/9/30 | Amrita Visalam | Upload sanitization Course Evaluation                              |
+| 2024/10/22 | Nirmal joji | Sidebar design improved and added swagger documentation                            |
 | 2024/10/22 | Dinesh Kannan | Course Evaluation web scraping and adding information into database                            |
 | 2024/10/22 | Amrita Visalam | CE Warning Banner for users                            |
 | 2024/10/22 | Deepak | Configurable suggestions for landing page                          |
+
+
 
 
 
