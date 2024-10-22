@@ -18,7 +18,10 @@ const ChatPage = () => {
   const apiUrl = process.env.REACT_APP_API_URL;
   const navigate = useNavigate();
   const [question, setQuestion] = useState("");
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState(() => {
+    const savedMessages = sessionStorage.getItem('messages');
+    return savedMessages ? JSON.parse(savedMessages) : [];
+  });
   const messageEndRef = useRef(null);
   const [userInfo, setUserInfo] = React.useState(null);
   const [currentSessionKey, setCurrentSessionKey] = useState("");
@@ -27,16 +30,52 @@ const ChatPage = () => {
   const [isLastMessageNew, setIsLastMessageNew] = useState(false);
   const suggestedContainerRef = useRef(null);
   const [file, setFile] = useState(null);
-  const [uploadingFiles, setUploadingFiles] = useState([]);
+  const [uploadingFiles, setUploadingFiles] = useState(() => {
+    const savedFiles = sessionStorage.getItem('uploadingFiles');
+    return savedFiles ? JSON.parse(savedFiles) : [];
+  });
   const [isUploading, setIsUploading] = useState(false);
   const [sessionId, setSessionId] = useState("");
   const [response, setResponse] = useState("");
 
-  const [currentSessionId, setCurrentSessionId] = useState("");
+  const [currentSessionId, setCurrentSessionId] = useState(() => {
+    return sessionStorage.getItem('sessionId') || '';
+  });
   const location = useLocation();
   const isEvaluationsUploaded = uploadingFiles.length > 0;
 
   const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
+
+  // Save currentSessionId to sessionStorage whenever it changes
+  useEffect(() => {
+    if (currentSessionId) {
+      sessionStorage.setItem('sessionId', currentSessionId);
+    }
+  }, [currentSessionId]);
+
+  // Save messages to sessionStorage whenever they change
+  useEffect(() => {
+    sessionStorage.setItem('messages', JSON.stringify(messages));
+  }, [messages]);
+
+  useEffect(() => {
+    sessionStorage.setItem('uploadingFiles', JSON.stringify(uploadingFiles));
+  }, [uploadingFiles]);
+
+  // Handler for beforeunload event
+  const handleBeforeUnload = (e) => {
+    if (messages.length > 0) {
+      e.preventDefault();
+      e.returnValue = '';
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [messages]);
 
   const handleFeedback = () => {
     window.open(FEEDBACK_URL);
@@ -46,7 +85,7 @@ const ChatPage = () => {
     const file = event.target.files[0];
     if (file) {
       if (file.size > MAX_FILE_SIZE) {
-        alert("File is too large. Maximum size allowed is 16 MB.");
+        alert("File is too large. Maximum size allowed is 10 MB.");
         return;
       }
       const allowedExtensions = /(\.csv|\.xlsx)$/i;
@@ -62,15 +101,19 @@ const ChatPage = () => {
 
   const initiateSession = async () => {
     if (!currentSessionId) {
-      const response = await fetch(`${apiUrl}/courseEvaluation/start_session`, {
-        method: "GET",
-      });
-      const data = await response.json();
-      if (data.session_id) {
-        setCurrentSessionId(data.session_id);
-        navigate(`/courseEvaluation/chat?sessionId=${data.session_id}`);
-      } else {
-        console.error("No session ID received from the backend");
+      try {
+        const response = await fetch(`${apiUrl}/courseEvaluation/start_session`, {
+          method: "GET",
+        });
+        const data = await response.json();
+        if (data.session_id) {
+          setCurrentSessionId(data.session_id);
+          navigate(`/courseEvaluation/chat?sessionId=${data.session_id}`);
+        } else {
+          console.error("No session ID received from the backend");
+        }
+      } catch (error) {
+        console.error("Error initiating session:", error);
       }
     }
   };
@@ -180,6 +223,10 @@ const ChatPage = () => {
       setCurrentSessionKey("");
       setMessages([]);
       setUploadingFiles([]);
+
+      sessionStorage.removeItem('sessionId');
+      sessionStorage.removeItem('messages');
+
       initiateSession();
     } catch (error) {
       console.error("Error creating new chat session:", error);
@@ -523,6 +570,14 @@ const ChatPage = () => {
           ))}
         </div>
         <div className="guest-login">
+        {messages.length > 0 && (
+          <div className="session-warning">
+            <p>
+              <strong>Warning:</strong> Closing the page will delete your current session.
+              To save your chat, please download it before leaving.
+            </p>
+          </div>
+        )}
           <p className="login-messageCE">
             <span className="first-lineCE">
               Uploaded Course Evaluations Appear here
