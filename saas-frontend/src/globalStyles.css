@@ -971,8 +971,21 @@
   max-width: 70%;
 }
 
+.message-CE {
+  padding: 10px;
+  border-radius: 10px;
+  margin-bottom: 8px;
+  max-width: 70%;
+}
+
 /* Styling for the sender tags on the chat */
 .sender {
+  font-weight: bold;
+  margin-bottom: 4px;
+  color: white;
+}
+
+.sender-CE {
   font-weight: bold;
   margin-bottom: 4px;
   color: white;
@@ -999,8 +1012,18 @@
   background-color: transparent;
 }
 
+.message-CE.user {
+  align-self: flex-end;
+  background-color: transparent;
+}
+
 /* Styling for the bot chat message padding for the Chat page */
 .message.bot {
+  align-self: flex-start;
+  background-color: transparent;
+}
+
+.message-CE.bot {
   align-self: flex-start;
   background-color: transparent;
 }
@@ -1012,8 +1035,21 @@
   color: white;
   border-radius: 10px;
 }
+
+.message-CE.user .text {
+  background-color: #414344;
+  line-height: 0;
+  color: white;
+  border-radius: 10px;
+}
 /* Styling for the bot text messages for the Chat page */
 .message.bot .text {
+  line-height: 1.5;
+  color: white;
+  border-radius: 10px;
+}
+
+.message-CE.bot .text {
   line-height: 1.5;
   color: white;
   border-radius: 10px;
@@ -2007,10 +2043,14 @@ li.deleting {
 }
 
 .session-warning {
-  background-color: #ffdddd;
+  background-color: #262626;
   border-left: 6px solid #f44336;
-  padding: 10px;
+  color: white;
+  padding: 5px;
   margin-bottom: 15px;
   border-radius: 4px;
-  font-size: 14px;
+  font-size: 13px;
+  font-family: 'Mona';
+  margin-right: -14px;
+  margin-left: -14px;
 }

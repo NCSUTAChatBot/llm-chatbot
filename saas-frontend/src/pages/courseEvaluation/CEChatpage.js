@@ -88,9 +88,9 @@ const ChatPage = () => {
         alert("File is too large. Maximum size allowed is 10 MB.");
         return;
       }
-      const allowedExtensions = /(\.csv|\.xlsx)$/i;
+      const allowedExtensions = /(\.csv)$/i;
       if (!allowedExtensions.exec(file.name)) {
-        alert("Invalid file type. Only .csv and .xlsx files are allowed.");
+        alert("Invalid file type. Only .csv files are allowed.");
         return;
       }
 
@@ -159,14 +159,15 @@ const ChatPage = () => {
           )
         );
         setFile(null);
-        alert("File uploaded successfully!");
       } else {
         if (contentType && contentType.includes("application/json")) {
           const errorData = await response.json();
           console.error("Error response JSON:", errorData);
+          alert("Error response JSON:", errorData);
         } else {
           const errorText = await response.text();
           console.error("Error response text:", errorText);
+          alert("Error response text:", errorText);
         }
       }
     } catch (error) {
@@ -573,7 +574,7 @@ const ChatPage = () => {
         {messages.length > 0 && (
           <div className="session-warning">
             <p>
-              <strong>Warning:</strong> Closing the page will delete your current session.
+              Closing the page will delete your current session.
               To save your chat, please download it before leaving.
             </p>
           </div>
@@ -583,7 +584,7 @@ const ChatPage = () => {
               Uploaded Course Evaluations Appear here
             </span>{" "}
             <br />
-            .csv and .xlsx files are supported
+            .csv files are supported
           </p>
         </div>
       </aside>
@@ -668,9 +669,9 @@ const ChatPage = () => {
             </div>
           ) : (
             messages.map((msg, index) => (
-              <div key={index} className={`message ${msg.sender}`}>
+              <div key={index} className={`message-CE ${msg.sender}`}>
                 <div className="sender">
-                  {msg.sender === "user" ? "You" : "SAAS Chatbot"}
+                  {msg.sender === "user" ? "You" : "CommentSense"}
                 </div>
                 <div className="text">
                     <ReactMarkdown>{msg.text}</ReactMarkdown> {/* Render markdown here */}
@@ -760,7 +761,7 @@ const ChatPage = () => {
               id="file-upload"
               style={{ display: "none" }}
               onChange={handleFileChange}
-              accept=".csv, .xlsx"
+              accept=".csv"
             />
             <button
               className="upload-button"
