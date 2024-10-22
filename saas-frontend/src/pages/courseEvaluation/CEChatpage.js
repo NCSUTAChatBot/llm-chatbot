@@ -6,6 +6,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "../../globalStyles.css";
+import ReactMarkdown from 'react-markdown';
 
 const ChatPage = () => {
   // ENV VARIABLES
@@ -17,7 +18,10 @@ const ChatPage = () => {
   const apiUrl = process.env.REACT_APP_API_URL;
   const navigate = useNavigate();
   const [question, setQuestion] = useState("");
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState(() => {
+    const savedMessages = sessionStorage.getItem('messages');
+    return savedMessages ? JSON.parse(savedMessages) : [];
+  });
   const messageEndRef = useRef(null);
   const [userInfo, setUserInfo] = React.useState(null);
   const [currentSessionKey, setCurrentSessionKey] = useState("");
@@ -26,14 +30,52 @@ const ChatPage = () => {
   const [isLastMessageNew, setIsLastMessageNew] = useState(false);
   const suggestedContainerRef = useRef(null);
   const [file, setFile] = useState(null);
-  const [uploadingFiles, setUploadingFiles] = useState([]);
+  const [uploadingFiles, setUploadingFiles] = useState(() => {
+    const savedFiles = sessionStorage.getItem('uploadingFiles');
+    return savedFiles ? JSON.parse(savedFiles) : [];
+  });
   const [isUploading, setIsUploading] = useState(false);
   const [sessionId, setSessionId] = useState("");
   const [response, setResponse] = useState("");
 
-  const [currentSessionId, setCurrentSessionId] = useState("");
+  const [currentSessionId, setCurrentSessionId] = useState(() => {
+    return sessionStorage.getItem('sessionId') || '';
+  });
   const location = useLocation();
   const isEvaluationsUploaded = uploadingFiles.length > 0;
+
+  const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
+
+  // Save currentSessionId to sessionStorage whenever it changes
+  useEffect(() => {
+    if (currentSessionId) {
+      sessionStorage.setItem('sessionId', currentSessionId);
+    }
+  }, [currentSessionId]);
+
+  // Save messages to sessionStorage whenever they change
+  useEffect(() => {
+    sessionStorage.setItem('messages', JSON.stringify(messages));
+  }, [messages]);
+
+  useEffect(() => {
+    sessionStorage.setItem('uploadingFiles', JSON.stringify(uploadingFiles));
+  }, [uploadingFiles]);
+
+  // Handler for beforeunload event
+  const handleBeforeUnload = (e) => {
+    if (messages.length > 0) {
+      e.preventDefault();
+      e.returnValue = '';
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [messages]);
 
   const handleFeedback = () => {
     window.open(FEEDBACK_URL);
@@ -42,6 +84,16 @@ const ChatPage = () => {
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (file) {
+      if (file.size > MAX_FILE_SIZE) {
+        alert("File is too large. Maximum size allowed is 10 MB.");
+        return;
+      }
+      const allowedExtensions = /(\.csv)$/i;
+      if (!allowedExtensions.exec(file.name)) {
+        alert("Invalid file type. Only .csv files are allowed.");
+        return;
+      }
+
       setFile(file);
       handleFileUpload(file);
     }
@@ -49,15 +101,19 @@ const ChatPage = () => {
 
   const initiateSession = async () => {
     if (!currentSessionId) {
-      const response = await fetch(`${apiUrl}/courseEvaluation/start_session`, {
-        method: "GET",
-      });
-      const data = await response.json();
-      if (data.session_id) {
-        setCurrentSessionId(data.session_id);
-        navigate(`/courseEvaluation/chat?sessionId=${data.session_id}`);
-      } else {
-        console.error("No session ID received from the backend");
+      try {
+        const response = await fetch(`${apiUrl}/courseEvaluation/start_session`, {
+          method: "GET",
+        });
+        const data = await response.json();
+        if (data.session_id) {
+          setCurrentSessionId(data.session_id);
+          navigate(`/courseEvaluation/chat?sessionId=${data.session_id}`);
+        } else {
+          console.error("No session ID received from the backend");
+        }
+      } catch (error) {
+        console.error("Error initiating session:", error);
       }
     }
   };
@@ -107,9 +163,11 @@ const ChatPage = () => {
         if (contentType && contentType.includes("application/json")) {
           const errorData = await response.json();
           console.error("Error response JSON:", errorData);
+          alert("Error response JSON:", errorData);
         } else {
           const errorText = await response.text();
           console.error("Error response text:", errorText);
+          alert("Error response text:", errorText);
         }
       }
     } catch (error) {
@@ -122,6 +180,7 @@ const ChatPage = () => {
   const handleDownloadChat = async () => {
     if (!currentSessionId) {
       console.error("No chat session selected to download.");
+      alert("No chat session selected to download.");
       return;
     }
     try {
@@ -165,6 +224,10 @@ const ChatPage = () => {
       setCurrentSessionKey("");
       setMessages([]);
       setUploadingFiles([]);
+
+      sessionStorage.removeItem('sessionId');
+      sessionStorage.removeItem('messages');
+
       initiateSession();
     } catch (error) {
       console.error("Error creating new chat session:", error);
@@ -445,35 +508,26 @@ const ChatPage = () => {
               />
             </svg>
           </button>
-          <input
-            type="file"
-            id="file-upload"
-            style={{ display: "none" }}
-            onChange={handleFileChange}
-            accept=".csv, .xlsx"
-          />
-          {userInfo && (
-            <button
-              className="refresh-button"
-              onClick={handleDownloadChat}
-              title="Download Chat"
+          <button
+            className="refresh-button"
+            onClick={handleDownloadChat}
+            title="Download Chat"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth="1.5"
+              stroke="currentColor"
+              style={{ width: "22px", height: "22px" }}
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth="1.5"
-                stroke="currentColor"
-                style={{ width: "22px", height: "22px" }}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"
-                />
-              </svg>
-            </button>
-          )}
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"
+              />
+            </svg>
+          </button>
         </div>
         <div className="uploaded-files">
           {uploadingFiles.map((file, index) => (
@@ -517,12 +571,20 @@ const ChatPage = () => {
           ))}
         </div>
         <div className="guest-login">
+        {messages.length > 0 && (
+          <div className="session-warning">
+            <p>
+              Closing the page will delete your current session.
+              To save your chat, please download it before leaving.
+            </p>
+          </div>
+        )}
           <p className="login-messageCE">
             <span className="first-lineCE">
               Uploaded Course Evaluations Appear here
             </span>{" "}
             <br />
-            .csv and .xlsx files are supported
+            .csv files are supported
           </p>
         </div>
       </aside>
@@ -607,11 +669,13 @@ const ChatPage = () => {
             </div>
           ) : (
             messages.map((msg, index) => (
-              <div key={index} className={`message ${msg.sender}`}>
+              <div key={index} className={`message-CE ${msg.sender}`}>
                 <div className="sender">
-                  {msg.sender === "user" ? "You" : "SAAS Chatbot"}
+                  {msg.sender === "user" ? "You" : "CommentSense"}
                 </div>
-                <div className="text">{msg.text}</div>
+                <div className="text">
+                    <ReactMarkdown>{msg.text}</ReactMarkdown> {/* Render markdown here */}
+                  </div>
               </div>
             ))
           )}
@@ -697,7 +761,7 @@ const ChatPage = () => {
               id="file-upload"
               style={{ display: "none" }}
               onChange={handleFileChange}
-              accept=".csv, .xlsx"
+              accept=".csv"
             />
             <button
               className="upload-button"

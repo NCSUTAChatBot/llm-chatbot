@@ -94,6 +94,7 @@ MONGODB_DATABASE=chatbot
 MONGODB_VECTORS= MONGODB_VECTORS
 MONGODB_VECTOR_INDEX= MONGODB_VECTOR_INDEX
 MONGODB_USERS= MONGODB_USERS
+MONGODB_SUGGESTIONS= MONGODB_SUGGESTIONS
 
 MONGODB_VECTORS_COURSEEVAL = MONGODB_VECTORS_COURSEEVALUATION
 MONGODB_VECTOR_INDEX_COURSEEVAL = MONGODB_VECTOR_INDEX_COURSEEVALUATION
@@ -106,6 +107,9 @@ MONGODB_VECTOR_INDEX_TEMPUSER = MONGODB_VECTOR_INDEX_TEMPUSER
 
 MONGODB_WHITELIST_USERS = MONGODB_WHITELIST_USERS
 MONGODB_ACCESSCODES = MONGODB_ACCESSCODES
+
+MONGODB_VECTORS_COURSEWEBSITE= MONGODB_VECTORS_COURSEWEBSITE
+MONGODB_VECTOR_INDEX_WEBSITE= MONGODB_VECTOR_INDEX_WEBSITE
 
 OPENAI_API_KEY= <YOU API KEY HERE>
 LANGFUSE_PUBLIC_KEY = <YOU API KEY HERE>
@@ -175,6 +179,17 @@ MONGODB_ACCESSCODES = MONGODB_ACCESSCODES
 | 2024/9/15 | Deepak | Chatbot History Context                               |
 | 2024/9/15 | Nirmal Joji | pause stream option and button, scrolling issue resolved, streaming issue fix                               |
 | 2024/9/15 | Amrita Visalam | pdf generation and download chat improvements                              |
+| 2024/9/30 | Nirmal Joji | Sidebar design improved and added swagger documentation                              |
+| 2024/9/30 | Deepak | Added Css formatting for tables + Chat History context fix                             |
+| 2024/9/30 | Amrita Visalam | Upload sanitization Course Evaluation                              |
+| 2024/10/22 | Nirmal joji | Sidebar design improved and added swagger documentation                            |
+| 2024/10/22 | Dinesh Kannan | Course Evaluation web scraping and adding information into database                            |
+| 2024/10/22 | Amrita Visalam | CE Warning Banner for users                            |
+| 2024/10/22 | Deepak | Configurable suggestions for landing page                          |
+
+
+
+
 
 
 

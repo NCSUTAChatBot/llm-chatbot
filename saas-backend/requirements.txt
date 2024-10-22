@@ -19,3 +19,4 @@ langfuse==2.48.1
 email-validator==2.2.0
 pandas==2.2.2
 pdfplumber==0.11.4
+flask-swagger-ui==4.11.1
