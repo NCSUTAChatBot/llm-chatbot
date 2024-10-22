@@ -6,6 +6,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "../../globalStyles.css";
+import ReactMarkdown from 'react-markdown';
 
 const ChatPage = () => {
   // ENV VARIABLES
@@ -616,7 +617,9 @@ const ChatPage = () => {
                 <div className="sender">
                   {msg.sender === "user" ? "You" : "SAAS Chatbot"}
                 </div>
-                <div className="text">{msg.text}</div>
+                <div className="text">
+                    <ReactMarkdown>{msg.text}</ReactMarkdown> {/* Render markdown here */}
+                  </div>
               </div>
             ))
           )}

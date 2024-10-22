@@ -5,6 +5,7 @@ This file contains the code to perform vector search on a course evaluation Mong
 IMPORTANT: Be sure to generate the embeddings using the generateVectorDB.py script before and be sure to intialize the MongoDB Atlas Vector Search index before running this script.
 
 @author Sanjit Verma (skverma)
+@modifiedby Dinesh Kannan (dkannan)
 
 '''
 import os
@@ -28,34 +29,43 @@ logger = logging.getLogger()
 OPENAI_KEY = os.getenv("OPENAI_API_KEY")
 MONGODB_URI = os.getenv('MONGODB_URI')
 db_name = os.getenv('MONGODB_DATABASE')
-collection_name = os.getenv('MONGODB_VECTORS_COURSEEVAL')
-vector_search_idx = os.getenv('MONGODB_VECTOR_INDEX_COURSEEVAL')
+#collection_name = os.getenv('MONGODB_VECTORS_COURSEEVAL')
+#vector_search_idx = os.getenv('MONGODB_VECTOR_INDEX_COURSEEVAL')
 
 collection_name_eval = os.getenv('MONGODB_VECTORS_COURSEEVALUATION_DOCS')
 vector_search_idx_eval = os.getenv('MONGODB_VECTOR_INDEX_TEMPUSER_DOC')
 
+collection_name_website= os.getenv('MONGODB_VECTORS_COURSEWEBSITE')
+vector_search_idx_website=os.getenv('MONGODB_VECTOR_INDEX_WEBSITE')
 
 # Connect to MongoDB
 client = MongoClient(MONGODB_URI)
 langfuse_handler = CallbackHandler()
 langfuse_handler.auth_check()
 
-if db_name is None or collection_name is None:
+#if db_name is None or collection_name is None:
+    #raise ValueError("Database name or collection name is not set.")
+
+if db_name is None or collection_name_website is None:
     raise ValueError("Database name or collection name is not set.")
 
 db = client[db_name]
-collection = db[collection_name]
+# collection = db[collection_name]
 eval_collection = db[collection_name_eval]
+website_collection=db[collection_name_website]
 
-if vector_search_idx is None:
-    raise ValueError("Vector search index is not set.")
+#if vector_search_idx is None:
+    #raise ValueError("Vector search index for website is not set.")
 
-# Setup MongoDB Atlas Vector Search
-vector_search = MongoDBAtlasVectorSearch(
-    embedding=OpenAIEmbeddings(disallowed_special=()),
-    collection=collection,
-    index_name=vector_search_idx,
-)
+if vector_search_idx_website is None:
+    raise ValueError("Vector search index for website is not set.")
+
+#Setup MongoDB Atlas Vector Search
+# vector_search = MongoDBAtlasVectorSearch(
+#     embedding=OpenAIEmbeddings(disallowed_special=()),
+#     collection=collection_name,
+#     index_name=vector_search_idx,
+# )
 
 vector_search_eval = MongoDBAtlasVectorSearch(
     embedding=OpenAIEmbeddings(disallowed_special=()),
@@ -63,9 +73,21 @@ vector_search_eval = MongoDBAtlasVectorSearch(
     index_name=vector_search_idx_eval,
 )
 
+vector_search_website = MongoDBAtlasVectorSearch(
+    embedding=OpenAIEmbeddings(disallowed_special=()),
+    collection=website_collection,
+    index_name=vector_search_idx_website,
+)
+
 # Configure the retriever
 # STEP 2
-retriever = vector_search.as_retriever(
+
+# retriever = vector_search.as_retriever(
+#     search_type="similarity",
+#     search_kwargs={"k": 10, "score_threshold": 0.8}
+# )
+
+retriever = vector_search_website.as_retriever(
     search_type="similarity",
     search_kwargs={"k": 10, "score_threshold": 0.8}
 )
@@ -73,18 +95,19 @@ retriever = vector_search.as_retriever(
 # Define the template for the language model
 template = """
 Use the following pieces of context to answer the question at the end.
-If asked a question not in the context, do not answer it and say I'm sorry, the course evaluation does not reference that.
+If context2 is empty or not provided, prioritize answering the question using context1.
+If asked a question that is either in context1 or context2, answer the question using information from both contexts, ensuring that the feedback from context2 is addressed and improvement strategies from context1 are included when possible.
+Do not repeat the exact feedback from context2 unless it's necessary to clarify.
 If you don't know the answer or if it is not provided in the context, just say that you don't know, don't try to make up an answer.
-If the answer is in the context, don't say mentioned in the context.
+If the answer is in the context, don't say "mentioned in the context."
 If the user asks you to generate code, say that you cannot generate code.
-If the user asks any question not related to course evaluations, say, I'm sorry, I can't assist with that.
+If the user asks any question not related to course evaluations, say, "I'm sorry, I can't assist with that."
 If the user asks what you can help with, say you are a Course Evaluation chatbot here to assist with course evaluation feedback.
 If the user greets you, say hello back.
 
-You are an assisstant for a course evaluation chatbot. You have been provided with two major information sources to assist with the course evaluation feedback.
+You are an assistant for a course evaluation chatbot. You have been provided with two major information sources to assist with the course evaluation feedback.
 
-
-Use the below information as a reference, the below infomation provides context on how professors can improve their class
+Use the below information as a reference, the below information provides context on how professors can improve their class:
 {context1}
 
 THE BELOW INFORMATION IS IMPORTANT AND CONTAINS THE EVALUATION OF THE COURSE:
@@ -95,8 +118,7 @@ Previous conversation:
 
 Question: {question}
 
-
-Answer the above question using course evalation feedback and if you need ways to improve on those questions, then use the reference material provided
+Answer the above question using course evaluation feedback, and if needed, suggest actionable strategies or improvements based on the reference material provided.
 """
 
 # Create a prompt template

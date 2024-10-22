@@ -57,6 +57,13 @@ def select_vector_search_idx():
     selected_key = list(vector_index_vars.keys())[selected_idx]
     return vector_index_vars[selected_key]
 
+def get_file_type():
+    print("Enter the type of input data:")
+    print("1) PDF")
+    print("2) JSON")
+    file_type = input("Select 1 for PDF or 2 for JSON: ")
+    return file_type
+
 # Menu loop
 while True:
     choice = display_menu()
@@ -75,17 +82,29 @@ client = MongoClient(MONGODB_URI)
 db = client[db_name]
 collection = db[collection_name]
 
-# Loading in the PDF and making some chunks
-current_script_dir = os.path.dirname(os.path.abspath(__file__))
-base_dir = os.path.dirname(current_script_dir)  # navigate to the parent directory
-pdf_directory = os.path.join(base_dir, 'pdfData')  # navigate to the pdfData directory
+# Get the file type
+file_type = get_file_type()
 
-# suppress INFO logs from httpx, suppress not critical pdf reader formatting warnings
-logging.getLogger('httpx').setLevel(logging.WARNING)
-logging.getLogger('pypdf._reader').setLevel(logging.ERROR)
+# Loading documents based on file type (PDF or JSON)
+docs = []
+if file_type == '1':  # PDF selected
+    current_script_dir = os.path.dirname(os.path.abspath(__file__))
+    base_dir = os.path.dirname(current_script_dir)
+    pdf_directory = os.path.join(base_dir, 'pdfData')  # Directory containing PDF files
 
-docs = loadDocuments.load_pdfs(pdf_directory)
-print(f"Total chunks loaded: {len(docs)}\n")
+    logging.getLogger('httpx').setLevel(logging.WARNING)
+    logging.getLogger('pypdf._reader').setLevel(logging.ERROR)
+
+    docs =  loadDocuments.load_pdfs(pdf_directory)
+    print(f"Total PDF chunks loaded: {len(docs)}\n")
+
+elif file_type == '2':  # JSON selected
+    json_file_path = input("Enter the full path to the JSON file: ")
+    docs = loadDocuments.load_json(json_file_path)
+    print(f"Total JSON documents loaded: {len(docs)}\n")
+else:
+    print("Invalid file type selected. Exiting.")
+    exit(1)
 
 # Initialize the vector store object and create the embeddings
 try:

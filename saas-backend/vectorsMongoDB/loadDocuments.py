@@ -6,6 +6,7 @@ This file is used to load documents from the file system into the Vector generat
 '''
 import os
 import pdfplumber
+import json
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.schema import Document
 from tqdm import tqdm
@@ -86,3 +87,53 @@ def load_pdfs(directory):
             
     return documents
 
+def load_json(directory):
+    documents = []
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1048, chunk_overlap=100)
+    unique_contents = set()  # To track unique document content
+
+    try:
+        # Load JSON file
+        with open(directory, 'r') as file:
+            data = json.load(file)
+        
+        # Function to process content lists
+        def process_content(content, base_idx=0):
+            for idx, content_list in enumerate(content.get('lists', [])):
+                # Combine the list of strings into one text document
+                full_text = " ".join([item for item in content_list if item.strip()]).strip()  # Filter out empty strings
+
+                # Ensure that the content is unique and non-empty
+                if full_text and full_text not in unique_contents:
+                    unique_contents.add(full_text)
+                    doc = Document(page_content=full_text, metadata={"document_number": base_idx + idx})
+                    docs = text_splitter.split_documents([doc])
+                    documents.extend(docs)
+                else:
+                    tqdm.write(f"Duplicate or empty content in document {base_idx + idx}.")
+
+        # Process main_page content
+        if 'main_page' in data and 'content' in data['main_page']:
+            process_content(data['main_page']['content'], base_idx=0)
+        else:
+            raise ValueError("JSON file does not contain expected 'main_page' -> 'content' structure.")
+        
+        # Process inner_pages content
+        if 'inner_pages' in data:
+            for i, page in enumerate(data['inner_pages']):
+                if 'content' in page:
+                    process_content(page['content'], base_idx=len(documents) + i)
+
+        tqdm.write(f"Loaded and processed {len(documents)} chunks from {directory}.")
+
+    except Exception as e:
+        tqdm.write(f"Failed to process {directory}: {e}")
+
+    return documents
+
+
+# current_script_dir = os.path.dirname(os.path.abspath(__file__))
+# base_dir = os.path.dirname(current_script_dir) # navigate to the parent directory
+# pdf_directory = os.path.join(base_dir, 'pdfData') # navigate to the pdfData directory
+
+# docs = load_pdfs(pdf_directory)
