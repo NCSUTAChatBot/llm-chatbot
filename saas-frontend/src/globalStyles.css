@@ -969,6 +969,7 @@
   border-radius: 10px;
   margin-bottom: 8px;
   max-width: 70%;
+  word-wrap: break-word;
 }
 
 .message-CE {
@@ -1034,11 +1035,12 @@
   line-height: 1.5;
   color: white;
   border-radius: 10px;
+  word-wrap: break-word;
 }
 
 .message-CE.user .text {
   background-color: #414344;
-  line-height: 0;
+  line-height: 1;
   color: white;
   border-radius: 10px;
 }

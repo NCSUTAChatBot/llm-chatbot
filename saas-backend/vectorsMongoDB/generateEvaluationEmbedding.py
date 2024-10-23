@@ -13,6 +13,8 @@ from langchain_mongodb import MongoDBAtlasVectorSearch
 import os
 import datetime
 import time
+from langchain.schema import Document
+
 
 load_dotenv()
 logging.basicConfig(level=logging.INFO)
@@ -40,37 +42,38 @@ class GenerateEvaluation:
 
     def generate_embeddings(self, session_id, documents):
         try:
-            
-            texts = [doc.page_content for doc in documents]
-            
-            # Create embeddings for each document
+            if not documents:
+                logger.warning("No documents provided for embedding generation.")
+                return False
+
             text_splitter = RecursiveCharacterTextSplitter(
-                # Set a really small chunk size, just to show.
                 chunk_size=2000,
                 chunk_overlap=20,
                 length_function=len,
                 is_separator_regex=False,
-            )  
-            docs = text_splitter.create_documents(texts)
-            ts = time.time()
-            for doc in docs:
-                doc.metadata = {"source": session_id,
-                                "createdAt": datetime.datetime.fromtimestamp(ts, None) } 
+            )
 
-    
+            all_docs = []
+            for doc in documents:
+                # Split each document's content
+                splits = text_splitter.split_text(doc.page_content)
+                for split_content in splits:
+                    new_doc = Document(
+                        page_content=split_content,
+                        metadata={
+                            "source": session_id,
+                            "createdAt": datetime.datetime.utcnow()
+                        }
+                    )
+                    all_docs.append(new_doc)
 
-            # Update the specific user's document with new embeddings
-            update_result = self.vector_store.add_documents(documents=docs)
+            self.vector_store.add_documents(documents=all_docs)
+            logger.info(f"Embeddings stored for session {session_id}")
 
-            # Check if the update was successful
-            if len(update_result) > 0:
-                logger.info(f"Successfully updated embeddings for session ID: {session_id}")
-                return True
-            else:
-                logger.warning(f"No document found with session ID: {session_id} or no update made")
-                return False
+            return True
 
         except Exception as e:
-            logger.error(f"Failed to create or store embeddings: {str(e)}")
+            logger.exception(f"Failed to create or store embeddings: {str(e)}")
             return False
+
         
