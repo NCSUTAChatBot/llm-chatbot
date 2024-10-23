@@ -42,7 +42,7 @@ const ChatPage = () => {
     return sessionStorage.getItem('sessionId') || '';
   });
   const location = useLocation();
-  const isEvaluationsUploaded = uploadingFiles.length > 0;
+  const isEvaluationsUploaded = uploadingFiles.length > 0 && uploadingFiles.some(file => file.progress === 100);
 
   const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
 
