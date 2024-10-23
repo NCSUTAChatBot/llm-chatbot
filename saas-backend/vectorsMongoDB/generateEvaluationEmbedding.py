@@ -38,7 +38,7 @@ class GenerateEvaluation:
             relevance_score_fn="cosine",
         )
 
-    def generate_embeddings(self, session_id, documents):
+    def generate_embeddings(self, session_id, file_id, documents):
         try:
             
             texts = [doc.page_content for doc in documents]
@@ -55,9 +55,8 @@ class GenerateEvaluation:
             ts = time.time()
             for doc in docs:
                 doc.metadata = {"source": session_id,
-                                "createdAt": datetime.datetime.fromtimestamp(ts, None) } 
-
-    
+                                "file_id": file_id,
+                                "createdAt": datetime.datetime.fromtimestamp(ts, None), } 
 
             # Update the specific user's document with new embeddings
             update_result = self.vector_store.add_documents(documents=docs)
