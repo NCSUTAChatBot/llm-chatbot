@@ -88,9 +88,9 @@ const ChatPage = () => {
         alert("File is too large. Maximum size allowed is 10 MB.");
         return;
       }
-      const allowedExtensions = /(\.csv)$/i;
+      const allowedExtensions = /(\.csv|\.xlsx)$/i;
       if (!allowedExtensions.exec(file.name)) {
-        alert("Invalid file type. Only .csv files are allowed.");
+        alert("Invalid file type. Only .csv and .xlsx files are allowed.");
         return;
       }
 
@@ -108,7 +108,7 @@ const ChatPage = () => {
         const data = await response.json();
         if (data.session_id) {
           setCurrentSessionId(data.session_id);
-          navigate(`/courseEvaluation/chat?sessionId=${data.session_id}`);
+          navigate(`/courseEvaluation/chat?sessionId=${data.session_id}`, { replace: true });
         } else {
           console.error("No session ID received from the backend");
         }
@@ -119,7 +119,13 @@ const ChatPage = () => {
   };
 
   useEffect(() => {
-    initiateSession();
+    // Only initiate session if there's no session ID in the URL and none in the state
+    const params = new URLSearchParams(location.search);
+    const sessionIdFromUrl = params.get('sessionId');
+    
+    if (!sessionIdFromUrl && !currentSessionId) {
+      initiateSession();
+    }
   }, [location.search]);
 
   const handleFileUpload = async (file) => {
@@ -584,7 +590,7 @@ const ChatPage = () => {
               Uploaded Course Evaluations Appear here
             </span>{" "}
             <br />
-            .csv files are supported
+            .csv and .xlsx files are supported
           </p>
         </div>
       </aside>
@@ -761,7 +767,7 @@ const ChatPage = () => {
               id="file-upload"
               style={{ display: "none" }}
               onChange={handleFileChange}
-              accept=".csv"
+              accept=".csv, .xlsx"
             />
             <button
               className="upload-button"

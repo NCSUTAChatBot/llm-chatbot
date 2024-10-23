@@ -47,10 +47,11 @@ CORS(eval_bp, resources={r"/*": {"origins": "http://localhost:3000"}})
 sessions = {}
 
 # Global variables
-ALLOWED_EXTENSIONS = {'csv'}
+ALLOWED_EXTENSIONS = {'csv','xlsx'}
 ALLOWED_MIME_TYPES = {
     'text/csv',
-    #'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    'application/vnd.ms-excel',
 }
 
 class Document:
@@ -100,6 +101,7 @@ def upload_file():
 
     if not documents:
         return jsonify({"error": "No documents were processed"}), 500
+    #print(documents)
 
     generator = GenerateEvaluation()
     success = generator.generate_embeddings(session_id, documents)
