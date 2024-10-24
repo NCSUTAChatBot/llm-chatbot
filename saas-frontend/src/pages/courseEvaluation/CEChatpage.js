@@ -46,6 +46,12 @@ const ChatPage = () => {
 
   const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
 
+  useEffect(() => {
+    if (currentSessionId === '') {
+      initiateSession();
+    }
+  }, [currentSessionId]);
+
   // Save currentSessionId to sessionStorage whenever it changes
   useEffect(() => {
     if (currentSessionId) {
@@ -100,7 +106,6 @@ const ChatPage = () => {
   };
 
   const initiateSession = async () => {
-    if (!currentSessionId) {
       try {
         const response = await fetch(`${apiUrl}/courseEvaluation/start_session`, {
           method: "GET",
@@ -115,7 +120,6 @@ const ChatPage = () => {
       } catch (error) {
         console.error("Error initiating session:", error);
       }
-    }
   };
 
   useEffect(() => {
@@ -126,7 +130,7 @@ const ChatPage = () => {
     if (!sessionIdFromUrl && !currentSessionId) {
       initiateSession();
     }
-  }, [location.search]);
+  }, [location.search, currentSessionId]);
 
   const handleFileUpload = async (file) => {
     setIsUploading(true);
@@ -233,8 +237,8 @@ const ChatPage = () => {
 
       sessionStorage.removeItem('sessionId');
       sessionStorage.removeItem('messages');
-
-      initiateSession();
+      
+      setCurrentSessionId('');
     } catch (error) {
       console.error("Error creating new chat session:", error);
     }
