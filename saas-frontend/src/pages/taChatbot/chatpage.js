@@ -724,15 +724,6 @@ const ChatPage = () => {
         };
     }, [suggestedContainerRef.current]);
 
-    //cutrs off length for long chat titles
-    const truncateText = (text, maxWords) => {
-        const words = text.trim().split(/\s+/);
-        if (words.length > maxWords) {
-            return words.slice(0, maxWords).join(' ');
-        }
-        return text;
-    };
-
     // This function is used to render the chat title with a typing animation
     const renderChatTitle = (title) => {
         return title.split('').map((char, index) => (
@@ -853,7 +844,7 @@ const ChatPage = () => {
                     )}
 
                 </div>
-                <div>
+                <div className='sidebar' style={{"borderRadius": "0px"}}>
                     {savedSessionKeys.length === 0 && userInfo ? (
                         <div className="empty-message">
                             Saved Chats appear here
@@ -886,7 +877,7 @@ const ChatPage = () => {
                                             />
                                         ) : (
                                             <span className="chat-title">
-                                                {currentSessionKey === session.sessionKey ? renderChatTitle(truncateText(session.chatTitle, 10)) : truncateText(session.chatTitle, 10)}
+                                                {currentSessionKey === session.sessionKey ? renderChatTitle(session.chatTitle + '    ') : session.chatTitle + '    ' }
                                             </span>
                                         )}
                                         
@@ -902,7 +893,7 @@ const ChatPage = () => {
                                             aria-expanded={activeDropdown === session.sessionKey}
                                         >
                                             {/* Ellipsis SVG Icon */}
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" style={{ width: '20px', height: '20px' }}>
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" style={{ width: '24px', height: '24px' }}>
                                                 <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
                                             </svg>
                                         </button>
