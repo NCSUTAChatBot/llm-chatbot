@@ -1040,7 +1040,7 @@
 
 .message-CE.user .text {
   background-color: #414344;
-  line-height: 1;
+  line-height: 0;
   color: white;
   border-radius: 10px;
 }
