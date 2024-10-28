@@ -1848,11 +1848,12 @@ li.deleting {
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  padding: 8px 15px;
+  padding: 4px 15px;
 }
 
 .chat-item:hover .chat-item-content {
   width: 90%;
+  padding: 3px 15px;
 }
 
 /* Chat Title Styling */
@@ -1862,7 +1863,7 @@ li.deleting {
   overflow: hidden; /* Hides overflowed text */
   text-overflow: clip; /* Adds ellipsis (…) for overflowed text */
   font-family: 'Mona'; /* Font family */
-  font-size: 15px; /* Font size */
+  font-size: 13px; /* Font size */
   max-width: calc(100% - 30px); /* Prevents overlap with button */
   padding: 10px 0;
   background: linear-gradient(to right, lightgray 90%, rgba(211, 211, 211, 0) 100%);
@@ -2030,22 +2031,24 @@ li.deleting {
 
 .edit-chat-title-input {
   width: 100%;
-  padding: 4px 8px;
   font-size: 14px;
   border: 1px solid #ccc;
+  background-color: rgb(12, 12, 12);
+  color: #ccc;
   border-radius: 4px;
   outline: none;
-  padding: 10px 4px;
+  padding: 4px 4px;
   margin-right: 60px;
 }
 
 .chat-item:hover .edit-chat-title-input {
   margin-right: 0px;
+  padding: 4px 4px;
 }
 
 .edit-chat-title-input:focus {
   border-color: #007bff;
-  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+  box-shadow: 0 0 0 2px #007bff40;
 }
 
 .session-warning {
