@@ -877,7 +877,7 @@ const ChatPage = () => {
                                             />
                                         ) : (
                                             <span className="chat-title">
-                                                {currentSessionKey === session.sessionKey ? renderChatTitle(session.chatTitle + '    ') : session.chatTitle + '    ' }
+                                                {currentSessionKey === session.sessionKey ? renderChatTitle(session.chatTitle + '\u00A0\u00A0\u00A0\u00A0') : session.chatTitle + '\u00A0\u00A0\u00A0\u00A0' }
                                             </span>
                                         )}
                                         
