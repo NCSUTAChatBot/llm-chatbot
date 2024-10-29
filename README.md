@@ -10,6 +10,8 @@
 
 *   One more thing, you may need an openai gpt api key to get the response from them. If you only work on UI and front end, you might not need this.
 
+*   Please add your contributions with meaningful change message to the change log below
+
 *   Need help setting up: contact me at skverma@ncsu.edu
 
 ## Steps to Run Application
@@ -187,8 +189,8 @@ MONGODB_ACCESSCODES = MONGODB_ACCESSCODES
 | 2024/10/22 | Amrita Visalam | CE Warning Banner for users                            |
 | 2024/10/22 | Deepak | Configurable suggestions for landing page                          |
 | 2024/10/23 | Sanjit Verma | Bug and UI Fixes, Renames Chatbot and Deployed new release                          |
-
-
+| 2024/10/23 | Sanjit Verma & Deepak | New Sidebar modification + styling                         |
+| 2024/10/23 | Amrita + Dinesh | CE Chatbot Bug fixes                      |
 
 
 

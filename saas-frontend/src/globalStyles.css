@@ -969,6 +969,7 @@
   border-radius: 10px;
   margin-bottom: 8px;
   max-width: 70%;
+  word-wrap: break-word;
 }
 
 .message-CE {
@@ -1034,6 +1035,7 @@
   line-height: 1.5;
   color: white;
   border-radius: 10px;
+  word-wrap: break-word;
 }
 
 .message-CE.user .text {
@@ -1164,6 +1166,7 @@ li.deleting {
 .chat-title-char {
   display: inline-block;
   opacity: 0;
+  color: lightgray;
   transform: translateY(-5px);
   animation: typing 0.5s forwards;
   animation-delay: var(--delay); 
@@ -1793,22 +1796,6 @@ li.deleting {
   border: 0.2px solid white;
 }
 
-.chat-item-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-}
-
-/* Chat Title Styling */
-.chat-title {
-    flex: 1; /* Allows the title to take up remaining space */
-    margin-right: 10px; /* Space between title and options button */
-    word-wrap: break-word; /* Allows text to wrap to next line */
-    white-space: pre-wrap; /* Preserves whitespace and allows wrapping */
-    overflow: hidden;
-}
-
 /* Options Button Styling */
 .options-button {
     flex-shrink: 0; /* Prevents the button from shrinking */
@@ -1841,6 +1828,10 @@ li.deleting {
   background-color: #212326; /* Matching hover color */
 }
 
+.chat-item:hover .options-button {
+  display: block;
+}
+
 .chat-item.selected {
   background-color: #212326; /* Matching selected color */
 }
@@ -1856,21 +1847,29 @@ li.deleting {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  width: 100%;
+  padding: 4px 15px;
+}
+
+.chat-item:hover .chat-item-content {
   width: 90%;
-  padding: 8px 15px;
+  padding: 2.5px 15px;
 }
 
 /* Chat Title Styling */
 .chat-title {
-  flex: 1; /* Takes up remaining horizontal space */
-  margin-right: 16px; /* Space between title and options button */
-  word-wrap: break-word; /* Allows text to wrap to next line */
-  white-space: pre-wrap; /* Preserves whitespace and allows wrapping */
-  overflow: hidden; /* Hides overflowing text */
-  color: white; /* Text color */
+  display: inline-block; /* Allows the title to take up remaining space */
+  white-space: nowrap; /* Forces text to stay on one line */
+  overflow: hidden; /* Hides overflowed text */
+  text-overflow: clip; /* Adds ellipsis (…) for overflowed text */
   font-family: 'Mona'; /* Font family */
-  font-size: 15px; /* Font size */
+  font-size: 13.5px; /* Font size */
   max-width: calc(100% - 30px); /* Prevents overlap with button */
+  padding: 10px 0;
+  background: linear-gradient(to right, lightgray 90%, rgba(211, 211, 211, 0) 100%);
+  -webkit-background-clip: text; /* For WebKit browsers */
+  -moz-background-clip: text; /* For Firefox */
+  color: rgb(167, 165, 163);
 }
 
 /* Options Button Styling */
@@ -1884,6 +1883,8 @@ li.deleting {
   align-items: center;
   justify-content: center;
   color: white; /* Icon color */
+  display: none;
+  /* margin-left: 16px; */
 }
 
 .options-button:hover {
@@ -1974,7 +1975,7 @@ li.deleting {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  background: rgba(0, 0, 0, 0.7); /* Semi-transparent background */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1985,17 +1986,18 @@ li.deleting {
 .modal-content {
   background: #1e1e1e; /* Dark background matching chat UI */
   padding: 20px;
-  border-radius: 8px;
+  border-radius: 30px;
   width: 90%;
   max-width: 400px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px rgba(155, 48, 48, 0.1);
   color: #ffffff; /* White text */
   text-align: center;
+  font-family: 'Mona';
 }
 
 /* Modal Buttons */
 .modal-buttons {
-  margin-top: 20px;
+  margin-top: 50px;
   display: flex;
   justify-content: space-around;
 }
@@ -2007,6 +2009,7 @@ li.deleting {
   border-radius: 4px;
   cursor: pointer;
   font-size: 16px;
+  font-family: 'Mona';
 }
 
 .confirm-button {
@@ -2030,16 +2033,26 @@ li.deleting {
 
 .edit-chat-title-input {
   width: 100%;
-  padding: 4px 8px;
-  font-size: 14px;
+  font-size: 13.5px;
   border: 1px solid #ccc;
+  background-color: rgb(12, 12, 12);
+  color: #ccc;
   border-radius: 4px;
   outline: none;
+  padding: 4px 4px;
+  margin-right: 60px;
+  font-family: 'Mona';
+
+}
+
+.chat-item:hover .edit-chat-title-input {
+  margin-right: 0px;
+  padding: 4px 4px;
 }
 
 .edit-chat-title-input:focus {
   border-color: #007bff;
-  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+  box-shadow: 0 0 0 2px #007bff40;
 }
 
 .session-warning {

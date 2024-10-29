@@ -43,14 +43,17 @@ client = MongoClient(MONGODB_URI)
 db = client[MONGODB_DB]
 user_collection = db[MONGODB_TEMPUSER]
 eval_bp = Blueprint('courseEvaluation', __name__)
-CORS(eval_bp, resources={r"/*": {"origins": "http://localhost:3000"}})
+CORS(eval_bp, resources={r"/*": {"origins": "*"}})
+
+
 sessions = {}
 
 # Global variables
-ALLOWED_EXTENSIONS = {'csv'}
+ALLOWED_EXTENSIONS = {'csv','xlsx'}
 ALLOWED_MIME_TYPES = {
     'text/csv',
-    #'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    'application/vnd.ms-excel',
 }
 
 class Document:
@@ -82,6 +85,13 @@ def upload_file():
     session_id = request.form.get('session_id')
     file = request.files.get('file')
 
+    if request.method == 'OPTIONS':
+        return Response(status=200, headers={
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'POST, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type'
+        })
+    
     if not session_id:
         return jsonify({"error": "Session ID is required"}), 400
     if not file:
@@ -100,6 +110,7 @@ def upload_file():
 
     if not documents:
         return jsonify({"error": "No documents were processed"}), 500
+    #print(documents)
 
     generator = GenerateEvaluation()
     success = generator.generate_embeddings(session_id, documents)

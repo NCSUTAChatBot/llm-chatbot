@@ -45,7 +45,7 @@ Session(app)
 
 # CORS(app, supports_credentials=True, resources={r"/ask": {"origins": ["192.168.50.58"]}})
 # Enable Cross-Origin Resource Sharing (CORS) for all domains on all routes. This allows AJAX requests from other domains.
-CORS(app) 
+CORS(app, resources={r"/*": {"origins": "*"}}) 
 
 JWTManager(app)
 
