@@ -1853,7 +1853,7 @@ li.deleting {
 
 .chat-item:hover .chat-item-content {
   width: 90%;
-  padding: 3px 15px;
+  padding: 2.5px 15px;
 }
 
 /* Chat Title Styling */
@@ -1863,13 +1863,13 @@ li.deleting {
   overflow: hidden; /* Hides overflowed text */
   text-overflow: clip; /* Adds ellipsis (…) for overflowed text */
   font-family: 'Mona'; /* Font family */
-  font-size: 13px; /* Font size */
+  font-size: 13.5px; /* Font size */
   max-width: calc(100% - 30px); /* Prevents overlap with button */
   padding: 10px 0;
   background: linear-gradient(to right, lightgray 90%, rgba(211, 211, 211, 0) 100%);
   -webkit-background-clip: text; /* For WebKit browsers */
   -moz-background-clip: text; /* For Firefox */
-  color: transparent;
+  color: rgb(167, 165, 163);
 }
 
 /* Options Button Styling */
@@ -1975,7 +1975,7 @@ li.deleting {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  background: rgba(0, 0, 0, 0.7); /* Semi-transparent background */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1986,17 +1986,18 @@ li.deleting {
 .modal-content {
   background: #1e1e1e; /* Dark background matching chat UI */
   padding: 20px;
-  border-radius: 8px;
+  border-radius: 30px;
   width: 90%;
   max-width: 400px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px rgba(155, 48, 48, 0.1);
   color: #ffffff; /* White text */
   text-align: center;
+  font-family: 'Mona';
 }
 
 /* Modal Buttons */
 .modal-buttons {
-  margin-top: 20px;
+  margin-top: 50px;
   display: flex;
   justify-content: space-around;
 }
@@ -2008,6 +2009,7 @@ li.deleting {
   border-radius: 4px;
   cursor: pointer;
   font-size: 16px;
+  font-family: 'Mona';
 }
 
 .confirm-button {
@@ -2031,7 +2033,7 @@ li.deleting {
 
 .edit-chat-title-input {
   width: 100%;
-  font-size: 14px;
+  font-size: 13.5px;
   border: 1px solid #ccc;
   background-color: rgb(12, 12, 12);
   color: #ccc;
@@ -2039,6 +2041,8 @@ li.deleting {
   outline: none;
   padding: 4px 4px;
   margin-right: 60px;
+  font-family: 'Mona';
+
 }
 
 .chat-item:hover .edit-chat-title-input {
