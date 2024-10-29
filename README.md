@@ -10,6 +10,8 @@
 
 *   One more thing, you may need an openai gpt api key to get the response from them. If you only work on UI and front end, you might not need this.
 
+*   Please add your contributions with meaningful change message to the change log below
+
 *   Need help setting up: contact me at skverma@ncsu.edu
 
 ## Steps to Run Application
