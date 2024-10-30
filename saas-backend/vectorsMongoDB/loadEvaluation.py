@@ -18,11 +18,11 @@ class LoadEvaluation:
         self.chunk_overlap = chunk_overlap
         self.text_splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
 
-    def load_from_stream(self, file_stream, file_type):
+    def load_from_stream(self, file_stream, file_type, encoding='utf-8'):
         if file_type == 'pdf':
             return self.extract_text_from_pdf(file_stream)
         elif file_type == 'csv':
-            return self.load_csv(file_stream)
+            return self.load_csv(file_stream, encoding=encoding)
         elif file_type == 'xlsx':
             return self.load_xlsx(file_stream)
         else:
@@ -46,8 +46,12 @@ class LoadEvaluation:
         table_texts = ['\n'.join(['\t'.join(str(cell) if cell is not None else '' for cell in row) for row in table]) for table in tables]
         return text + '\n\n' + '\n\n'.join(table_texts)
 
-    def load_csv(self, file_stream):
-        df = pd.read_csv(file_stream)
+    def load_csv(self, file_stream, encoding='utf-8'):
+        try:
+            df = pd.read_csv(file_stream, encoding=encoding)
+        except UnicodeDecodeError as e:
+            tqdm.write(f"UnicodeDecodeError: {e}")
+            raise e
         return self._chunk_dataframe(df, "uploaded.csv")
 
     def load_xlsx(self, file_stream):
