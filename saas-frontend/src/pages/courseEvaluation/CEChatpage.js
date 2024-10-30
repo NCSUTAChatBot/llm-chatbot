@@ -88,6 +88,7 @@ const ChatPage = () => {
   };
 
   const handleFileChange = (event) => {
+    event.preventDefault();
     const file = event.target.files[0];
     if (file) {
       if (file.size > MAX_FILE_SIZE) {
@@ -154,7 +155,6 @@ const ChatPage = () => {
       const response = await fetch(`${apiUrl}/courseEvaluation/upload`, {
         method: "POST",
         body: formData,
-        credentials: "include",
       });
 
       console.log("Response status:", response.status);
@@ -777,7 +777,10 @@ const ChatPage = () => {
             <button
               className="upload-button"
               title="Upload Eval"
-              onClick={() => document.getElementById("file-upload").click()}
+              onClick={(e) => {
+                e.preventDefault();
+                document.getElementById("file-upload").click()
+              }}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
