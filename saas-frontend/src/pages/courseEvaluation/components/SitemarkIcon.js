@@ -7,7 +7,7 @@ export default function SitemarkIcon() {
   return (
     <div>
       <div style={{color: 'white', fontFamily: 'Mona', fontSize: '20px', marginBottom: '5px'}}> CommentSense Course Evaluation </div>
-      <div style={{color: 'white', fontFamily: 'Mona', fontSize: '14px'}}>version 2.0.1 </div>
+      <div style={{color: 'white', fontFamily: 'Mona', fontSize: '14px'}}>version 2.0.2 </div>
     </div>
       
   );
