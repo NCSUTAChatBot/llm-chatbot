@@ -30,6 +30,7 @@ import markdown2
 import io
 from werkzeug.utils import secure_filename
 import mimetypes
+import chardet
 
 # Load environment variables
 load_dotenv()
@@ -49,7 +50,7 @@ CORS(eval_bp, resources={r"/*": {"origins": "*"}})
 sessions = {}
 
 # Global variables
-ALLOWED_EXTENSIONS = {'csv','xlsx'}
+ALLOWED_EXTENSIONS = {'csv', 'xls'}
 ALLOWED_MIME_TYPES = {
     'text/csv',
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
@@ -89,7 +90,7 @@ def upload_file():
         return Response(status=200, headers={
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Methods': 'POST, OPTIONS',
-            'Access-Control-Allow-Headers': 'Content-Type'
+            'Access-Control-Allow-Headers': '*'
         })
     
     if not session_id:
@@ -104,13 +105,20 @@ def upload_file():
     
     file_type = filename.rsplit('.', 1)[-1].lower()
 
+    # Detect encoding
+    file.stream.seek(0)  # Ensure the stream is at the start
+    raw_data = file.stream.read(10000)  # Read a portion of the file to detect encoding
+    result = chardet.detect(raw_data)
+    encoding = result['encoding'] if result['encoding'] else 'utf-8'
+    file.stream.seek(0)  # Reset stream to the beginning after reading
+    
+    # Load documents using detected encoding
     loader = LoadEvaluation()
     with file.stream:
-        documents = loader.load_from_stream(file.stream, file_type)
+        documents = loader.load_from_stream(file.stream, file_type, encoding=encoding)
 
     if not documents:
         return jsonify({"error": "No documents were processed"}), 500
-    #print(documents)
 
     generator = GenerateEvaluation()
     success = generator.generate_embeddings(session_id, documents)
