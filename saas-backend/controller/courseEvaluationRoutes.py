@@ -50,7 +50,7 @@ CORS(eval_bp, resources={r"/*": {"origins": "*"}})
 sessions = {}
 
 # Global variables
-ALLOWED_EXTENSIONS = {'csv','xlsx'}
+ALLOWED_EXTENSIONS = {'csv', 'xls'}
 ALLOWED_MIME_TYPES = {
     'text/csv',
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',

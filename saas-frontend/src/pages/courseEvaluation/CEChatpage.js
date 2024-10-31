@@ -95,9 +95,9 @@ const ChatPage = () => {
         alert("File is too large. Maximum size allowed is 10 MB.");
         return;
       }
-      const allowedExtensions = /(\.csv|\.xlsx)$/i;
+      const allowedExtensions = /(\.csv|\.xls)$/i;
       if (!allowedExtensions.exec(file.name)) {
-        alert("Invalid file type. Only .csv and .xlsx files are allowed.");
+        alert("Invalid file type. Only .csv and .xls files are allowed.");
         return;
       }
 
@@ -144,7 +144,7 @@ const ChatPage = () => {
 
     const newFile = {
       name: file.name,
-      type: file.type.includes("spreadsheet") ? "xlsx" : "csv",
+      type: file.name.split(".").pop(),
       progress: 0,
     };
     setUploadingFiles((prevFiles) => [...prevFiles, newFile]);
@@ -595,7 +595,7 @@ const ChatPage = () => {
               Uploaded Course Evaluations Appear here
             </span>{" "}
             <br />
-            .csv and .xlsx files are supported
+            .csv and .xls files are supported
           </p>
         </div>
       </aside>
@@ -772,7 +772,7 @@ const ChatPage = () => {
               id="file-upload"
               style={{ display: "none" }}
               onChange={handleFileChange}
-              accept=".csv, .xlsx"
+              accept=".csv, .xls"
             />
             <button
               className="upload-button"
