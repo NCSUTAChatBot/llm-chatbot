@@ -100,9 +100,11 @@ const ChatPage = () => {
         alert("Invalid file type. Only .csv and .xls files are allowed.");
         return;
       }
-
+  
       setFile(file);
       handleFileUpload(file);
+
+      event.target.value = null;
     }
   };
 
