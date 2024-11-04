@@ -47,7 +47,7 @@ eval_bp = Blueprint('courseEvaluation', __name__)
 CORS(eval_bp, resources={r"/*": {"origins": "*"}})
 
 
-sessions = {}
+# sessions = {}
 
 # Global variables
 ALLOWED_EXTENSIONS = {'csv', 'xls'}
@@ -74,7 +74,7 @@ def start_session():
     }
     user_collection.insert_one(user)
     
-    sessions[session_id] = {'vector_store': None}  
+    # sessions[session_id] = {'vector_store': None}  
     return jsonify({'session_id': session_id})
 
 def allowed_file(filename, mimetype):
@@ -145,7 +145,8 @@ def ask():
     if not session_id:
         return jsonify({"error": "Session ID is required"}), 400
 
-    session_data = sessions.get(session_id)
+    session_data = user_collection.find_one({'session_id': session_id})
+
     if not session_data:
         return jsonify({"error": "Session not found or has expired"}), 404
     
