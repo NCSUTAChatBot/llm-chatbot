@@ -191,6 +191,7 @@ MONGODB_ACCESSCODES = MONGODB_ACCESSCODES
 | 2024/10/23 | Sanjit Verma | Bug and UI Fixes, Renames Chatbot and Deployed new release                          |
 | 2024/10/23 | Sanjit Verma & Deepak | New Sidebar modification + styling                         |
 | 2024/10/23 | Amrita + Dinesh | CE Chatbot Bug fixes                      |
+| 2024/10/23 | Sanjit Verma | Setup Github Actions Automatic Deployment Pipeline                    |
 
 
 
