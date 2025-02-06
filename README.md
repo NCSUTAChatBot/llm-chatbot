@@ -63,6 +63,9 @@ REACT_APP_CENAVBAR_HEADER="Course Evaluation LLM"
 REACT_APP_CECHAT_WELCOME="Hello, "
 REACT_APP_CECHAT_WELCOME_TEXT="Please upload your course evaluation."
 
+# COURSE ENVIRONMENT
+REACT_APP_COURSE_NUMBER="CSC 517"
+REACT_APP_COURSE_TITLE="Object-Oriented Design and Development"
 
 ```
 3.  Install the packages for the frontend.
@@ -191,7 +194,8 @@ MONGODB_ACCESSCODES = MONGODB_ACCESSCODES
 | 2024/10/23 | Sanjit Verma | Bug and UI Fixes, Renames Chatbot and Deployed new release                          |
 | 2024/10/23 | Sanjit Verma & Deepak | New Sidebar modification + styling                         |
 | 2024/10/23 | Amrita + Dinesh | CE Chatbot Bug fixes                      |
-| 2024/10/23 | Sanjit Verma | Setup Github Actions Automatic Deployment Pipeline                    |
+| 2024/1/30 | Sanjit Verma | Setup Github Actions Automatic Deployment Pipeline                    |
+| 2024/2/6 | Sanjit Verma | Added UI display for course details and course number                    |
 
 
 
