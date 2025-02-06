@@ -11,11 +11,7 @@ import AppAppBar from './components/AppAppBar';
 import SimpleFooter from './components/SimpleFooter';
 
 function ForgotPassword() {
-    const NAVBAR_HEADER = process.env.REACT_APP_NAVBAR_HEADER;
-    const BACKGROUND_IMAGE_URL = process.env.REACT_APP_BACKGROUND_IMAGE_URL;
     const apiUrl = process.env.REACT_APP_API_URL;
-
-
     const [email, setEmail] = useState('');
     const [message, setMessage] = useState('');
     const [isError, setIsError] = useState(false);
