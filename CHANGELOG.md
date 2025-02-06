@@ -43,4 +43,4 @@
 | 2024/10/23 | Sanjit Verma & Deepak | New Sidebar modification + styling                         |
 | 2024/10/23 | Amrita + Dinesh | CE Chatbot Bug fixes                      |
 | 2024/10/23 | Sanjit Verma | Setup Github Actions Automatic Deployment Pipeline                    |
-| 2024/2/6 | Sanjit Verma | Added UI display for course details and course number                    |
+| 2024/2/6 | Sanjit Verma | Added UI display for course details and course number, updated UI for logout/help dropdowns, updated UI for input field                    |
