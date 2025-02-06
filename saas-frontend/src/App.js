@@ -12,6 +12,8 @@ import NotFound from './pages/notFound.js';
 
 import './fonts/Arimo-Variable.ttf';
 import './fonts/Mona-Sans.woff2';
+import './fonts/Roboto-Regular.ttf';
+
 function App() {
   return (
     <Routes>
