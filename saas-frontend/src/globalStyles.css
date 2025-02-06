@@ -946,8 +946,10 @@
 
 /* Styling for the chat input field for the Chat page */
 .input-field {
-  width: 30%;
-  min-height: 64px;;
+  width: 700px; /* Default size */
+  min-width: 700px;
+  max-width: 700px;
+  min-height: 64px;
   max-height: 8em;
   overflow-y: auto;
   resize: none;
@@ -961,6 +963,16 @@
   border: none;
   line-height: 1.8;
 }
+
+/* Make input field smaller on smaller screens */
+@media (max-width: 1050px) {
+  .input-field {
+    width: 90%; 
+    min-width: unset; 
+    max-width: 100%; 
+  }
+}
+
 
 
 
