@@ -44,6 +44,15 @@ langfuse_handler.auth_check()
 if db_name is None or collection_name is None:
     raise ValueError("Database name or collection name is not set.")
 
+# Determine course name based on database
+if db_name == "chatbot506":
+    course = "CSC 506 Architecture of Parallel Computers"
+elif db_name == "chatbot":
+    course = "CSC 517 Object-Oriented Design and Development"
+else:
+    course_name = "CSC 517 Object-Oriented Design and Development"
+    logger.warning(f"Unexpected database name '{db_name}'. Defaulting to CSC 517.")
+
 db = client[db_name]
 collection = db[collection_name]
 
@@ -63,28 +72,27 @@ retriever = vector_search.as_retriever(
     search_type="similarity",
     search_kwargs={"k": 10, "score_threshold": 0.8}
 )
-
 # Define the template for the language model
-template = """
+template = f"""
 Use the following pieces of context to answer the question at the end.
 If asked a question not in the context, previous conversation, or additional context, do not answer it and say I'm sorry, I do not know the answer to that question.
 If the answer is not in the context, previous conversation, or additional context, just say that you don't know, don't try to make up an answer.
-If the user asks what you can help with, say you are a Teaching Assistant chatbot for CSC 517 Object-Oriented Design and Development and can help with questions related to the course material.
+If the user asks what you can help with, say you are a Teaching Assistant chatbot for {course} and can help with questions related to the course material.
 If the user greets you, say hello back. If they provide their name remeber the name.
 If asked to provide a code example, provide a code snippet that is relevant to the question from the textbook.
 Please provide a detailed explanation and if applicable, give examples or historical context.
 If a homework or practice problem question is asked, don't give the answer or solve it directly, instead help the student reach the answer.
 
 Context:
-{context}
+{{context}}
 
 Previous conversation:
-{history}
+{{history}}
 
 Additional context:
-Today is {date}
+Today is {{date}}
 
-Question: {question}
+Question: {{question}}
 
 Answer:
 """
