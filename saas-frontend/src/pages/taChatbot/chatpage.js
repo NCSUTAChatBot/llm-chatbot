@@ -6,11 +6,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../../globalStyles.css';
-import Markdown from 'react-markdown' 
+import { ModelSelector } from "./components/modelSelector";
+import Markdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
-
+import { ChevronDown, LayoutGrid, LogOut, HelpCircle } from "lucide-react";
 const ChatPage = () => {
-
 
     // ENV VARIABLES
     const NAVBAR_HEADER = process.env.REACT_APP_NAVBAR_HEADER;
@@ -55,11 +55,12 @@ const ChatPage = () => {
     const [confirmDelete, setConfirmDelete] = useState(null);
 
     const [editingSessionKey, setEditingSessionKey] = useState(null);
-    const [editedTitle, setEditedTitle] = useState(''); 
+    const [editedTitle, setEditedTitle] = useState('');
     const dropdownRef = useRef(null);
 
     const editInputRef = useRef(null);
-    
+    const helpDropdownRef = useRef(null);
+
     const [suggestedQuestions, setSuggestedQuestions] = useState([]);
     const [firstGuess, setFirstGuess] = useState('');
 
@@ -68,38 +69,38 @@ const ChatPage = () => {
     }, []);
 
     const fetchSuggestions = async () => {
-    try {
-        const response = await fetch(`${apiUrl}/chat/suggestions`);  // Fetch data from the API
-        if (!response.ok) {
-            throw new Error('Error in fetching suggestions');
-        }
-        const data = await response.json();
-        setSuggestedQuestions(data);
+        try {
+            const response = await fetch(`${apiUrl}/chat/suggestions`);  // Fetch data from the API
+            if (!response.ok) {
+                throw new Error('Error in fetching suggestions');
+            }
+            const data = await response.json();
+            setSuggestedQuestions(data);
         } catch (error) {
             console.error('Error fetching suggestions:', error);
         }
     };
-    
+
     const suggestionContainerRef = useRef(null);
 
     useEffect(() => {
         const container = suggestionContainerRef.current;
         if (container) {
-          const handleWheel = (e) => {
-            if (e.deltaY !== 0) {
-              e.preventDefault();
-              container.scrollLeft += e.deltaY;
-            }
-          };
-          container.addEventListener('wheel', handleWheel, { passive: false });
-          return () => container.removeEventListener('wheel', handleWheel);
+            const handleWheel = (e) => {
+                if (e.deltaY !== 0) {
+                    e.preventDefault();
+                    container.scrollLeft += e.deltaY;
+                }
+            };
+            container.addEventListener('wheel', handleWheel, { passive: false });
+            return () => container.removeEventListener('wheel', handleWheel);
         }
-      }, []);
+    }, []);
 
     const onSuggestedQuestionClick = (e, question) => {
         handleSubmit(e, question);
     };
-    
+
 
     // This function is called when the user clicks on the download as pdf button
     const handleDownloadChat = async () => {
@@ -144,7 +145,7 @@ const ChatPage = () => {
             setIsStreaming(false);
             setAbortController(null);
         }
-    
+
         setCurrentSessionKey(sessionKey);
         try {
             const response = await fetch(`${apiUrl}/chat/get_chat_by_session`, {
@@ -152,7 +153,7 @@ const ChatPage = () => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email: userInfo.email, sessionKey: sessionKey })
             });
-    
+
             if (response.ok) {
                 const data = await response.json();
                 setMessages(data.messages);
@@ -163,14 +164,24 @@ const ChatPage = () => {
             console.error('Error fetching chat messages:', error);
         }
     };
-    
-    
 
     // This function is called when the user clicks on the Feedback button
     const handleFeedback = () => {
         window.open(FEEDBACK_URL);
     };
 
+    useEffect(() => {
+        function handleClickOutside(event) {
+            if (helpDropdownRef.current && !helpDropdownRef.current.contains(event.target)) {
+                setShowDropdown2(false);
+            }
+        }
+    
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
 
     useEffect(() => {
         return () => {
@@ -203,17 +214,17 @@ const ChatPage = () => {
             setIsStreaming(false);
             setAbortController(null);
         }
-    
+
         try {
             setCurrentSessionKey('');
             setMessages([]);
-    
+
             const sessionResponse = await fetch(`${apiUrl}/chat/createSession`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email: userInfo.email })
             });
-    
+
             if (sessionResponse.ok) {
                 const sessionData = await sessionResponse.json();
                 setCurrentSessionKey(sessionData.sessionKey);  // Set the new session key
@@ -244,6 +255,22 @@ const ChatPage = () => {
             console.error('Error clearing chat history:', error);
         }
     };
+
+
+
+    useEffect(() => {
+        function handleClickOutside(e) {
+            if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+                setShowDropdown(false);  // Close the dropdown if clicked outside
+            }
+        }
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
+
 
     // This function is called when the user clicks on the delete button for a chat session
     const performDeleteChat = async (sessionKey) => {
@@ -289,7 +316,7 @@ const ChatPage = () => {
     };
 
 
-    
+
 
     const handleRenameChat = (session) => {
         setEditingSessionKey(session.sessionKey);
@@ -321,37 +348,37 @@ const ChatPage = () => {
 
     // Function to save the edited title
     const saveEditedTitle = async (sessionKey) => {
-    if (editedTitle.trim() === '') {
-        alert("Chat title cannot be empty.");
-        return;
-    }
-    try {
-        await updateChatTitle(userInfo.email, sessionKey, editedTitle.trim());
-        setSavedSessionKeys(prevKeys => prevKeys.map(s => 
-            s.sessionKey === sessionKey ? { ...s, chatTitle: editedTitle.trim() } : s
-        ));
-        setEditingSessionKey(null);
-        setEditedTitle('');
-    } catch (error) {
-        console.error("Error renaming chat title:", error);
-        alert("Failed to rename chat title. Please try again.");
-    }
+        if (editedTitle.trim() === '') {
+            alert("Chat title cannot be empty.");
+            return;
+        }
+        try {
+            await updateChatTitle(userInfo.email, sessionKey, editedTitle.trim());
+            setSavedSessionKeys(prevKeys => prevKeys.map(s =>
+                s.sessionKey === sessionKey ? { ...s, chatTitle: editedTitle.trim() } : s
+            ));
+            setEditingSessionKey(null);
+            setEditedTitle('');
+        } catch (error) {
+            console.error("Error renaming chat title:", error);
+            alert("Failed to rename chat title. Please try again.");
+        }
     };
 
     // Function to handle input blur
     const handleInputBlur = (sessionKey) => {
-    saveEditedTitle(sessionKey);
+        saveEditedTitle(sessionKey);
     };
 
-// Function to handle key down in input
+    // Function to handle key down in input
     const handleInputKeyDown = (e, sessionKey) => {
-    if (e.key === 'Enter') {
-        e.preventDefault();
-        saveEditedTitle(sessionKey);
-    } else if (e.key === 'Escape') {
-        setEditingSessionKey(null);
-        setEditedTitle('');
-    }
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            saveEditedTitle(sessionKey);
+        } else if (e.key === 'Escape') {
+            setEditingSessionKey(null);
+            setEditedTitle('');
+        }
     };
 
 
@@ -376,13 +403,13 @@ const ChatPage = () => {
         let response;
         let payload;
 
-        setIsStreaming(true);
+            setIsStreaming(true);
 
-        const controller = new AbortController();
-        setAbortController(controller);
+            const controller = new AbortController();
+            setAbortController(controller);
 
-        // Capture the current session key
-        const sessionKeyAtStart = currentSessionKey;
+            // Capture the current session key
+            const sessionKeyAtStart = currentSessionKey;
 
         // If no session key is set, assume creating a new session
         if (!currentSessionKey) {
@@ -400,11 +427,11 @@ const ChatPage = () => {
             });
         }
 
-        if (response.ok) {
-            // Handle new session creation
-            if (!currentSessionKey) {
-                const data = await response.json();
-                setCurrentSessionKey(data.sessionKey); // Set the new session key
+            if (response.ok) {
+                // Handle new session creation
+                if (!currentSessionKey) {
+                    const data = await response.json();
+                    setCurrentSessionKey(data.sessionKey); // Set the new session key
 
                 // Re-fetch the ask endpoint with the new sessionKey for streaming
                 response = await fetch(`${apiUrl}/chat/ask`, {
@@ -413,167 +440,94 @@ const ChatPage = () => {
                     body: JSON.stringify({ email, sessionKey: data.sessionKey, question: _question, firstGuess: _firstGuess })
                 });
 
-                // Add the new session to the saved sessions list with the chat title
-                setSavedSessionKeys(prevKeys => [
-                    { sessionKey: data.sessionKey, chatTitle: _question },
-                    ...prevKeys
-                ]);
-            }
+                    // Add the new session to the saved sessions list with the chat title
+                    setSavedSessionKeys(prevKeys => [
+                        { sessionKey: data.sessionKey, chatTitle: _question },
+                        ...prevKeys
+                    ]);
+                }
 
-            // Handle streaming responses
-            if (response.body) {
-                const reader = response.body.getReader();
-                const decoder = new TextDecoder();
-                let aggregatedText = ''; // Buffer for the streamed text
+                // Handle streaming responses
+                if (response.body) {
+                    const reader = response.body.getReader();
+                    const decoder = new TextDecoder();
+                    let aggregatedText = ''; // Buffer for the streamed text
 
-                while (true) {
-                    const { done, value } = await reader.read();
-                    if (done) break;
-                    if (controller.signal.aborted) break;
+                    while (true) {
+                        const { done, value } = await reader.read();
+                        if (done) break;
+                        if (controller.signal.aborted) break;
 
-                    const chunk = decoder.decode(value, { stream: true });
-                    aggregatedText += chunk;
+                        const chunk = decoder.decode(value, { stream: true });
+                        aggregatedText += chunk;
 
-                    // Check if the session key hasn't changed
-                    if (sessionKeyAtStart !== currentSessionKey) {
-                        console.log('Session key changed, aborting stream.');
-                        controller.abort();
-                        break;
+                        // Check if the session key hasn't changed
+                        if (sessionKeyAtStart !== currentSessionKey) {
+                            console.log('Session key changed, aborting stream.');
+                            controller.abort();
+                            break;
+                        }
+
+                        // Update messages without duplicating or adding unnecessary spaces
+                        setMessages(messages => {
+                            const lastMessage = messages[messages.length - 1];
+                            if (lastMessage && lastMessage.sender === 'bot') {
+                                lastMessage.text += chunk;
+                                return [...messages.slice(0, -1), lastMessage];
+                            } else {
+                                return [...messages, { text: chunk, sender: 'bot' }];
+                            }
+                        });
                     }
 
-                    // Update messages without duplicating or adding unnecessary spaces
-                    setMessages(messages => {
-                        const lastMessage = messages[messages.length - 1];
-                        if (lastMessage && lastMessage.sender === 'bot') {
-                            lastMessage.text += chunk;
-                            return [...messages.slice(0, -1), lastMessage];
+                    // Ensure the reader is closed
+                    reader.releaseLock();
+                }
+
+                // Update the session title in local state if necessary, based on session history
+                if (currentSessionKey) {
+                    setSavedSessionKeys(prevKeys => {
+                        const sessionIndex = prevKeys.findIndex(session => session.sessionKey === currentSessionKey);
+                        if (sessionIndex === -1) {
+                            // If the session is not found in the local state add it with the new title
+                            updateChatTitle(email, currentSessionKey, _question);
+                            return [{ sessionKey: currentSessionKey, chatTitle: _question }, ...prevKeys];
                         } else {
-                            return [...messages, { text: chunk, sender: 'bot' }];
+                            // If found, check if it's the first message or if the title is 'Untitled Chat'
+                            const updatedSessions = [...prevKeys];
+                            if (!updatedSessions[sessionIndex].chatTitle) {
+                                updatedSessions[sessionIndex].chatTitle = _question;
+                            }
+                            return updatedSessions;
                         }
                     });
                 }
-
-                // Ensure the reader is closed
-                reader.releaseLock();
+            } else {
+                throw new Error('Failed to submit message. Status: ' + response.status);
             }
-
-            // Update the session title in local state if necessary, based on session history
-            if (currentSessionKey) {
-                setSavedSessionKeys(prevKeys => {
-                    const sessionIndex = prevKeys.findIndex(session => session.sessionKey === currentSessionKey);
-                    if (sessionIndex === -1) {
-                        // If the session is not found in the local state add it with the new title
-                        updateChatTitle(email, currentSessionKey, _question);
-                        return [{ sessionKey: currentSessionKey, chatTitle: _question }, ...prevKeys];
-                    } else {
-                        // If found, check if it's the first message or if the title is 'Untitled Chat'
-                        const updatedSessions = [...prevKeys];
-                        if (!updatedSessions[sessionIndex].chatTitle) {
-                            updatedSessions[sessionIndex].chatTitle = _question;
-                        }
-                        return updatedSessions;
-                    }
-                });
+        } catch (error) {
+            if (error.name === 'AbortError') {
+                console.log('Fetch aborted');
+            } else {
+                console.error('Error submitting question:', error);
+                setMessages(prevMessages => prevMessages.slice(0, -1)); // Remove the last user message if there is an error
             }
-        } else {
-            throw new Error('Failed to submit message. Status: ' + response.status);
+        } finally {
+            // Enable the submit button again
+            setIsStreaming(false);
+            setAbortController(null);
         }
-    } catch (error) {
-        if (error.name === 'AbortError') {
-            console.log('Fetch aborted');
-        } else {
-            console.error('Error submitting question:', error);
-            setMessages(prevMessages => prevMessages.slice(0, -1)); // Remove the last user message if there is an error
-        }
-    } finally {
-        // Enable the submit button again
-        setIsStreaming(false);
-        setAbortController(null);
-    }
 
-    // messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-};
+        // messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    };
 
-        // GUEST MODE CODE
-    // const handleGuestSubmit = async (event) => {
-    //     event.preventDefault();
-    //     if (!question.trim()) return;
-    //     setIsLastMessageNew(true);
-
-    //     const userMessage = { text: question, sender: 'user' };
-    //     setMessages(prevMessages => [...prevMessages, userMessage]);
-    //     setQuestion('');
-    //     try {
-    //         let response;
-    //         let payload;
-    //         if (!currentSessionKey) {
-    //             response = await fetch(`${apiUrl}/chat/askGuest`, {
-    //                 method: 'POST',
-    //                 headers: { 'Content-Type': 'application/json' },
-    //                 body: JSON.stringify({ question: question })
-    //             });
-    //             if (response.ok) {
-    //                 const data = await response.json();
-    //                 setCurrentSessionKey(data.sessionKey);
-    //                 response = await fetch(`${apiUrl}/chat/askGuest`, {
-    //                     method: 'POST',
-    //                     headers: { 'Content-Type': 'application/json' },
-    //                     body: JSON.stringify({ sessionKey: data.sessionKey, question: question })
-    //                 });
-    //             }
-    //         } else {
-    //             payload = { sessionKey: currentSessionKey, question };
-    //             response = await fetch(`${apiUrl}/chat/askGuest`, {
-    //                 method: 'POST',
-    //                 headers: { 'Content-Type': 'application/json' },
-    //                 body: JSON.stringify(payload)
-    //             });
-    //         }
-    //         if (response.ok) {
-    //             if (response.body) {
-    //                 const reader = response.body.getReader();
-    //                 const decoder = new TextDecoder();
-    //                 let aggregatedText = '';
-
-    //                 while (true) {
-    //                     const { done, value } = await reader.read();
-    //                     if (done) break;
-
-    //                     const chunk = decoder.decode(value, { stream: true });
-    //                     aggregatedText += chunk;
-
-    //                     setMessages(messages => {
-    //                         const lastMessage = messages[messages.length - 1];
-    //                         if (lastMessage && lastMessage.sender === 'bot') {
-    //                             lastMessage.text += chunk;
-    //                             return [...messages.slice(0, -1), lastMessage];
-    //                         } else {
-    //                             return [...messages, { text: chunk, sender: 'bot' }];
-    //                         }
-    //                     });
-    //                 }
-    //                 reader.releaseLock();
-    //             }
-    //         } else {
-    //             throw new Error('Failed to submit message. Status: ' + response.status);
-    //         }
-    //     } catch (error) {
-    //         console.error('Error submitting question:', error);
-    //         setMessages(prevMessages => prevMessages.slice(0, -1));
-    //     } finally {
-    //         setIsLastMessageNew(false);
-    //     }
-
-    //     messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    // };
-
-    const handlePauseStream = async() => {
+    const handlePauseStream = async () => {
         console.log("pausing stream");
         if (abortController) {
             abortController.abort();
             setIsStreaming(false);
         }
-            // Get the last message from the messages state
+        // Get the last message from the messages state
         const lastMessage = messages[messages.length - 1];
 
         if (lastMessage && currentSessionKey) {
@@ -599,22 +553,22 @@ const ChatPage = () => {
             } catch (error) {
                 console.error('Error pausing stream:', error);
             }
-    }
+        }
     };
 
     useEffect(() => {
         const chatContainer = chatContainerRef.current;
-    
+
         const handleScroll = () => {
             if (!chatContainer) return;
             const { scrollTop, scrollHeight, clientHeight } = chatContainer;
             const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
-            
+
             // Adjust threshold as needed
-            const isAtBottom = distanceFromBottom < 60; 
-    
+            const isAtBottom = distanceFromBottom < 60;
+
             setIsAutoScroll(isAtBottom);
-    
+
             // Show or hide the scroll-to-top button
             const scrollToTopButton = document.querySelector('.scroll-to-top');
             if (scrollTop > 500) {
@@ -623,11 +577,11 @@ const ChatPage = () => {
                 scrollToTopButton.style.display = 'none';
             }
         };
-    
+
         if (chatContainer) {
             chatContainer.addEventListener('scroll', handleScroll);
         }
-    
+
         return () => {
             if (chatContainer) {
                 chatContainer.removeEventListener('scroll', handleScroll);
@@ -639,11 +593,11 @@ const ChatPage = () => {
         if (isAutoScroll && messageEndRef.current) {
             // Delay the scrolling to ensure the DOM has updated
             requestAnimationFrame(() => {
-                messageEndRef.current.scrollIntoView({ behavior: 'smooth' });
+                messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
             });
         }
     }, [messages, isAutoScroll]);
-    
+
     // useEffect(() => {
     //     if (messageEndRef.current) {
     //         messageEndRef.current.scrollIntoView({ behavior: 'smooth' });
@@ -793,7 +747,7 @@ const ChatPage = () => {
             setUserInfo(JSON.parse(storedUserInfo));
         }
         else { //REMOVE FOR GUEST MODE
-            navigate('/virtualTA/login'); 
+            navigate('/virtualTA/login');
         }
     }, [navigate]);
 
@@ -807,30 +761,31 @@ const ChatPage = () => {
         <div className='chat-page'>
             <div className="top-barchat">
                 <div className="title-chatpage">
-                    {NAVBAR_HEADER}
-                    <span className="title-chatpage-smallText">  {REACT_APP_LFOOTER}</span>
+                    <ModelSelector />
                 </div>
                 <div className="buttons">
 
-                    <div className="userInfo">
-                        <div className="userInfo" onClick={toggleDropdown}>
-                            Welcome, {userInfo ? userInfo.name : "Guest"}
-                            {showDropdown && (
-                                <div className='user-dropdown'>
-                                    {userInfo ? (
-                                        <>
-                                            <button type="submit" className="user-dropdown-button" onClick={handleLogout}>Logout</button>
-                                            <button className="user-dropdown-button" onClick={handleFeedback}>Leave Feedback</button>
-                                        </>
-                                    ) : (
-                                        <button type="submit" className="user-dropdown-button" onClick={() => navigate('/virtualTA')}>Home</button>
-                                    )}
+                    <div className={"container"} ref={dropdownRef}>
+                        <button className={"trigger"} onClick={toggleDropdown}>
+                            <span className="avatar">
+                                {userInfo?.name ? userInfo.name.charAt(0).toUpperCase() : 'G'}
+                            </span>
+                            <ChevronDown className={"chevron"} />
+                        </button>
+
+                        {showDropdown && (
+                            <div className={"dropdown"}>
+                                <div className={"menuItem"} onClick={handleFeedback}>
+                                    <LayoutGrid size={16} />
+                                    <span>Feedback</span>
+                                    {/* <span className={"beta"}>BETA</span> */}
                                 </div>
-                            )}
-                            <svg style={{ paddingLeft: "5" }} xmlns="http://www.w3.org/2000/svg" fill="none" width="16" height="16" viewBox="0 0 24 24" strokeWidth="3" stroke="white" className="size-6">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-                            </svg>
-                        </div>
+                                <div className={"menuItem"} onClick={handleLogout}>
+                                    <LogOut size={16} />
+                                    <span>Log out</span>
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                 </div>
@@ -852,7 +807,7 @@ const ChatPage = () => {
                     )}
 
                 </div>
-                <div className='sidebar' style={{"borderRadius": "0px"}}>
+                <div className='sidebar' style={{ "borderRadius": "0px" }}>
                     {savedSessionKeys.length === 0 && userInfo ? (
                         <div className="empty-message">
                             Saved Chats appear here
@@ -863,8 +818,8 @@ const ChatPage = () => {
                         </div>
                     ) : (
                         savedSessionKeys.map((session) => (
-                            <div 
-                                key={session.sessionKey} 
+                            <div
+                                key={session.sessionKey}
                                 className={`chat-item ${currentSessionKey === session.sessionKey ? 'selected' : ''} ${deletingSessionKey === session.sessionKey ? 'deleting' : ''}`}
                                 onClick={() => selectChat(session.sessionKey)}
                                 style={{ position: 'relative' }} // Ensure positioning for dropdown
@@ -885,13 +840,13 @@ const ChatPage = () => {
                                             />
                                         ) : (
                                             <span className="chat-title">
-                                                {currentSessionKey === session.sessionKey ? renderChatTitle(session.chatTitle + '\u00A0\u00A0\u00A0\u00A0') : session.chatTitle + '\u00A0\u00A0\u00A0\u00A0' }
+                                                {currentSessionKey === session.sessionKey ? renderChatTitle(session.chatTitle + '\u00A0\u00A0\u00A0\u00A0') : session.chatTitle + '\u00A0\u00A0\u00A0\u00A0'}
                                             </span>
                                         )}
-                                        
+
                                         {/* Three Dots Button */}
-                                        <button 
-                                            className="options-button" 
+                                        <button
+                                            className="options-button"
                                             onClick={(e) => {
                                                 e.stopPropagation(); // Prevent triggering selectChat
                                                 setActiveDropdown(activeDropdown === session.sessionKey ? null : session.sessionKey);
@@ -910,8 +865,8 @@ const ChatPage = () => {
                                     {/* Dropdown Menu */}
                                     {activeDropdown === session.sessionKey && (
                                         <div className="dropdown-container">
-                                            <button 
-                                                className="dropdown-item" 
+                                            <button
+                                                className="dropdown-item"
                                                 onClick={(e) => {
                                                     e.stopPropagation();
                                                     setActiveDropdown(null);
@@ -920,8 +875,8 @@ const ChatPage = () => {
                                             >
                                                 Delete
                                             </button>
-                                            <button 
-                                                className="dropdown-item" 
+                                            <button
+                                                className="dropdown-item"
                                                 onClick={(e) => {
                                                     e.stopPropagation();
                                                     setActiveDropdown(null);
@@ -937,7 +892,7 @@ const ChatPage = () => {
                         ))
                     )}
                 </div>
-                 {/* GUEST MODE CODE */}
+                {/* GUEST MODE CODE */}
                 {/* {(!userInfo || !userInfo.email) && (
                     <div className="guest-login">
                         <p className="login-message">
@@ -1004,25 +959,34 @@ const ChatPage = () => {
                             <path d="M12 13H36" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
                         </svg>
                     </button>
-                    <div className="more-info">
+                    <div className="help-container" ref={helpDropdownRef}>
+                        <button className="help-trigger" onClick={toggleDropdown2}>
+                            <HelpCircle className="help-icon" />
+                        </button>
+
                         {showDropdown2 && (
-                            <div className="more-info-dropdown">
-                                {userInfo ? (
-                                    <button className="moreinfo-dropdown-button">{userInfo.email}</button>
-                                ) : null}
-                                <button className="moreinfo-dropdown-button">Help & FAQ</button>
-                                <button className="moreinfo-dropdown-button">Release Notes</button>
+                            <div className="help-dropdown">
+                                {userInfo && (
+                                    <>
+                                        <div className="help-menu-item">
+                                            <span className="help-email">{userInfo.email}</span>
+                                        </div>
+                                        <div className="help-divider" />
+                                    </>
+                                )}
+
+                                <div className="help-menu-item">
+                                    <span>Help & FAQ</span>
+                                </div>
+
+                                <div className="help-menu-item">
+                                    <span>Release Notes</span>
+                                </div>
                             </div>
                         )}
-                        <div className="more-info-icon" onClick={toggleDropdown2}>
-                            <svg width="20" height="20" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M24 44C29.5228 44 34.5228 41.7614 38.1421 38.1421C41.7614 34.5228 44 29.5228 44 24C44 18.4772 41.7614 13.4772 38.1421 9.85786C34.5228 6.23858 29.5228 4 24 4C18.4772 4 13.4772 6.23858 9.85786 9.85786C6.23858 13.4772 4 18.4772 4 24C4 29.5228 6.23858 34.5228 9.85786 38.1421C13.4772 41.7614 18.4772 44 24 44Z" fill="none" stroke="#ffffff" stroke-width="2" stroke-linejoin="round" />
-                                <path d="M24 28.6248V24.6248C27.3137 24.6248 30 21.9385 30 18.6248C30 15.3111 27.3137 12.6248 24 12.6248C20.6863 12.6248 18 15.3111 18 18.6248" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
-                                <path fill-rule="evenodd" clip-rule="evenodd" d="M24 37.6248C25.3807 37.6248 26.5 36.5055 26.5 35.1248C26.5 33.7441 25.3807 32.6248 24 32.6248C22.6193 32.6248 21.5 33.7441 21.5 35.1248C21.5 36.5055 22.6193 37.6248 24 37.6248Z" fill="#ffffff" />
-                            </svg>
-                        </div>
                     </div>
-                    
+
+
                 </div>
                 <div className="input-row">
                     <textarea
@@ -1034,7 +998,7 @@ const ChatPage = () => {
                         value={question}
                         onChange={(e) => setQuestion(e.target.value)}
                         onKeyDown={(e) => {
-                            if (e.key === 'Enter'  && !e.shiftKey) {
+                            if (e.key === 'Enter' && !e.shiftKey) {
                                 e.preventDefault();
                                 handleSubmit(e, question,  !currentSessionKey ? firstGuess : '');
                             }

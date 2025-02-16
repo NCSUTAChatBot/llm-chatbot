@@ -30,6 +30,7 @@ import markdown2
 import io
 from werkzeug.utils import secure_filename
 import mimetypes
+import chardet
 
 # Load environment variables
 load_dotenv()
@@ -46,10 +47,10 @@ eval_bp = Blueprint('courseEvaluation', __name__)
 CORS(eval_bp, resources={r"/*": {"origins": "*"}})
 
 
-sessions = {}
+# sessions = {}
 
 # Global variables
-ALLOWED_EXTENSIONS = {'csv','xlsx'}
+ALLOWED_EXTENSIONS = {'csv', 'xls'}
 ALLOWED_MIME_TYPES = {
     'text/csv',
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
@@ -73,7 +74,7 @@ def start_session():
     }
     user_collection.insert_one(user)
     
-    sessions[session_id] = {'vector_store': None}  
+    # sessions[session_id] = {'vector_store': None}  
     return jsonify({'session_id': session_id})
 
 def allowed_file(filename, mimetype):
@@ -89,7 +90,7 @@ def upload_file():
         return Response(status=200, headers={
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Methods': 'POST, OPTIONS',
-            'Access-Control-Allow-Headers': 'Content-Type'
+            'Access-Control-Allow-Headers': '*'
         })
     
     if not session_id:
@@ -104,13 +105,20 @@ def upload_file():
     
     file_type = filename.rsplit('.', 1)[-1].lower()
 
+    # Detect encoding
+    file.stream.seek(0)  # Ensure the stream is at the start
+    raw_data = file.stream.read(10000)  # Read a portion of the file to detect encoding
+    result = chardet.detect(raw_data)
+    encoding = result['encoding'] if result['encoding'] else 'utf-8'
+    file.stream.seek(0)  # Reset stream to the beginning after reading
+    
+    # Load documents using detected encoding
     loader = LoadEvaluation()
     with file.stream:
-        documents = loader.load_from_stream(file.stream, file_type)
+        documents = loader.load_from_stream(file.stream, file_type, encoding=encoding)
 
     if not documents:
         return jsonify({"error": "No documents were processed"}), 500
-    #print(documents)
 
     generator = GenerateEvaluation()
     success = generator.generate_embeddings(session_id, documents)
@@ -137,7 +145,8 @@ def ask():
     if not session_id:
         return jsonify({"error": "Session ID is required"}), 400
 
-    session_data = sessions.get(session_id)
+    session_data = user_collection.find_one({'session_id': session_id})
+
     if not session_data:
         return jsonify({"error": "Session not found or has expired"}), 404
     
