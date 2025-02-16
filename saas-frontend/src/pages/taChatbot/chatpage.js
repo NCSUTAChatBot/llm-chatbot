@@ -360,9 +360,15 @@ const ChatPage = () => {
     const handleSubmit = async (event, _question,_firstGuess) => {
     event.preventDefault();
     if (!_question.trim()) return;
-    console.log("First")
+    const effectiveFirstGuess = !currentSessionKey ? _firstGuess : '';
     const email = userInfo.email;
-    const userMessage = { text: _question, sender: 'user' };
+    let userMessage;
+    if (effectiveFirstGuess===''){
+        userMessage = { text: _question, sender: 'user'  };
+    }
+    else{
+        userMessage = { text: _question, sender: 'user', first_guess: effectiveFirstGuess  };
+    }
     setMessages(prevMessages => [...prevMessages, userMessage]);
     setQuestion('');
     setFirstGuess('');
@@ -383,10 +389,10 @@ const ChatPage = () => {
             response = await fetch(`${apiUrl}/chat/ask`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: email, question: _question, firstGuess: _firstGuess, chatTitle: _question })
+                body: JSON.stringify({ email: email, question: _question, firstGuess: effectiveFirstGuess, chatTitle: _question })
             });
         } else {
-            payload = { email, sessionKey: currentSessionKey, question: _question, firstGuess: _firstGuess, history: messages.slice(-10) };
+            payload = { email, sessionKey: currentSessionKey, question: _question, firstGuess: effectiveFirstGuess, history: messages.slice(-10) };
             response = await fetch(`${apiUrl}/chat/ask`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -967,15 +973,30 @@ const ChatPage = () => {
                             </div>
                         </div>
                     ) : (
-                        messages.map((msg, index) => (
-                            <div key={index} className={`message ${msg.sender}`}>
-                                <div className="sender">{msg.sender === 'user' ? 'You' : 'Virtual TA'}</div>
-                                <div className="text zero-pad-markdown">
-                                    <Markdown remarkPlugins={[remarkGfm]} children={msg.text}/>
+                        messages.map((msg, index) => {
+                            const renderMessage = (sender, text, label) => (
+                                <div className={`message ${sender}`}>
+                                  <div className="sender">{label}</div>
+                                  <div className="text zero-pad-markdown">
+                                    <Markdown remarkPlugins={[remarkGfm]} children={text} />
+                                  </div>
                                 </div>
-                            </div>
-                        ))
-                    )}
+                              );
+                            
+                              return (
+                                <React.Fragment key={index}>
+                                  {/* User Message */}
+                                  {msg.sender === 'user' && renderMessage('user', msg.text, 'You')}
+                            
+                                  {/* First Guess (if it exists) */}
+                                  {msg.sender === 'user' && msg.first_guess && renderMessage('user', msg.first_guess, 'First Guess')}
+                            
+                                  {/* Bot Message */}
+                                  {msg.sender === 'bot' && renderMessage('bot', msg.text, 'Virtual TA')}
+                                </React.Fragment>
+                                );
+                          })
+                        )}
                     <div ref={messageEndRef} />
                     <button className="scroll-to-top" onClick={scrollToTop}>
                         <svg width="22px" height="22px" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: '22px', height: '22px', stroke: '#ffffff', strokeWidth: '4' }}>
@@ -1015,15 +1036,16 @@ const ChatPage = () => {
                         onKeyDown={(e) => {
                             if (e.key === 'Enter'  && !e.shiftKey) {
                                 e.preventDefault();
-                                handleSubmit(e, question, firstGuess);
+                                handleSubmit(e, question,  !currentSessionKey ? firstGuess : '');
                             }
                         }}
                     />
-                    {/* Show the guess input only when a question is present */}
-                    {question.trim() !== "" && (
+                    {/* Only show the first guess input when there is a question AND no session exists */}
+                    {question.trim() !== "" && !currentSessionKey && (
                         <textarea
                             key="firstGuess"
                             id="firstGuess"
+                            className="input-field"
                             placeholder="What is your first guess?"
                             value={firstGuess}
                             onChange={(e) => { // Log the current value
@@ -1035,7 +1057,7 @@ const ChatPage = () => {
                         <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 5.25v13.5m-7.5-13.5v13.5" />
                     </svg>
                 </button> }
-                {!isStreaming && <button type="submit" className="submit-chat" onClick={(e) => handleSubmit(e, question, firstGuess)}>
+                {!isStreaming && <button type="submit" className="submit-chat" onClick={(e) => handleSubmit(e, question, !currentSessionKey ? firstGuess : '')}>
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" width="20" height="20">
                         <path strokeLinecap="round" strokeLinejoin="round" d="m9 9 6-6m0 0 6 6m-6-6v12a6 6 0 0 1-12 0v-3" />
                     </svg>
