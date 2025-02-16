@@ -154,7 +154,7 @@ const ChatPage = () => {
       const response = await fetch(`${apiUrl}/courseEvaluation/upload`, {
         method: "POST",
         body: formData,
-        credentials: "include",
+        //credentials: "include",
       });
 
       console.log("Response status:", response.status);

@@ -95,6 +95,7 @@ def ask():
     email = input_data['email']
     session_key = input_data.get('sessionKey')
     question = input_data['question']
+    first_guess = input_data.get('firstGuess') 
     history = input_data.get('history', [])
 
     user = user_collection.find_one({"email": email})
@@ -121,6 +122,8 @@ def ask():
         "text": question,
         "timestamp": datetime.now().isoformat()
     }
+    if first_guess:  # If a first guess is provided, include it in the session
+        user_message["first_guess"] = first_guess
     user_collection.update_one(
         {"email": email},
         {"$push": {f"savedChats.{session_key}.messages": user_message}}
@@ -129,7 +132,7 @@ def ask():
     def generate_response():
         full_response = "" 
         try:
-            for chunk in queryManager.make_query(question, history):
+            for chunk in queryManager.make_query(question, history,first_guess):
                 try:
                     chunk_data = json.loads(chunk)
                 except JSONDecodeError:

@@ -67,6 +67,8 @@ retriever = vector_search.as_retriever(
 # Define the template for the language model
 template = """
 Use the following pieces of context to answer the question at the end.
+User's initial guess: {first_guess}
+
 If asked a question not in the context, previous conversation, or additional context, do not answer it and say I'm sorry, I do not know the answer to that question.
 If the answer is not in the context, previous conversation, or additional context, just say that you don't know, don't try to make up an answer.
 If the user asks what you can help with, say you are a Teaching Assistant chatbot and can help with questions related to the course material.
@@ -91,7 +93,7 @@ Answer:
 
 # Create a prompt template
 custom_rag_prompt = PromptTemplate(
-    input_variables=["context", "question", "history"],
+    input_variables=["context", "question", "history", "first_guess"],
     template = template)
 
 llm = ChatOpenAI(
@@ -134,7 +136,8 @@ rag_chain = (
         "context": lambda x: x.get("context", ""),
         "history": lambda x: x.get("history", ""),
         "question": lambda x: x.get("question", ""),
-        "date": lambda x: x.get("date", "")
+        "date": lambda x: x.get("date", ""),
+        "first_guess": lambda x: x.get("first_guess", "")
     }
     | custom_rag_prompt # STEP 5
     | llm # STEP 6
@@ -143,7 +146,7 @@ rag_chain = (
 
 # Function to process a query
 
-def process_query(question, history: List[dict]):
+def process_query(question, history: List[dict],first_guess: str = ''):
     '''
     This function processes a query by invoking the RAG chain with the given question.
     It returns a generator that yields the response in chunks.
@@ -172,7 +175,8 @@ def process_query(question, history: List[dict]):
                         "question" : question,
                         "context": context,
                         "history": history_formatted,
-                        "date": human_readable_date
+                        "date": human_readable_date,
+                        "first_guess": first_guess
                     }, 
             config={"callbacks":[langfuse_handler]})
 
@@ -182,7 +186,7 @@ def process_query(question, history: List[dict]):
     except Exception as e:
         raise RuntimeError(f"An error occurred while processing the query: {e}")
 
-def make_query(input_text: str | None, history: List[dict] | None = None):
+def make_query(input_text: str | None, history: List[dict] | None = None, first_guess: str | None = ''):
     '''
     This is the entry function that processes a given query from payload
     '''
@@ -193,7 +197,7 @@ def make_query(input_text: str | None, history: List[dict] | None = None):
         history = []
 
     try:
-        response_generator = process_query(input_text, history)
+        response_generator = process_query(input_text, history, first_guess)
         return response_generator
     except Exception as e:
         raise RuntimeError(f"An error occurred while processing the query: {e}")

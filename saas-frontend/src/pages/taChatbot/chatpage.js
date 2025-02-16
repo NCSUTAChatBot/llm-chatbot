@@ -61,6 +61,7 @@ const ChatPage = () => {
     const editInputRef = useRef(null);
     
     const [suggestedQuestions, setSuggestedQuestions] = useState([]);
+    const [firstGuess, setFirstGuess] = useState('');
 
     useEffect(() => {
         fetchSuggestions();
@@ -356,14 +357,15 @@ const ChatPage = () => {
 
     // This function is called when the user submits a question. It handles logic for creating session and managing message history
     // 2. Update handleSubmit to associate streams with session keys
-    const handleSubmit = async (event, _question) => {
+    const handleSubmit = async (event, _question,_firstGuess) => {
     event.preventDefault();
     if (!_question.trim()) return;
-
+    console.log("First")
     const email = userInfo.email;
     const userMessage = { text: _question, sender: 'user' };
     setMessages(prevMessages => [...prevMessages, userMessage]);
     setQuestion('');
+    setFirstGuess('');
     try {
         let response;
         let payload;
@@ -381,10 +383,10 @@ const ChatPage = () => {
             response = await fetch(`${apiUrl}/chat/ask`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: email, question: _question, chatTitle: _question })
+                body: JSON.stringify({ email: email, question: _question, firstGuess: _firstGuess, chatTitle: _question })
             });
         } else {
-            payload = { email, sessionKey: currentSessionKey, question: _question, history: messages.slice(-10) };
+            payload = { email, sessionKey: currentSessionKey, question: _question, firstGuess: _firstGuess, history: messages.slice(-10) };
             response = await fetch(`${apiUrl}/chat/ask`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -402,7 +404,7 @@ const ChatPage = () => {
                 response = await fetch(`${apiUrl}/chat/ask`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, sessionKey: data.sessionKey, question: _question })
+                    body: JSON.stringify({ email, sessionKey: data.sessionKey, question: _question, firstGuess: _firstGuess })
                 });
 
                 // Add the new session to the saved sessions list with the chat title
@@ -1013,16 +1015,27 @@ const ChatPage = () => {
                         onKeyDown={(e) => {
                             if (e.key === 'Enter'  && !e.shiftKey) {
                                 e.preventDefault();
-                                handleSubmit(e, question);
+                                handleSubmit(e, question, firstGuess);
                             }
                         }}
                     />
+                    {/* Show the guess input only when a question is present */}
+                    {question.trim() !== "" && (
+                        <textarea
+                            key="firstGuess"
+                            id="firstGuess"
+                            placeholder="What is your first guess?"
+                            value={firstGuess}
+                            onChange={(e) => { // Log the current value
+                                setFirstGuess(e.target.value)}}
+                        />
+                    )}
                 {isStreaming && <button type="submit" className="submit-chat" onClick={handlePauseStream}>
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" width="20" height="20">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 5.25v13.5m-7.5-13.5v13.5" />
                     </svg>
                 </button> }
-                {!isStreaming && <button type="submit" className="submit-chat" onClick={(e) => handleSubmit(e, question)}>
+                {!isStreaming && <button type="submit" className="submit-chat" onClick={(e) => handleSubmit(e, question, firstGuess)}>
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" width="20" height="20">
                         <path strokeLinecap="round" strokeLinejoin="round" d="m9 9 6-6m0 0 6 6m-6-6v12a6 6 0 0 1-12 0v-3" />
                     </svg>
