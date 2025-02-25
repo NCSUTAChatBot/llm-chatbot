@@ -35,8 +35,8 @@ db_name = os.getenv('MONGODB_DATABASE')
 collection_name_eval = os.getenv('MONGODB_VECTORS_COURSEEVALUATION_DOCS')
 vector_search_idx_eval = os.getenv('MONGODB_VECTOR_INDEX_TEMPUSER_DOC')
 
-collection_name_website= os.getenv('MONGODB_VECTORS_COURSEWEBSITE')
-vector_search_idx_website=os.getenv('MONGODB_VECTOR_INDEX_WEBSITE')
+collection_name_website= os.getenv('MONGODB_VECTORS_COURSEEVAL')
+vector_search_idx_website=os.getenv('MONGODB_VECTOR_INDEX_COURSEEVAL')
 
 # Connect to MongoDB
 client = MongoClient(MONGODB_URI)
