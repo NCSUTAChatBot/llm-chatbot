@@ -29,8 +29,10 @@ logger = logging.getLogger()
 OPENAI_KEY = os.getenv("OPENAI_API_KEY")
 MONGODB_URI = os.getenv('MONGODB_URI')
 db_name = os.getenv('MONGODB_DATABASE')
-#collection_name = os.getenv('MONGODB_VECTORS_COURSEEVAL')
-#vector_search_idx = os.getenv('MONGODB_VECTOR_INDEX_COURSEEVAL')
+
+# 3 indexes for CommentSense: Website, CourseEval, CourseEvalDocs
+collection_name = os.getenv('MONGODB_VECTORS_COURSEEVAL')
+vector_search_idx = os.getenv('MONGODB_VECTOR_INDEX_COURSEEVAL')
 
 collection_name_eval = os.getenv('MONGODB_VECTORS_COURSEEVALUATION_DOCS')
 vector_search_idx_eval = os.getenv('MONGODB_VECTOR_INDEX_TEMPUSER_DOC')
@@ -61,10 +63,10 @@ if vector_search_idx_website is None:
     raise ValueError("Vector search index for website is not set.")
 
 #Setup MongoDB Atlas Vector Search
-# vector_search = MongoDBAtlasVectorSearch(
-#     embedding=OpenAIEmbeddings(disallowed_special=()),
-#     collection=collection_name,
-#     index_name=vector_search_idx,
+vector_search = MongoDBAtlasVectorSearch(
+    embedding=OpenAIEmbeddings(disallowed_special=()),
+    collection=collection_name,
+    index_name=vector_search_idx,
 # )
 
 vector_search_eval = MongoDBAtlasVectorSearch(
