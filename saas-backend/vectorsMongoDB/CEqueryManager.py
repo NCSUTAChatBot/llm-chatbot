@@ -43,8 +43,8 @@ vector_search_idx_textbook=os.getenv('MONGODB_VECTOR_INDEX_COURSEEVAL')
 
 
 # COURSE EVALUATION COURSE WEBSITE
-collection_name_website= os.getenv('MONGODB_VECTORS_COURSEEVAL')
-vector_search_idx_website=os.getenv('MONGODB_VECTOR_INDEX_COURSEEVAL')
+collection_name_website= os.getenv('MONGODB_VECTORS_COURSEWEBSITE')
+vector_search_idx_website=os.getenv('MONGODB_VECTOR_INDEX_WEBSITE')
 
 # Connect to MongoDB
 client = MongoClient(MONGODB_URI)
@@ -96,10 +96,6 @@ vector_search_textbook = MongoDBAtlasVectorSearch(
 #     search_kwargs={"k": 10, "score_threshold": 0.8}
 # )
 
-retriever = vector_search_website.as_retriever(
-    search_type="similarity",
-    search_kwargs={"k": 10, "score_threshold": 0.8}
-)
 
 # Define the template for the language model
 template = """
@@ -172,14 +168,6 @@ def format_response(response, context):
 
     return "\n".join(formatted_response)
 
-# Define the retrieval and response chain
-rag_chain = (
-    {"context": retriever | format_docs, "question": RunnablePassthrough()} # STEP 4
-    | custom_rag_prompt # STEP 5
-    | llm # STEP 6
-    | StrOutputParser() # STEP 7
-)
-
 # Function to process a query
 
 def process_query(question, session_id, history: List[dict]):
@@ -199,22 +187,28 @@ def process_query(question, session_id, history: List[dict]):
 
     try:
         # Retrieve the relevant documents
-        #Texbook vectors
         retriever_eval = vector_search_eval.as_retriever(
             search_type="similarity",
             search_kwargs={"k": 10, "score_threshold": 0.8},
             pre_filter={"source": {"$eq": session_id}}
         )
 
-        #Website vectors
+        #Texbook vectors
         retriever_website = vector_search_website.as_retriever(
             search_type="similarity",
             search_kwargs={"k": 10, "score_threshold": 0.8},
             pre_filter={"source": {"$eq": session_id}}
         )
 
+        #Website vectors
+        retriever_tb = vector_search_textbook.as_retriever(
+            search_type="similarity",
+            search_kwargs={"k": 10, "score_threshold": 0.8},
+            pre_filter={"source": {"$eq": session_id}}
+        )
+
         context_ce = format_docs(retriever_eval.invoke(question))
-        context_tb = format_docs(retriever.invoke(question))
+        context_tb = format_docs(retriever_tb.invoke(question))
         context_website = format_docs(retriever_website.invoke(question))
         
         rag_chain = (

@@ -22,3 +22,4 @@ pdfplumber==0.11.4
 flask-swagger-ui==4.11.1
 openpyxl
 xlrd
+odfpy==1.4.1
