@@ -8,7 +8,6 @@ from pymongo import MongoClient
 from flask_jwt_extended import create_access_token, unset_jwt_cookies
 from flask_mail import Message
 from service.user_service import UserService
-from repository.user_repository import UserRepository
 from pydantic import ValidationError
 from dotenv import load_dotenv
 from langfuse.decorators import observe, langfuse_context
@@ -30,8 +29,7 @@ whitelist_collection = db[MONGODB_WHITELIST]
 access_codes_collection = db[MONGODB_ACCESSCODES]
 
 # Initialize UserRepository and UserService
-user_repository = UserRepository(user_collection)
-user_service = UserService(user_repository)
+user_service = UserService(user_collection)
 
 # a blueprint named 'user'
 user_bp = Blueprint('user', __name__)
