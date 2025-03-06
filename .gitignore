@@ -132,3 +132,5 @@ venv.bak/
 
 #openaiapikey
 openapikeyformal
+
+*/__pycache__/*
