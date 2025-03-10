@@ -451,33 +451,47 @@ const ChatPage = () => {
                 if (response.body) {
                     const reader = response.body.getReader();
                     const decoder = new TextDecoder();
-                    let aggregatedText = ''; // Buffer for the streamed text
+                    let aggregatedText = ''; // Buffer for combined text (main response + analysis)
+                    let isAnalysisStarted = false; // Track when First Guess Analysis starts
 
+                    function updateMessages(chunk) {
+                        setMessages((prev) => {
+                            const lastMessage = prev[prev.length - 1];
+                    
+                            // Check if this chunk contains "[First Guess Analysis]"
+                            if (chunk.includes('\n [First Guess Analysis]')) {
+                                isAnalysisStarted = true; // Start appending analysis content
+                                aggregatedText += '\n\n'; // Add spacing before analysis
+                            }
+                    
+                            // Append chunks to aggregated text
+                            aggregatedText += chunk;
+                    
+                            // Update or create a single combined message
+                            if (lastMessage?.sender === 'bot' && lastMessage?.isCombined) {
+                                // Update the existing combined message
+                                return [...prev.slice(0, -1), { ...lastMessage, text: `Virtual TA\n${aggregatedText}` }];
+                            } else {
+                                // Create a new combined message
+                                return [
+                                    ...prev,
+                                    {
+                                        text: `Virtual TA\n${aggregatedText}`,
+                                        sender: 'bot',
+                                        isCombined: true, // Mark as combined message
+                                    },
+                                ];
+                            }
+                        });
+                    }
+                    
                     while (true) {
                         const { done, value } = await reader.read();
                         if (done) break;
                         if (controller.signal.aborted) break;
-
+                    
                         const chunk = decoder.decode(value, { stream: true });
-                        aggregatedText += chunk;
-
-                        // Check if the session key hasn't changed
-                        if (sessionKeyAtStart !== currentSessionKey) {
-                            console.log('Session key changed, aborting stream.');
-                            controller.abort();
-                            break;
-                        }
-
-                        // Update messages without duplicating or adding unnecessary spaces
-                        setMessages(messages => {
-                            const lastMessage = messages[messages.length - 1];
-                            if (lastMessage && lastMessage.sender === 'bot') {
-                                lastMessage.text += chunk;
-                                return [...messages.slice(0, -1), lastMessage];
-                            } else {
-                                return [...messages, { text: chunk, sender: 'bot' }];
-                            }
-                        });
+                        updateMessages(chunk); // Pass chunk to the external function
                     }
 
                     // Ensure the reader is closed

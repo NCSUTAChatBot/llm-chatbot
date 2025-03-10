@@ -9,6 +9,7 @@ from flask import Blueprint, request, jsonify, send_file, stream_with_context, R
 import json
 from json import JSONDecodeError 
 from datetime import datetime
+from langchain_openai import ChatOpenAI
 from pymongo import MongoClient, ReturnDocument
 from dotenv import load_dotenv
 import os
@@ -130,41 +131,72 @@ def ask():
     )
 
     def generate_response():
-        full_response = "" 
+        full_response = ""  # To store the complete main response
+        analysis_buffer = []  # Buffer for First Guess Analysis
+        combined_response = ""  # Combined response for saving to the database
         try:
-            for chunk in queryManager.make_query(question, history,first_guess):
+            # Stream the main response
+            for chunk in queryManager.make_query(question, history, first_guess):
                 try:
                     chunk_data = json.loads(chunk)
                 except JSONDecodeError:
-                    chunk_data = chunk 
+                    chunk_data = chunk
 
                 if isinstance(chunk_data, dict) and "choices" in chunk_data:
                     for choice in chunk_data["choices"]:
                         if "text" in choice:
                             bot_response_text = choice["text"]
-                            yield f"{bot_response_text}"
-                            full_response += bot_response_text  
-                            # time.sleep(0.01) # generator needs a short delay to process each chunk in  otherwise generator will process too quickly
+                            full_response += bot_response_text
+                            yield f"{bot_response_text}"  # Stream main response chunks
                 else:
-                    yield f"{chunk}"
-                    full_response += chunk  
-                    # time.sleep(0.01)
+                    full_response += chunk
+                    yield f"{chunk}"  # Stream main response chunks
+
+            # Generate and stream analysis after the main response is complete
+            if first_guess and first_guess.strip():
+                comparison_prompt = f"""
+                Compare the user's first guess with the final answer. 
+                Highlight key similarities and provide constructive feedback.
+                
+                First Guess: {first_guess}
+                Final Answer: {full_response}
+                
+                Structure your response:
+                - Key Matches: 
+                - Suggested Improvements:
+                """
+
+                analysis_stream = ChatOpenAI().stream(comparison_prompt)
+
+                # Stream chunks of analysis directly
+                yield "\n\n[First Guess Analysis]\n"
+                for msg_chunk in analysis_stream:
+                    if hasattr(msg_chunk, 'content'):
+                        analysis_buffer.append(str(msg_chunk.content))
+                        yield str(msg_chunk.content)
+                    else:
+                        analysis_buffer.append(str(msg_chunk))
+                        yield str(msg_chunk)
+            
+            # Combine main response and analysis into one text block
+            combined_response = f"{full_response}\n\n[First Guess Analysis]\n{''.join(analysis_buffer)}"
 
 
         except Exception as e:
             yield f"Error: {str(e)}"
             return
-        
+
+        # Save the bot's combined response to the database
         bot_response = {
             "sender": "bot",
-            "text": full_response,
+            "text": combined_response,
             "timestamp": datetime.now().isoformat()
         }
-        
         user_collection.update_one(
             {"email": email},
             {"$push": {f"savedChats.{session_key}.messages": bot_response}}
         )
+
     
     return Response(stream_with_context(generate_response()), content_type='text/plain')
 
