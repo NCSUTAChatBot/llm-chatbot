@@ -64,9 +64,20 @@ const ChatPage = () => {
     const [suggestedQuestions, setSuggestedQuestions] = useState([]);
     const [firstGuess, setFirstGuess] = useState('');
 
+    const [showFirstGuess, setShowFirstGuess] = useState(() => {
+        if (typeof window === 'undefined') return true; // SSR fallback
+        return localStorage.getItem('firstGuessEnabled') !== 'false';
+      });
+
     useEffect(() => {
         fetchSuggestions();
     }, []);
+
+    const toggleFirstGuess = () => {
+        const newState = !showFirstGuess;
+        setShowFirstGuess(newState);
+        localStorage.setItem('firstGuessEnabled', newState);
+      };
 
     const fetchSuggestions = async () => {
         try {
@@ -819,7 +830,6 @@ const ChatPage = () => {
                             </svg>
                         </button>
                     )}
-
                 </div>
                 <div className='sidebar' style={{ "borderRadius": "0px" }}>
                     {savedSessionKeys.length === 0 && userInfo ? (
@@ -906,6 +916,7 @@ const ChatPage = () => {
                         ))
                     )}
                 </div>
+                
                 {/* GUEST MODE CODE */}
                 {/* {(!userInfo || !userInfo.email) && (
                     <div className="guest-login">
@@ -916,6 +927,26 @@ const ChatPage = () => {
                         <button className="login-button" onClick={() => navigate('/virtualTA/login')}>Log in</button>
                     </div>
                 )} */}
+
+                <div className="chat-footer"> 
+                        <button 
+                            className="toggle-firstguess"
+                            onClick={toggleFirstGuess}
+                            title={showFirstGuess ? "Disable First Guess" : "Enable First Guess"}
+                            aria-pressed={showFirstGuess}
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" 
+                                fill={showFirstGuess ? "currentColor" : "none"} 
+                                viewBox="0 0 24 24" 
+                                strokeWidth="1.5" 
+                                stroke="currentColor" 
+                                style={{ width: '24px', height: '24px' }}>
+                                <path strokeLinecap="round" strokeLinejoin="round" 
+                                    d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            First Guess
+                        </button>
+                </div>
             </aside>
             <main style={{ flex: 1, overflowY: 'hidden', padding: '10px', display: 'flex', flexDirection: 'column' }}>
                 <div className="chat-container" ref={chatContainerRef}>
@@ -1019,7 +1050,7 @@ const ChatPage = () => {
                         }}
                     />
                     {/* Only show the first guess input when there is a question AND no session exists */}
-                    {question.trim() !== "" && !currentSessionKey && (
+                    {question.trim() !== "" && !currentSessionKey && showFirstGuess && (
                         <textarea
                             key="firstGuess"
                             id="firstGuess"
