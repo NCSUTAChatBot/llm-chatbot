@@ -32,9 +32,17 @@ db_name = os.getenv('MONGODB_DATABASE')
 #collection_name = os.getenv('MONGODB_VECTORS_COURSEEVAL')
 #vector_search_idx = os.getenv('MONGODB_VECTOR_INDEX_COURSEEVAL')
 
+
+# EXCEL SHEETS UPLOADED BY THE USER
 collection_name_eval = os.getenv('MONGODB_VECTORS_COURSEEVALUATION_DOCS')
 vector_search_idx_eval = os.getenv('MONGODB_VECTOR_INDEX_TEMPUSER_DOC')
 
+# COURSE EVALUATION TEXTBOOK
+collection_name_textbook= os.getenv('MONGODB_VECTORS_COURSEEVAL')
+vector_search_idx_textbook=os.getenv('MONGODB_VECTOR_INDEX_COURSEEVAL')
+
+
+# COURSE EVALUATION COURSE WEBSITE
 collection_name_website= os.getenv('MONGODB_VECTORS_COURSEWEBSITE')
 vector_search_idx_website=os.getenv('MONGODB_VECTOR_INDEX_WEBSITE')
 
@@ -50,22 +58,17 @@ if db_name is None or collection_name_website is None:
     raise ValueError("Database name or collection name is not set.")
 
 db = client[db_name]
-# collection = db[collection_name]
+
+
 eval_collection = db[collection_name_eval]
 website_collection=db[collection_name_website]
+textbook_collection=db[collection_name_textbook]
 
-#if vector_search_idx is None:
-    #raise ValueError("Vector search index for website is not set.")
 
 if vector_search_idx_website is None:
     raise ValueError("Vector search index for website is not set.")
 
-#Setup MongoDB Atlas Vector Search
-# vector_search = MongoDBAtlasVectorSearch(
-#     embedding=OpenAIEmbeddings(disallowed_special=()),
-#     collection=collection_name,
-#     index_name=vector_search_idx,
-# )
+
 
 vector_search_eval = MongoDBAtlasVectorSearch(
     embedding=OpenAIEmbeddings(disallowed_special=()),
@@ -79,6 +82,12 @@ vector_search_website = MongoDBAtlasVectorSearch(
     index_name=vector_search_idx_website,
 )
 
+
+vector_search_textbook = MongoDBAtlasVectorSearch(
+    embedding=OpenAIEmbeddings(disallowed_special=()),
+    collection=textbook_collection,
+    index_name=vector_search_idx_textbook,
+)
 # Configure the retriever
 # STEP 2
 
@@ -87,10 +96,6 @@ vector_search_website = MongoDBAtlasVectorSearch(
 #     search_kwargs={"k": 10, "score_threshold": 0.8}
 # )
 
-retriever = vector_search_website.as_retriever(
-    search_type="similarity",
-    search_kwargs={"k": 10, "score_threshold": 0.8}
-)
 
 # Define the template for the language model
 template = """
@@ -112,9 +117,11 @@ Use the below information as a reference, which provides context on how professo
 Context1:
 {context1}
 
-THE BELOW INFORMATION IS IMPORTANT AND CONTAINS THE EVALUATION OF THE COURSE:
-Context2:
+This is course website information:
 {context2}
+
+THE BELOW INFORMATION IS IMPORTANT AND CONTAINS THE EVALUATION OF THE COURSE:
+{context3}
 
 Previous conversation:
 {history}
@@ -164,14 +171,6 @@ def format_response(response, context):
 
     return "\n".join(formatted_response)
 
-# Define the retrieval and response chain
-rag_chain = (
-    {"context": retriever | format_docs, "question": RunnablePassthrough()} # STEP 4
-    | custom_rag_prompt # STEP 5
-    | llm # STEP 6
-    | StrOutputParser() # STEP 7
-)
-
 # Function to process a query
 
 def process_query(question, session_id, history: List[dict]):
@@ -191,20 +190,35 @@ def process_query(question, session_id, history: List[dict]):
 
     try:
         # Retrieve the relevant documents
-        #Texbook vectors
         retriever_eval = vector_search_eval.as_retriever(
             search_type="similarity",
             search_kwargs={"k": 10, "score_threshold": 0.8},
             pre_filter={"source": {"$eq": session_id}}
         )
 
+        #Texbook vectors
+        retriever_website = vector_search_website.as_retriever(
+            search_type="similarity",
+            search_kwargs={"k": 10, "score_threshold": 0.8},
+            pre_filter={"source": {"$eq": session_id}}
+        )
+
+        #Website vectors
+        retriever_tb = vector_search_textbook.as_retriever(
+            search_type="similarity",
+            search_kwargs={"k": 10, "score_threshold": 0.8},
+            pre_filter={"source": {"$eq": session_id}}
+        )
+
         context_ce = format_docs(retriever_eval.invoke(question))
-        context_tb = format_docs(retriever.invoke(question))
+        context_tb = format_docs(retriever_tb.invoke(question))
+        context_website = format_docs(retriever_website.invoke(question))
         
         rag_chain = (
             {
                 "context1": lambda x: x.get('context1', ''),
                 "context2": lambda x: x.get('context2', ''),
+                "context3": lambda x: x.get('context3', ''),
                 "question": lambda x: x.get('question', ''),
                 "history": lambda x: x.get('history', '')
             }
@@ -216,7 +230,8 @@ def process_query(question, session_id, history: List[dict]):
         stream_response = rag_chain.stream({
             "question": question,
             "context1": context_tb,
-            "context2": context_ce,
+            "context2": context_website,
+            "context3": context_ce,
             "history": history
             }, config={"callbacks":[langfuse_handler]})
 

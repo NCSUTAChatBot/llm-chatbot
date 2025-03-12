@@ -50,11 +50,15 @@ CORS(eval_bp, resources={r"/*": {"origins": "*"}})
 # sessions = {}
 
 # Global variables
-ALLOWED_EXTENSIONS = {'csv', 'xls'}
+ALLOWED_EXTENSIONS = {'csv', 'xls', 'xlsx', 'pdf'}
 ALLOWED_MIME_TYPES = {
     'text/csv',
-    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     'application/vnd.ms-excel',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    'application/excel',
+    'application/x-excel',
+    'application/x-msexcel',
+    'application/pdf'
 }
 
 class Document:
@@ -78,8 +82,11 @@ def start_session():
     return jsonify({'session_id': session_id})
 
 def allowed_file(filename, mimetype):
+    """Check if the file type is allowed"""
     ext = filename.rsplit('.', 1)[-1].lower()
-    return ext in ALLOWED_EXTENSIONS and mimetype in ALLOWED_MIME_TYPES
+    # Some browsers/systems might send slightly different MIME types
+    base_mimetype = mimetype.split(';')[0].strip()
+    return ext in ALLOWED_EXTENSIONS and base_mimetype in ALLOWED_MIME_TYPES
 
 @eval_bp.route('/upload', methods=['POST'])
 def upload_file():
@@ -93,40 +100,47 @@ def upload_file():
             'Access-Control-Allow-Headers': '*'
         })
     
-    if not session_id:
-        return jsonify({"error": "Session ID is required"}), 400
     if not file:
         return jsonify({"error": "File is required"}), 400
 
     filename = secure_filename(file.filename)
+    file_type = filename.rsplit('.', 1)[-1].lower()
 
     if not allowed_file(filename, file.mimetype):
         return jsonify({"error": "Unsupported file type"}), 400
-    
-    file_type = filename.rsplit('.', 1)[-1].lower()
 
-    # Detect encoding
-    file.stream.seek(0)  # Ensure the stream is at the start
-    raw_data = file.stream.read(10000)  # Read a portion of the file to detect encoding
-    result = chardet.detect(raw_data)
-    encoding = result['encoding'] if result['encoding'] else 'utf-8'
-    file.stream.seek(0)  # Reset stream to the beginning after reading
-    
-    # Load documents using detected encoding
-    loader = LoadEvaluation()
-    with file.stream:
-        documents = loader.load_from_stream(file.stream, file_type, encoding=encoding)
+    try:
+        # Detect encoding
+        file.stream.seek(0)
+        raw_data = file.stream.read(10000)
+        result = chardet.detect(raw_data)
+        encoding = result['encoding'] if result['encoding'] else 'utf-8'
+        file.stream.seek(0)
 
-    if not documents:
-        return jsonify({"error": "No documents were processed"}), 500
+        loader = LoadEvaluation()
+        try:
+            documents = loader.load_from_stream(file.stream, file_type, encoding=encoding)
+        except ValueError as ve:
+            return jsonify({"error": str(ve)}), 400
+        except Exception as e:
+            return jsonify({"error": f"Error processing file: {str(e)}"}), 500
 
-    generator = GenerateEvaluation()
-    success = generator.generate_embeddings(session_id, documents)
+        if not documents:
+            return jsonify({"error": "No content could be extracted from the file"}), 400
 
-    if success:
-        return jsonify({"message": "Embeddings successfully created"}), 200
-    else:
-        return jsonify({"error": "Failed to generate embeddings"}), 500
+        if not session_id:
+            session_id = secrets.token_urlsafe(16)
+
+        generator = GenerateEvaluation()
+        success = generator.generate_embeddings(session_id, documents)
+
+        if success:
+            return jsonify({"message": "File processed successfully", "session_id": session_id}), 200
+        else:
+            return jsonify({"error": "Failed to process file"}), 500
+
+    except Exception as e:
+        return jsonify({"error": f"Server error: {str(e)}"}), 500
 
 
 @eval_bp.route('/ask', methods=['POST', 'OPTIONS'])
