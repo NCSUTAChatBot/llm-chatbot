@@ -6,7 +6,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "../../globalStyles.css";
-import ReactMarkdown from 'react-markdown';
+import Markdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 
 const ChatPage = () => {
   // ENV VARIABLES
@@ -116,7 +117,7 @@ const ChatPage = () => {
         const data = await response.json();
         if (data.session_id) {
           setCurrentSessionId(data.session_id);
-          navigate(`/courseEvaluation/chat?sessionId=${data.session_id}`, { replace: true });
+          navigate(`/commentSense/chat?sessionId=${data.session_id}`, { replace: true });
         } else {
           console.error("No session ID received from the backend");
         }
@@ -249,7 +250,7 @@ const ChatPage = () => {
 
   // This function is called when the user clicks on the Logout button
   const handleLogout = async () => {
-    navigate("/courseEvaluation");
+    navigate("/commentSense");
   };
 
   const handleSubmit = async (event) => {
@@ -682,14 +683,12 @@ const ChatPage = () => {
             </div>
           ) : (
             messages.map((msg, index) => (
-              <div key={index} className={`message-CE ${msg.sender}`}>
-                <div className="sender">
-                  {msg.sender === "user" ? "You" : "CommentSense"}
+                <div key={index} className={`message ${msg.sender}`}>
+                    <div className="sender">{msg.sender === 'user' ? '' : 'CommentSense'}</div>
+                    <div className="text zero-pad-markdown">
+                        <Markdown remarkPlugins={[remarkGfm]} children={msg.text} />
+                    </div>
                 </div>
-                <div className="text">
-                    <ReactMarkdown>{msg.text}</ReactMarkdown> {/* Render markdown here */}
-                  </div>
-              </div>
             ))
           )}
           <button className="scroll-to-top" onClick={scrollToTop}>
