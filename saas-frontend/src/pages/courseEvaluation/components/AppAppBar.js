@@ -15,7 +15,7 @@ function AppAppBar() {
   const navigate = useNavigate();
 
   const handleChat = () => {
-    window.location.href = '/courseEvaluation/chat';
+    navigate('/commentSense/chat');
   } 
   
   const handleFeedback = () => {
