@@ -398,7 +398,7 @@ const ChatPage = () => {
     const handleSubmit = async (event, _question,_firstGuess) => {
     event.preventDefault();
     if (!_question.trim()) return;
-    const effectiveFirstGuess = !currentSessionKey ? _firstGuess : '';
+    const effectiveFirstGuess = showFirstGuess ? _firstGuess : '';
     const email = userInfo.email;
     let userMessage;
     if (effectiveFirstGuess===''){
@@ -448,7 +448,7 @@ const ChatPage = () => {
                 response = await fetch(`${apiUrl}/chat/ask`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, sessionKey: data.sessionKey, question: _question, firstGuess: _firstGuess })
+                    body: JSON.stringify({ email, sessionKey: data.sessionKey, question: _question, firstGuess: effectiveFirstGuess })
                 });
 
                     // Add the new session to the saved sessions list with the chat title
@@ -1045,12 +1045,12 @@ const ChatPage = () => {
                         onKeyDown={(e) => {
                             if (e.key === 'Enter' && !e.shiftKey) {
                                 e.preventDefault();
-                                handleSubmit(e, question,  !currentSessionKey ? firstGuess : '');
+                                handleSubmit(e, question,  showFirstGuess ? firstGuess : '');
                             }
                         }}
                     />
                     {/* Only show the first guess input when there is a question AND no session exists */}
-                    {question.trim() !== "" && !currentSessionKey && showFirstGuess && (
+                    {question.trim() !== "" && showFirstGuess && (
                         <textarea
                             key="firstGuess"
                             id="firstGuess"
@@ -1066,7 +1066,7 @@ const ChatPage = () => {
                         <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 5.25v13.5m-7.5-13.5v13.5" />
                     </svg>
                 </button> }
-                {!isStreaming && <button type="submit" className="submit-chat" onClick={(e) => handleSubmit(e, question, !currentSessionKey ? firstGuess : '')}>
+                {!isStreaming && <button type="submit" className="submit-chat" onClick={(e) => handleSubmit(e, question, firstGuess)}>
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" width="20" height="20">
                         <path strokeLinecap="round" strokeLinejoin="round" d="m9 9 6-6m0 0 6 6m-6-6v12a6 6 0 0 1-12 0v-3" />
                     </svg>
