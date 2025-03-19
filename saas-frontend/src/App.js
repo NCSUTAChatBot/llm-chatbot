@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import Chatpage from './pages/taChatbot/chatpage.js';
 import LoginPage from './pages/taChatbot/loginpage.js';
 import SignupPage from './pages/taChatbot/signuppage.js';
@@ -24,8 +24,11 @@ function App() {
       <Route path="/virtualTA/forgotpassword" element={<ForgotPassword/>} />
       <Route path='/virtualTA/reset_password' element={<ResetPassword/>} />
       
-      <Route path="/courseEvaluation" element={<CELandingPage/>} />
-      <Route path="/courseEvaluation/chat" element={<CEChatPage/>} />
+      <Route path="/commentSense" element={<CELandingPage/>} />
+      <Route path="/commentSense/chat" element={<CEChatPage/>} />
+
+      {/* Redirect to the course evaluation chat page if the user tries to access the course evaluation page */}
+      <Route path="/courseEvaluation/*" element={<Navigate to="/commentSense" />} />
 
       <Route path="*" element={<NotFound />} />
     </Routes>

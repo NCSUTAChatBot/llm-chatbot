@@ -32,9 +32,17 @@ db_name = os.getenv('MONGODB_DATABASE')
 #collection_name = os.getenv('MONGODB_VECTORS_COURSEEVAL')
 #vector_search_idx = os.getenv('MONGODB_VECTOR_INDEX_COURSEEVAL')
 
+
+# EXCEL SHEETS UPLOADED BY THE USER
 collection_name_eval = os.getenv('MONGODB_VECTORS_COURSEEVALUATION_DOCS')
 vector_search_idx_eval = os.getenv('MONGODB_VECTOR_INDEX_TEMPUSER_DOC')
 
+# COURSE EVALUATION TEXTBOOK
+collection_name_textbook= os.getenv('MONGODB_VECTORS_COURSEEVAL')
+vector_search_idx_textbook=os.getenv('MONGODB_VECTOR_INDEX_COURSEEVAL')
+
+
+# COURSE EVALUATION COURSE WEBSITE
 collection_name_website= os.getenv('MONGODB_VECTORS_COURSEWEBSITE')
 vector_search_idx_website=os.getenv('MONGODB_VECTOR_INDEX_WEBSITE')
 
@@ -50,22 +58,17 @@ if db_name is None or collection_name_website is None:
     raise ValueError("Database name or collection name is not set.")
 
 db = client[db_name]
-# collection = db[collection_name]
+
+
 eval_collection = db[collection_name_eval]
 website_collection=db[collection_name_website]
+textbook_collection=db[collection_name_textbook]
 
-#if vector_search_idx is None:
-    #raise ValueError("Vector search index for website is not set.")
 
 if vector_search_idx_website is None:
     raise ValueError("Vector search index for website is not set.")
 
-#Setup MongoDB Atlas Vector Search
-# vector_search = MongoDBAtlasVectorSearch(
-#     embedding=OpenAIEmbeddings(disallowed_special=()),
-#     collection=collection_name,
-#     index_name=vector_search_idx,
-# )
+
 
 vector_search_eval = MongoDBAtlasVectorSearch(
     embedding=OpenAIEmbeddings(disallowed_special=()),
@@ -79,6 +82,12 @@ vector_search_website = MongoDBAtlasVectorSearch(
     index_name=vector_search_idx_website,
 )
 
+
+vector_search_textbook = MongoDBAtlasVectorSearch(
+    embedding=OpenAIEmbeddings(disallowed_special=()),
+    collection=textbook_collection,
+    index_name=vector_search_idx_textbook,
+)
 # Configure the retriever
 # STEP 2
 
@@ -87,38 +96,33 @@ vector_search_website = MongoDBAtlasVectorSearch(
 #     search_kwargs={"k": 10, "score_threshold": 0.8}
 # )
 
-retriever = vector_search_website.as_retriever(
-    search_type="similarity",
-    search_kwargs={"k": 10, "score_threshold": 0.8}
-)
 
 # Define the template for the language model
 template = """
-Use the following pieces of context to answer the question at the end.
-If context2 is empty or not provided, prioritize answering the question using context1.
-If asked a question that is either in context1 or context2, answer the question using information from both contexts, ensuring that the feedback from context2 is addressed and improvement strategies from context1 are included when possible.
-Do not repeat the exact feedback from context2 unless it's necessary to clarify.
-If you don't know the answer or if it is not provided in the context, just say that you don't know, don't try to make up an answer.
-If the answer is in the context, don't say "mentioned in the context."
-If the user asks you to generate code, say that you cannot generate code.
-If the user asks any question not related to course evaluations, say, "I'm sorry, I can't assist with that."
-If the user asks what you can help with, say you are a Course Evaluation chatbot here to assist with course evaluation feedback.
-If the user greets you, say hello back.
+You are a Course Evaluation chatbot designed to identify issues and provide constructive feedback from student evaluations in a helpful and encouraging tone. Your goal is to highlight student concerns and suggestions from course feedback, offering actionable improvement strategies where relevant.
 
-You are an assistant for a course evaluation chatbot. You have been provided with two major information sources to assist with the course evaluation feedback.
+**Guidelines:**
+- Focus on identifying issues and constructive feedback from student evaluations in Context3, presenting them clearly and positively.
+- Use Context1 to suggest improvement strategies tailored to the issues or feedback in Context3 when applicable.
+- If Context2 (course website info) provides relevant details, integrate it to supplement the response; otherwise, prioritize Context3 and Context1.
+- If Context2 is incomplete or absent, rely on Context3 for feedback and Context1 for suggestions, noting if more details would help.
+- Paraphrase student feedback from Context3 unless exact wording is needed for clarity.
+- If the answer isn’t in the provided context, say, “I don’t have enough information to address that,” and avoid speculating.
+- For code requests, respond, “Sorry, I can’t generate code—I’m here to focus on course evaluation feedback.”
+- For off-topic questions, say, “Sorry, I can’t assist with that. I’m here to help with course evaluations—let me know how I can assist with that!”
+- If asked what you can help with, say, “I’m a Course Evaluation chatbot here to identify student feedback and offer constructive suggestions.”
+- For greetings, reply warmly, e.g., “Hi there! How can I assist with course feedback today?”
 
-Use the below information as a reference, the below information provides context on how professors can improve their class:
-{context1}
 
-THE BELOW INFORMATION IS IMPORTANT AND CONTAINS THE EVALUATION OF THE COURSE:
-{context2}
+**Reference Materials:**
+- **Context1:** Strategies for professors to improve their classes: {context1}
+- **Context2:** Course website information: {context2}
+- **Context3:** Student course evaluation feedback (primary source): {context3}
+- **Previous Conversation:** {history} (Use for continuity if relevant, but prioritize the current question.)
 
-Previous conversation:
-{history}
+**Current Question:** {question}
 
-Question: {question}
-
-Answer the above question using course evaluation feedback, and if needed, suggest actionable strategies or improvements based on the reference material provided.
+Answer by identifying specific issues and constructive feedback from Context3. Supplement with details from Context2 if relevant, and offer tailored improvement strategies from Context1 to address the feedback.
 """
 
 # Create a prompt template
@@ -126,7 +130,7 @@ custom_rag_prompt = PromptTemplate(
     template=template, input_variables=["context1", "context2", "question", "history"]
 )
 llm = ChatOpenAI(
-    model="gpt-4o-mini",
+    model="gpt-4o",
 )
 
 # Function to format documents
@@ -159,14 +163,6 @@ def format_response(response, context):
 
     return "\n".join(formatted_response)
 
-# Define the retrieval and response chain
-rag_chain = (
-    {"context": retriever | format_docs, "question": RunnablePassthrough()} # STEP 4
-    | custom_rag_prompt # STEP 5
-    | llm # STEP 6
-    | StrOutputParser() # STEP 7
-)
-
 # Function to process a query
 
 def process_query(question, session_id, history: List[dict]):
@@ -186,20 +182,35 @@ def process_query(question, session_id, history: List[dict]):
 
     try:
         # Retrieve the relevant documents
-        #Texbook vectors
         retriever_eval = vector_search_eval.as_retriever(
             search_type="similarity",
             search_kwargs={"k": 10, "score_threshold": 0.8},
             pre_filter={"source": {"$eq": session_id}}
         )
 
+        #Texbook vectors
+        retriever_website = vector_search_website.as_retriever(
+            search_type="similarity",
+            search_kwargs={"k": 10, "score_threshold": 0.8},
+            pre_filter={"source": {"$eq": session_id}}
+        )
+
+        #Website vectors
+        retriever_tb = vector_search_textbook.as_retriever(
+            search_type="similarity",
+            search_kwargs={"k": 10, "score_threshold": 0.8},
+            pre_filter={"source": {"$eq": session_id}}
+        )
+
         context_ce = format_docs(retriever_eval.invoke(question))
-        context_tb = format_docs(retriever.invoke(question))
+        context_tb = format_docs(retriever_tb.invoke(question))
+        context_website = format_docs(retriever_website.invoke(question))
         
         rag_chain = (
             {
                 "context1": lambda x: x.get('context1', ''),
                 "context2": lambda x: x.get('context2', ''),
+                "context3": lambda x: x.get('context3', ''),
                 "question": lambda x: x.get('question', ''),
                 "history": lambda x: x.get('history', '')
             }
@@ -211,7 +222,8 @@ def process_query(question, session_id, history: List[dict]):
         stream_response = rag_chain.stream({
             "question": question,
             "context1": context_tb,
-            "context2": context_ce,
+            "context2": context_website,
+            "context3": context_ce,
             "history": history
             }, config={"callbacks":[langfuse_handler]})
 
