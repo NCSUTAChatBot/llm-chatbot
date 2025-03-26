@@ -47,7 +47,7 @@ const randomTexts = [
 export default function Hero() {
   const navigate = useNavigate();
   const handleChat = () => {
-    window.location.href = '/courseEvaluation/chat';
+    navigate('/commentSense/chat');
   } 
 
   const [placeholderText, setPlaceholderText] = useState(randomTexts[0]);
